@@ -1,0 +1,2716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>sing-box 1.14.0-alpha.13 全功能分流配置转换器 | 官方模板专用版</title>
+    <!-- 引入YAML解析库，用于解析Clash YAML格式 -->
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <style>
+        /* 日夜模式全局变量 */
+        :root {
+            --bg-body: #eef2f7;
+            --bg-container: #ffffff;
+            --bg-card: #f8fafc;
+            --bg-tab: #f1f5f9;
+            --bg-tab-active: #ffffff;
+            --header-bg: #0a2b3c;
+            --header-text: #ffffff;
+            --th-bg: #e9f0f6;
+            --th-border: #cbdde6;
+            --line-num-bg: #f8fafc;
+            --line-num-text: #6b7280;
+            --code-text: #1e40af;
+            --code-bg: #fefefe;
+            --comment-text: #166534;
+            --comment-bg: #f1fdf5;
+            --info-bg: #f8fafc;
+            --info-text: #1e293b;
+            --border-light: #e2e8f0;
+            --border-primary: #cbd5e1;
+            --border-danger: #fca5a5;
+            --btn-bg: #e2e8f0;
+            --btn-text: #1e293b;
+            --btn-active-bg: #0a2b3c;
+            --btn-active-text: #ffffff;
+            --btn-primary-bg: #2563eb;
+            --btn-primary-hover: #1d4ed8;
+            --btn-success-bg: #10b981;
+            --btn-danger-bg: #ef4444;
+            --btn-warning-bg: #f59e0b;
+            --input-bg: #ffffff;
+            --input-text: #1e293b;
+            --input-border: #cbd5e1;
+            --input-focus: #2563eb;
+            --label-text: #475569;
+            --tab-text: #64748b;
+            --tab-active-text: #0a2b3c;
+            --scrollbar-thumb: #cbd5e1;
+            --scrollbar-track: #f1f5f9;
+            --inline-code-bg: #e0e7ff;
+            --inline-code-text: #1e40af;
+            --node-item-bg: #ffffff;
+            --node-item-border: #e2e8f0;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #1a1e2a;
+                --bg-container: #252b3a;
+                --bg-card: #1f2533;
+                --bg-tab: #2d3548;
+                --bg-tab-active: #252b3a;
+                --header-bg: #162b3a;
+                --header-text: #f0f6fc;
+                --th-bg: #2d3548;
+                --th-border: #3f4a60;
+                --line-num-bg: #1f2533;
+                --line-num-text: #9aa4b8;
+                --code-text: #b5c9ff;
+                --code-bg: #1a1f2b;
+                --comment-text: #8bcf9e;
+                --comment-bg: #1e2a2a;
+                --info-bg: #1f2533;
+                --info-text: #cbd5e1;
+                --border-light: #2f3a4c;
+                --border-primary: #475569;
+                --border-danger: #7f1d1d;
+                --btn-bg: #3a465c;
+                --btn-text: #e2e8f0;
+                --btn-active-bg: #3b82f6;
+                --btn-active-text: #ffffff;
+                --btn-primary-bg: #3b82f6;
+                --btn-primary-hover: #2563eb;
+                --btn-success-bg: #10b981;
+                --btn-danger-bg: #ef4444;
+                --btn-warning-bg: #f59e0b;
+                --input-bg: #2d3548;
+                --input-text: #e2e8f0;
+                --input-border: #475569;
+                --input-focus: #3b82f6;
+                --label-text: #cbd5e1;
+                --tab-text: #94a3b8;
+                --tab-active-text: #f0f6fc;
+                --scrollbar-thumb: #475569;
+                --scrollbar-track: #1e293b;
+                --inline-code-bg: #334155;
+                --inline-code-text: #bfdbfe;
+                --node-item-bg: #2d3548;
+                --node-item-border: #475569;
+            }
+        }
+        /* 手动主题强制类 */
+        body.light {
+            --bg-body: #eef2f7;
+            --bg-container: #ffffff;
+            --bg-card: #f8fafc;
+            --bg-tab: #f1f5f9;
+            --bg-tab-active: #ffffff;
+            --header-bg: #0a2b3c;
+            --header-text: #ffffff;
+            --th-bg: #e9f0f6;
+            --th-border: #cbdde6;
+            --line-num-bg: #f8fafc;
+            --line-num-text: #6b7280;
+            --code-text: #1e40af;
+            --code-bg: #fefefe;
+            --comment-text: #166534;
+            --comment-bg: #f1fdf5;
+            --info-bg: #f8fafc;
+            --info-text: #1e293b;
+            --border-light: #e2e8f0;
+            --border-primary: #cbd5e1;
+            --border-danger: #fca5a5;
+            --btn-bg: #e2e8f0;
+            --btn-text: #1e293b;
+            --btn-active-bg: #0a2b3c;
+            --btn-active-text: #ffffff;
+            --btn-primary-bg: #2563eb;
+            --btn-primary-hover: #1d4ed8;
+            --btn-success-bg: #10b981;
+            --btn-danger-bg: #ef4444;
+            --btn-warning-bg: #f59e0b;
+            --input-bg: #ffffff;
+            --input-text: #1e293b;
+            --input-border: #cbd5e1;
+            --input-focus: #2563eb;
+            --label-text: #475569;
+            --tab-text: #64748b;
+            --tab-active-text: #0a2b3c;
+            --scrollbar-thumb: #cbd5e1;
+            --scrollbar-track: #f1f5f9;
+            --inline-code-bg: #e0e7ff;
+            --inline-code-text: #1e40af;
+            --node-item-bg: #ffffff;
+            --node-item-border: #e2e8f0;
+        }
+        body.dark {
+            --bg-body: #1a1e2a;
+            --bg-container: #252b3a;
+            --bg-card: #1f2533;
+            --bg-tab: #2d3548;
+            --bg-tab-active: #252b3a;
+            --header-bg: #162b3a;
+            --header-text: #f0f6fc;
+            --th-bg: #2d3548;
+            --th-border: #3f4a60;
+            --line-num-bg: #1f2533;
+            --line-num-text: #9aa4b8;
+            --code-text: #b5c9ff;
+            --code-bg: #1a1f2b;
+            --comment-text: #8bcf9e;
+            --comment-bg: #1e2a2a;
+            --info-bg: #1f2533;
+            --info-text: #cbd5e1;
+            --border-light: #2f3a4c;
+            --border-primary: #475569;
+            --border-danger: #7f1d1d;
+            --btn-bg: #3a465c;
+            --btn-text: #e2e8f0;
+            --btn-active-bg: #3b82f6;
+            --btn-active-text: #ffffff;
+            --btn-primary-bg: #3b82f6;
+            --btn-primary-hover: #2563eb;
+            --btn-success-bg: #10b981;
+            --btn-danger-bg: #ef4444;
+            --btn-warning-bg: #f59e0b;
+            --input-bg: #2d3548;
+            --input-text: #e2e8f0;
+            --input-border: #475569;
+            --input-focus: #3b82f6;
+            --label-text: #cbd5e1;
+            --tab-text: #94a3b8;
+            --tab-active-text: #f0f6fc;
+            --scrollbar-thumb: #475569;
+            --scrollbar-track: #1e293b;
+            --inline-code-bg: #334155;
+            --inline-code-text: #bfdbfe;
+            --node-item-bg: #2d3548;
+            --node-item-border: #475569;
+        }
+        /* 全局初始化 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { 
+            background: var(--bg-body); 
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', sans-serif; 
+            padding: 1rem; 
+            color: var(--info-text);
+            transition: background 0.2s ease, color 0.2s ease;
+            line-height: 1.5;
+        }
+        /* 容器样式 */
+        .container { 
+            max-width: 1900px; 
+            margin: 0 auto; 
+            background: var(--bg-container); 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px -8px rgba(0,0,0,0.12); 
+            overflow: hidden; 
+        }
+        /* 头部样式 */
+        .header { 
+            background: var(--header-bg); 
+            color: var(--header-text); 
+            padding: 1.2rem 1.5rem; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: relative;
+            z-index: 20;
+        }
+        .header-title h1 { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.3; }
+        .header-title p { margin-top: 0.4rem; opacity: 0.9; font-size: 0.85rem; }
+        .header-tools { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+        .theme-switcher { display: flex; gap: 0.5rem; }
+        .theme-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 20px;
+            padding: 0.4rem 0.9rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        .theme-btn.active {
+            background: var(--btn-active-bg);
+            color: var(--btn-active-text);
+        }
+        .copy-main-btn {
+            background: var(--btn-primary-bg);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-weight: 500;
+        }
+        .copy-main-btn:hover { background: var(--btn-primary-hover); }
+        .copy-main-btn.success { background: var(--btn-success-bg); }
+        /* Tab标签页样式 */
+        .tab-nav {
+            display: flex;
+            background: var(--bg-tab);
+            border-bottom: 1px solid var(--border-light);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tab-nav::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            padding: 0.9rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--tab-text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn.active {
+            background: var(--bg-tab-active);
+            color: var(--tab-active-text);
+            border-bottom-color: var(--btn-primary-bg);
+        }
+        .tab-content {
+            display: none;
+            padding: 1.5rem;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* 表单通用样式 */
+        .form-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--info-text);
+        }
+        .form-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--label-text);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            background: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: border-color 0.2s ease;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .form-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--btn-primary-hover); }
+        .btn-default {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+        }
+        .btn-default:hover { filter: brightness(0.95); }
+        .btn-success {
+            background: var(--btn-success-bg);
+            color: white;
+        }
+        .btn-success:hover { filter: brightness(0.95); }
+        .btn-danger {
+            background: var(--btn-danger-bg);
+            color: white;
+        }
+        .btn-danger:hover { filter: brightness(0.95); }
+        .btn-warning {
+            background: var(--btn-warning-bg);
+            color: white;
+        }
+        .btn-warning:hover { filter: brightness(0.95); }
+        .required-mark {
+            color: var(--btn-danger-bg);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+        /* 节点导入区域 */
+        .import-section {
+            background: var(--bg-card);
+            padding: 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .node-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+        .node-item {
+            background: var(--node-item-bg);
+            border: 1px solid var(--node-item-border);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .node-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .node-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .node-meta {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.2rem;
+        }
+        .node-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .node-btn {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .empty-tip {
+            text-align: center;
+            padding: 2rem;
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+        .alert-box {
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--btn-success-bg);
+            color: var(--btn-success-bg);
+        }
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--btn-danger-bg);
+            color: var(--btn-danger-bg);
+        }
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--btn-warning-bg);
+            color: var(--btn-warning-bg);
+        }
+        /* 入站配置区域 */
+        .inbound-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.2rem;
+        }
+        .inbound-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        .inbound-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .inbound-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .inbound-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+        .inbound-form .form-group {
+            margin-bottom: 0;
+        }
+        /* 表格容器样式 */
+        .table-wrapper {
+            overflow-x: auto;
+            position: relative;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+        /* 表格核心样式 */
+        .config-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.8rem;
+            table-layout: fixed;
+        }
+        /* 表头吸顶 */
+        .config-table th { 
+            text-align: left; 
+            background: var(--th-bg); 
+            padding: 0.9rem 0.7rem; 
+            font-weight: 600; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10;
+            backdrop-filter: blur(6px); 
+            border-bottom: 2px solid var(--th-border); 
+            color: var(--info-text);
+        }
+        /* 列宽固定 */
+        .config-table th:nth-child(1) { width: 60px; min-width: 60px; }
+        .config-table th:nth-child(2) { width: 50%; min-width: 400px; }
+        .config-table th:nth-child(3) { width: calc(50% - 60px); min-width: 350px; }
+        .config-table td { 
+            padding: 0.7rem; 
+            border-bottom: 1px solid var(--border-light); 
+            vertical-align: top;
+            line-height: 1.6;
+        }
+        /* 行号列 */
+        .line-num { 
+            text-align: right; 
+            color: var(--line-num-text); 
+            background: var(--line-num-bg); 
+            user-select: none; 
+            font-family: monospace;
+        }
+        /* 代码单元格 */
+        .code-cell { 
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; 
+            white-space: pre;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            color: var(--code-text); 
+            background: var(--code-bg); 
+            tab-size: 2;
+        }
+        /* 注释单元格 */
+        .comment-cell { 
+            color: var(--comment-text); 
+            background: var(--comment-bg); 
+            line-height: 1.6; 
+            word-break: break-word;
+        }
+        /* 表格斑马纹 */
+        .config-table tbody tr:nth-child(even) .code-cell { filter: brightness(0.98); }
+        .config-table tbody tr:nth-child(even) .comment-cell { filter: brightness(0.98); }
+        .config-table tbody tr:hover td { filter: brightness(0.97); transition: filter 0.1s ease; }
+        /* 说明盒子样式 */
+        .info-box {
+            background: var(--info-bg);
+            padding: 1.2rem 1.5rem;
+            margin: 1rem;
+            border-radius: 8px;
+            color: var(--info-text);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+        .info-box code {
+            background: var(--inline-code-bg);
+            color: var(--inline-code-text);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .info-box strong { font-weight: 600; }
+        /* 滚动条样式适配 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { filter: brightness(0.9); }
+        /* 响应式布局适配 */
+        @media (max-width: 1200px) {
+            .config-table th:nth-child(2) { width: 55%; }
+            .config-table th:nth-child(3) { width: calc(45% - 60px); }
+            .inbound-list { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 0.5rem; }
+            .header { padding: 1rem; flex-direction: column; align-items: flex-start; }
+            .header-tools { width: 100%; justify-content: space-between; }
+            .tab-content { padding: 1rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .inbound-form { grid-template-columns: 1fr; }
+            .config-table { table-layout: auto; min-width: 900px; }
+            .config-table th, .config-table td { padding: 0.5rem 0.4rem; }
+            .code-cell, .comment-cell { font-size: 0.75rem; }
+            .info-box { margin: 0.5rem; padding: 1rem; }
+            .table-wrapper { max-height: calc(100vh - 400px); }
+            .node-item { flex-direction: column; align-items: flex-start; }
+            .node-actions { width: 100%; justify-content: flex-end; }
+        }
+        @media (max-width: 480px) {
+            .theme-switcher { gap: 0.3rem; }
+            .theme-btn { padding: 0.3rem 0.6rem; font-size: 0.75rem; }
+            .copy-main-btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+            .form-actions { flex-direction: column; }
+            .form-btn { width: 100%; }
+            .tab-btn { padding: 0.7rem 1rem; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 页面头部 -->
+    <div class="header">
+        <div class="header-title">
+            <h1>📄 sing-box 1.14.0-alpha.13 全功能分流配置转换器 | 官方模板专用版</h1>
+            <p>✅ 100%还原1.14.0-alpha.13配置结构 | 内置hosts预解析 | QUIC/DoH双DNS | FakeIP防污染 | 广告拦截</p>
+        </div>
+        <div class="header-tools">
+            <button class="copy-main-btn" id="copyFullConfigBtn">📋 复制完整配置</button>
+            <div class="theme-switcher">
+                <button class="theme-btn active" data-theme="auto">🌓 自动</button>
+                <button class="theme-btn" data-theme="light">☀️ 亮色</button>
+                <button class="theme-btn" data-theme="dark">🌙 暗色</button>
+            </div>
+        </div>
+    </div>
+    <!-- Tab标签页导航 -->
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="import">📥 节点导入</button>
+        <button class="tab-btn" data-tab="inbound">🔌 入站配置</button>
+        <button class="tab-btn" data-tab="preview">📋 配置预览</button>
+        <button class="tab-btn" data-tab="help">📖 使用说明</button>
+    </div>
+    <!-- Tab1: 节点导入 -->
+    <div class="tab-content active" id="tab-import">
+        <div class="import-section">
+            <h2 class="form-title">节点/订阅导入</h2>
+            <p class="form-desc">支持粘贴 <code>vmess://vless://trojan://ss://anytls://</code> 节点链接、Clash订阅链接、Clash YAML配置内容，支持批量导入，一行一个节点</p>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <textarea id="importInput" placeholder="请粘贴节点链接、订阅链接或Clash YAML配置内容..."></textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="form-btn btn-primary" id="parseImportBtn">🔍 解析导入</button>
+                <button class="form-btn btn-default" id="clearImportBtn">清空输入</button>
+                <button class="form-btn btn-warning" id="clearNodeBtn">清空所有节点</button>
+            </div>
+            <div id="importAlert"></div>
+        </div>
+        <div class="import-section">
+            <h2 class="form-title">手动添加节点</h2>
+            <p class="form-desc">手动填写节点信息，支持所有主流出站协议</p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="manualProtocol">协议类型<span class="required-mark">*</span></label>
+                    <select id="manualProtocol">
+                        <option value="vless">VLESS</option>
+                        <option value="vmess">VMess</option>
+                        <option value="trojan">Trojan</option>
+                        <option value="shadowsocks">Shadowsocks</option>
+                        <option value="hysteria2">Hysteria2</option>
+                        <option value="tuic">TUIC</option>
+                        <option value="naive">Naive</option>
+                        <option value="shadowtls">ShadowTLS</option>
+                        <option value="anytls">AnyTLS</option>
+                        <option value="wireguard">WireGuard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="manualName">节点名称<span class="required-mark">*</span></label>
+                    <input type="text" id="manualName" placeholder="例如：🚀 CF-优选-Visa">
+                </div>
+                <div class="form-group">
+                    <label for="manualServer">服务器地址<span class="required-mark">*</span></label>
+                    <input type="text" id="manualServer" placeholder="例如：cf.example.com">
+                </div>
+                <div class="form-group">
+                    <label for="manualPort">端口<span class="required-mark">*</span></label>
+                    <input type="number" id="manualPort" value="443" placeholder="节点端口">
+                </div>
+                <div class="form-group">
+                    <label for="manualUuid">UUID/用户ID/密码</label>
+                    <input type="text" id="manualUuid" placeholder="UUID、密码、用户ID等身份验证信息">
+                </div>
+                <div class="form-group">
+                    <label for="manualAlterId">AlterId (VMess专用)</label>
+                    <input type="number" id="manualAlterId" value="0" placeholder="VMess协议的AlterId">
+                </div>
+                <div class="form-group">
+                    <label for="manualSecurity">加密/安全类型</label>
+                    <input type="text" id="manualSecurity" placeholder="例如：auto、none、chacha20-ietf-poly1305">
+                </div>
+                <div class="form-group">
+                    <label for="manualTransport">传输协议</label>
+                    <select id="manualTransport">
+                        <option value="tcp">TCP</option>
+                        <option value="ws">WebSocket (WS)</option>
+                        <option value="http">HTTP</option>
+                        <option value="grpc">gRPC</option>
+                        <option value="quic">QUIC</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="manualPath">路径/服务名</label>
+                    <input type="text" id="manualPath" placeholder="WS路径、gRPC服务名等">
+                </div>
+                <div class="form-group">
+                    <label for="manualHost">Host/SNI</label>
+                    <input type="text" id="manualHost" placeholder="WS Host、TLS SNI">
+                </div>
+                <div class="form-group">
+                    <label for="manualTls">TLS启用</label>
+                    <select id="manualTls">
+                        <option value="true">开启</option>
+                        <option value="false">关闭</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="manualFlow">流控 (VLESS专用)</label>
+                    <input type="text" id="manualFlow" placeholder="例如：xtls-rprx-vision">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="form-btn btn-success" id="addManualNodeBtn">➕ 添加节点</button>
+            </div>
+        </div>
+        <div class="import-section">
+            <h2 class="form-title">已导入节点列表</h2>
+            <p class="form-desc">已导入的节点将自动加入到节点选择器和自动测速中</p>
+            <div class="node-list" id="nodeList">
+                <div class="empty-tip">暂无节点，请先导入或手动添加节点</div>
+            </div>
+        </div>
+    </div>
+    <!-- Tab2: 入站配置 -->
+    <div class="tab-content" id="tab-inbound">
+        <h2 class="form-title">入站协议配置</h2>
+        <p class="form-desc">支持12种入站协议，开启后将自动加入配置中，默认开启Mixed混合代理和TUN透明代理（与1.14.0-alpha.13模板完全一致）</p>
+        <div class="inbound-list" id="inboundList">
+            <!-- 入站配置卡片将通过JS动态生成 -->
+        </div>
+    </div>
+    <!-- Tab3: 配置预览 -->
+    <div class="tab-content" id="tab-preview">
+        <div class="table-wrapper">
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>行号</th>
+                        <th>配置代码</th>
+                        <th>注释 / 详细说明</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- 动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Tab4: 使用说明 -->
+    <div class="tab-content" id="tab-help">
+        <div class="info-box">
+            <strong>📌 功能说明</strong><br>
+            1. <strong>模板100%还原</strong>：完全基于1.14.0-alpha.13官方配置模板生成，所有字段、规则、结构与原文件完全一致，无任何修改<br>
+            2. <strong>全协议支持</strong>：入站支持12种协议：WireGuard、VLESS、VMess、Trojan、Shadowsocks、Hysteria2、TUIC、Naive、ShadowTLS、AnyTLS、Mixed、HTTP<br>
+            3. <strong>全格式订阅解析</strong>：支持 <code>vmess://vless://trojan://ss://anytls://</code> 节点链接、Clash YAML订阅/配置文件<br>
+            4. <strong>核心特性完整保留</strong>：内置hosts预解析、QUIC+DoH双DNS、FakeIP防DNS污染、双广告规则集拦截、AI/游戏/海外站点专属分流、Clash模式全兼容、安卓APP专属规则<br>
+            5. <strong>版本兼容</strong>：生成的配置100%兼容sing-box 1.14.0-alpha.13版本，完全符合官方语法规范<br>
+            <br>
+            <strong>📝 使用步骤</strong><br>
+            1. 【节点导入】：粘贴节点链接/订阅/Clash配置，点击「解析导入」，或手动添加节点<br>
+            2. 【入站配置】：选择需要开启的入站协议，配置监听地址和端口（默认配置与原模板完全一致，可直接使用）<br>
+            3. 【配置预览】：查看生成的完整带注释配置，点击右上角「复制完整配置」一键复制<br>
+            4. 把复制的配置直接导入sing-box客户端即可使用<br>
+            <br>
+            <strong>⚠️ 注意事项</strong><br>
+            1. 【必填项】AUTO自动测速节点的outbounds数组默认为空，必须导入/添加节点后才能正常使用<br>
+            2. 所有入站默认监听127.0.0.1，如需局域网访问，请修改为0.0.0.0<br>
+            3. TUN入站需要管理员/root权限才能正常运行<br>
+            4. 生成的配置已内置原模板的所有功能：国内外分流、广告拦截、自动测速、Clash面板支持、FakeIP防污染、hosts预解析等
+        </div>
+    </div>
+    <!-- 底部说明 -->
+    <div class="info-box">
+        <strong>💡 提示</strong><br>
+        本转换器完全在浏览器本地运行，不会上传任何节点信息，保证数据安全；生成的配置严格遵循1.14.0-alpha.13模板的官方规范，可直接导入使用。
+    </div>
+</div>
+<script>
+(function() {
+    'use strict';
+    // ========== 全局配置 ==========
+    // 支持的12种入站协议模板（默认开启TUN和Mixed，与原模板完全一致）
+    const inboundTemplates = [
+        {
+            id: 'mixed',
+            name: 'Mixed 混合代理',
+            enabled: true,
+            defaultConfig: {
+                type: 'mixed',
+                tag: 'mixed-in',
+                listen: '127.0.0.1',
+                listen_port: 7890
+            },
+            comment: '混合代理入站，同时支持HTTP和Socks5协议，兼容绝大多数客户端和软件，与原模板完全一致'
+        },
+        {
+            id: 'http',
+            name: 'HTTP 代理',
+            enabled: false,
+            defaultConfig: {
+                type: 'http',
+                tag: 'http-in',
+                listen: '127.0.0.1',
+                listen_port: 7891
+            },
+            comment: 'HTTP代理入站，仅支持HTTP协议，兼容老旧客户端'
+        },
+        {
+            id: 'vless',
+            name: 'VLESS 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'vless',
+                tag: 'vless-in',
+                listen: '0.0.0.0',
+                listen_port: 10000,
+                users: [{uuid: '请替换为自己的UUID'}]
+            },
+            comment: 'VLESS协议入站，用于搭建服务端，支持XTLS流控'
+        },
+        {
+            id: 'vmess',
+            name: 'VMess 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'vmess',
+                tag: 'vmess-in',
+                listen: '0.0.0.0',
+                listen_port: 10001,
+                users: [{uuid: '请替换为自己的UUID', alterId: 0}]
+            },
+            comment: 'VMess协议入站，用于搭建服务端，兼容主流VMess客户端'
+        },
+        {
+            id: 'trojan',
+            name: 'Trojan 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'trojan',
+                tag: 'trojan-in',
+                listen: '0.0.0.0',
+                listen_port: 10002,
+                users: [{password: '请替换为自己的密码'}]
+            },
+            comment: 'Trojan协议入站，用于搭建服务端，模拟HTTPS流量'
+        },
+        {
+            id: 'shadowsocks',
+            name: 'Shadowsocks 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'shadowsocks',
+                tag: 'ss-in',
+                listen: '0.0.0.0',
+                listen_port: 10003,
+                method: 'chacha20-ietf-poly1305',
+                password: '请替换为自己的密码'
+            },
+            comment: 'Shadowsocks协议入站，用于搭建服务端，兼容性极强'
+        },
+        {
+            id: 'hysteria2',
+            name: 'Hysteria2 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'hysteria2',
+                tag: 'hy2-in',
+                listen: '0.0.0.0',
+                listen_port: 10004,
+                users: [{password: '请替换为自己的密码'}]
+            },
+            comment: 'Hysteria2协议入站，基于QUIC，弱网环境表现优异'
+        },
+        {
+            id: 'tuic',
+            name: 'TUIC 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'tuic',
+                tag: 'tuic-in',
+                listen: '0.0.0.0',
+                listen_port: 10005,
+                users: [{uuid: '请替换为自己的UUID', password: '请替换为自己的密码'}]
+            },
+            comment: 'TUIC协议入站，基于QUIC，低延迟高吞吐'
+        },
+        {
+            id: 'naive',
+            name: 'Naive 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'naive',
+                tag: 'naive-in',
+                listen: '0.0.0.0',
+                listen_port: 10006,
+                users: [{username: 'user', password: 'pass'}]
+            },
+            comment: 'Naive协议入站，基于Chrome网络栈，防识别能力极强'
+        },
+        {
+            id: 'shadowtls',
+            name: 'ShadowTLS 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'shadowtls',
+                tag: 'shadowtls-in',
+                listen: '0.0.0.0',
+                listen_port: 10007,
+                password: '请替换为自己的密码',
+                server: 'www.baidu.com',
+                server_port: 443
+            },
+            comment: 'ShadowTLS协议入站，流量伪装能力极强'
+        },
+        {
+            id: 'anytls',
+            name: 'AnyTLS 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'anytls',
+                tag: 'anytls-in',
+                listen: '0.0.0.0',
+                listen_port: 10008,
+                users: [{password: '请替换为自己的密码'}]
+            },
+            comment: 'AnyTLS协议入站，全量TLS握手模拟，防主动探测'
+        },
+        {
+            id: 'wireguard',
+            name: 'WireGuard 入站',
+            enabled: false,
+            defaultConfig: {
+                type: 'wireguard',
+                tag: 'wg-in',
+                listen: '0.0.0.0',
+                listen_port: 10009,
+                private_key: '请替换为自己的私钥',
+                address: ['10.0.0.1/24']
+            },
+            comment: 'WireGuard协议入站，基于内核级VPN，性能极强'
+        },
+        {
+            id: 'tun',
+            name: 'TUN 透明代理',
+            enabled: true,
+            defaultConfig: {
+                type: 'tun',
+                tag: 'tun-in',
+                address: ['10.8.0.1/24'],
+                mtu: 1500,
+                stack: 'mixed',
+                auto_route: true,
+                strict_route: true
+            },
+            comment: 'TUN虚拟网卡入站，实现全局透明代理，接管系统所有流量，与原模板完全一致'
+        }
+    ];
+    // 1.14.0-alpha.13 完整配置模板（仅将可变部分做占位符处理，其余100%还原原文件）
+    const baseConfigTemplate = [
+        "{",
+        "  \"log\": {",
+        "    \"level\": \"fatal\",",
+        "    \"timestamp\": true",
+        "  },",
+        "  \"ntp\": {",
+        "    \"enabled\": true,",
+        "    \"server\": \"ntp.aliyun.com\",",
+        "    \"server_port\": 123,",
+        "    \"interval\": \"30m\"",
+        "  },",
+        "  \"dns\": {",
+        "    \"servers\": [",
+        "      {",
+        "        \"tag\": \"local\",",
+        "        \"type\": \"local\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"hosts_fix\",",
+        "        \"type\": \"hosts\",",
+        "        \"predefined\": {",
+        "          \"dns.alidns.com\": [",
+        "            \"223.5.5.5\",",
+        "            \"223.6.6.6\"",
+        "          ],",
+        "          \"doh.pub\": [",
+        "            \"1.12.12.21\",",
+        "            \"120.53.53.53\"",
+        "          ],",
+        "          \"dns.google\": [",
+        "            \"8.8.8.8\",",
+        "            \"8.8.4.4\"",
+        "          ],",
+        "          \"cloudflare-dns.com\": [",
+        "            \"104.16.248.249\",",
+        "            \"104.16.249.249\"",
+        "          ]",
+        "        }",
+        "      },",
+        "      {",
+        "        \"tag\": \"alidns\",",
+        "        \"type\": \"quic\",",
+        "        \"server\": \"dns.alidns.com\",",
+        "        \"domain_resolver\": \"hosts_fix\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"ggdns\",",
+        "        \"type\": \"https\",",
+        "        \"server\": \"dns.google\",",
+        "        \"domain_resolver\": \"hosts_fix\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"fakeip\",",
+        "        \"type\": \"fakeip\",",
+        "        \"inet4_range\": \"198.18.0.0/15\"",
+        "      }",
+        "    ],",
+        "    \"rules\": [",
+        "      {",
+        "        \"domain_suffix\": [",
+        "          \"app-measurement.com\",",
+        "          \"hm.baidu.com\",",
+        "          \"firebaselogging.googleapis.com\",",
+        "          \"firebaselogging-pa.googleapis.com\",",
+        "          \"beacons.gvt2.com\",",
+        "          \"beacons2.gvt2.com\",",
+        "          \"beacons3.gvt2.com\",",
+        "          \"tracking.miui.com\"",
+        "        ],",
+        "        \"server\": \"alidns\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": [",
+        "          \"geosite_adguard\",",
+        "          \"geosite-category-ads-all\"",
+        "        ],",
+        "        \"action\": \"reject\"",
+        "      },",
+        "      {",
+        "        \"domain_suffix\": [",
+        "          \".local\",",
+        "          \".lan\",",
+        "          \"miwifi.com\",",
+        "          \"tplogin.cn\",",
+        "          \"router.asus.com\",",
+        "          \"tendawifi.com\",",
+        "          \"tplinkwifi.net\"",
+        "        ],",
+        "        \"server\": \"local\"",
+        "      },",
+        "      {",
+        "        \"query_type\": [",
+        "          \"SVCB\",",
+        "          \"HTTPS\"",
+        "        ],",
+        "        \"action\": \"reject\"",
+        "      },",
+        "      {",
+        "        \"query_type\": [",
+        "          \"PTR\"",
+        "        ],",
+        "        \"action\": \"reject\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": [",
+        "          \"proxy\",",
+        "          \"games\",",
+        "          \"ai\"",
+        "        ],",
+        "        \"query_type\": [",
+        "          \"A\",",
+        "          \"AAAA\"",
+        "        ],",
+        "        \"server\": \"fakeip\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": [",
+        "          \"proxy\",",
+        "          \"games\",",
+        "          \"ai\"",
+        "        ],",
+        "        \"query_type\": [",
+        "          \"A\",",
+        "          \"AAAA\"",
+        "        ],",
+        "        \"server\": \"ggdns\",",
+        "        \"client_subnet\": \"119.134.100.0/24\"",
+        "      },",
+        "      {",
+        "        \"domain_suffix\": [",
+        "          \"market.xiaomi.com\",",
+        "          \"lancache.steamcontent.com\"",
+        "        ],",
+        "        \"server\": \"alidns\"",
+        "      },",
+        "      {",
+        "        \"domain_suffix\": [",
+        "          \"play.google.com\",",
+        "          \"ggpht.com\",",
+        "          \"googleusercontent.com\",",
+        "          \"android.com\"",
+        "        ],",
+        "        \"server\": \"fakeip\"",
+        "      },",
+        "      {",
+        "        \"action\": \"evaluate\",",
+        "        \"server\": \"alidns\"",
+        "      },",
+        "      {",
+        "        \"type\": \"logical\",",
+        "        \"mode\": \"or\",",
+        "        \"rules\": [",
+        "          {",
+        "            \"match_response\": true,",
+        "            \"ip_is_private\": true",
+        "          }",
+        "        ],",
+        "        \"action\": \"respond\"",
+        "      },",
+        "      {",
+        "        \"match_response\": true,",
+        "        \"ip_accept_any\": true,",
+        "        \"action\": \"respond\"",
+        "      }",
+        "    ],",
+        "    \"final\": \"alidns\",",
+        "    \"strategy\": \"ipv4_only\",",
+        "    \"reverse_mapping\": true,",
+        "    \"cache_capacity\": 16000,",
+        "    \"optimistic\": true",
+        "  },",
+        "  \"inbounds\": [",
+        "    {{INBOUNDS}}",
+        "  ],",
+        "  \"outbounds\": [",
+        "    {",
+        "      \"type\": \"direct\",",
+        "      \"tag\": \"DIRECT\",",
+        "      \"domain_resolver\": \"alidns\"",
+        "    },",
+        "    {",
+        "      \"type\": \"selector\",",
+        "      \"tag\": \"PROXY\",",
+        "      \"outbounds\": [",
+        "        \"AUTO\",",
+        "        {{NODE_TAGS}}",
+        "        \"DIRECT\"",
+        "      ],",
+        "      \"default\": \"AUTO\",",
+        "      \"interrupt_exist_connections\": false",
+        "    },",
+        "    {",
+        "      \"type\": \"urltest\",",
+        "      \"tag\": \"AUTO\",",
+        "      \"outbounds\": [",
+        "        {{NODE_TAGS}}",
+        "      ],",
+        "      \"url\": \"http://www.gstatic.com/generate_204\",",
+        "      \"interval\": \"10m\",",
+        "      \"tolerance\": 50,",
+        "      \"idle_timeout\": \"30m\",",
+        "      \"interrupt_exist_connections\": false",
+        "    },",
+        "    {",
+        "      \"type\": \"selector\",",
+        "      \"tag\": \"GLOBAL\",",
+        "      \"outbounds\": [",
+        "        \"PROXY\",",
+        "        \"DIRECT\"",
+        "      ],",
+        "      \"default\": \"PROXY\",",
+        "      \"interrupt_exist_connections\": false",
+        "    },",
+        "    {",
+        "      \"type\": \"selector\",",
+        "      \"tag\": \"CN\",",
+        "      \"outbounds\": [",
+        "        \"DIRECT\",",
+        "        \"PROXY\"",
+        "      ],",
+        "      \"default\": \"DIRECT\",",
+        "      \"interrupt_exist_connections\": false",
+        "    },",
+        "    {{NODES}}",
+        "  ],",
+        "  \"http_clients\": [",
+        "    {",
+        "      \"tag\": \"default\",",
+        "      \"detour\": \"PROXY\"",
+        "    }",
+        "  ],",
+        "  \"route\": {",
+        "    \"default_domain_resolver\": \"alidns\",",
+        "    \"rules\": [",
+        "      {",
+        "        \"type\": \"logical\",",
+        "        \"mode\": \"or\",",
+        "        \"rules\": [",
+        "          {",
+        "            \"port\": 53",
+        "          },",
+        "          {",
+        "            \"protocol\": \"dns\"",
+        "          }",
+        "        ],",
+        "        \"action\": \"hijack-dns\"",
+        "      },",
+        "      {",
+        "        \"action\": \"sniff\"",
+        "      },",
+        "      {",
+        "        \"type\": \"logical\",",
+        "        \"mode\": \"and\",",
+        "        \"rules\": [",
+        "          {",
+        "            \"protocol\": \"quic\"",
+        "          },",
+        "          {",
+        "            \"port\": 443",
+        "          }",
+        "        ],",
+        "        \"action\": \"reject\"",
+        "      },",
+        "      {",
+        "        \"domain_suffix\": [",
+        "          \"miwifi.com\"",
+        "        ],",
+        "        \"outbound\": \"DIRECT\"",
+        "      },",
+        "      {",
+        "        \"ip_is_private\": true,",
+        "        \"outbound\": \"DIRECT\"",
+        "      },",
+        "      {",
+        "        \"ip_cidr\": [",
+        "          \"198.18.0.0/15\"",
+        "        ],",
+        "        \"outbound\": \"PROXY\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": [",
+        "          \"geosite_adguard\",",
+        "          \"geosite-category-ads-all\"",
+        "        ],",
+        "        \"action\": \"reject\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": \"geosite-google\",",
+        "        \"outbound\": \"PROXY\"",
+        "      },",
+        "      {",
+        "        \"domain_suffix\": [",
+        "          \"steamserver.net\",",
+        "          \"zhihu.com\",",
+        "          \"zhimg.com\",",
+        "          \"jd.com\",",
+        "          \"360buyimg.com\",",
+        "          \"xfyun.cn\"",
+        "        ],",
+        "        \"outbound\": \"DIRECT\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": \"proxy\",",
+        "        \"outbound\": \"PROXY\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": \"games\",",
+        "        \"outbound\": \"PROXY\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": \"ai\",",
+        "        \"outbound\": \"PROXY\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": [",
+        "          \"private\",",
+        "          \"cn\",",
+        "          \"microsoft-cn\",",
+        "          \"apple-cn\",",
+        "          \"google-cn\",",
+        "          \"games-cn\",",
+        "          \"networktest\"",
+        "        ],",
+        "        \"outbound\": \"DIRECT\"",
+        "      },",
+        "      {",
+        "        \"action\": \"resolve\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": \"telegramip\",",
+        "        \"outbound\": \"PROXY\"",
+        "      },",
+        "      {",
+        "        \"rule_set\": \"cnip\",",
+        "        \"outbound\": \"DIRECT\"",
+        "      },",
+        "      {",
+        "        \"package_name\": [",
+        "          \"com.google.android.youtube\",",
+        "          \"app.revanced.android.youtube\"",
+        "        ],",
+        "        \"outbound\": \"PROXY\"",
+        "      },",
+        "      {",
+        "        \"package_name\": [",
+        "          \"org.telegram.messenger\",",
+        "          \"org.telegram.messenger.beta\"",
+        "        ],",
+        "        \"outbound\": \"PROXY\"",
+        "      }",
+        "    ],",
+        "    \"rule_set\": [",
+        "      {",
+        "        \"tag\": \"geosite-category-ads-all\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"geosite_adguard\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblocksingbox.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"geosite-google\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-google.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"geosite-youtube\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-youtube.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"proxy\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"games\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"ai\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"private\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"cn\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"microsoft-cn\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"apple-cn\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"google-cn\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/google-cn.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"games-cn\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"networktest\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"telegramip\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      },",
+        "      {",
+        "        \"tag\": \"cnip\",",
+        "        \"type\": \"remote\",",
+        "        \"format\": \"binary\",",
+        "        \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs\",",
+        "        \"http_client\": \"default\",",
+        "        \"update_interval\": \"48h\"",
+        "      }",
+        "    ],",
+        "    \"final\": \"PROXY\",",
+        "    \"auto_detect_interface\": true",
+        "  },",
+        "  \"experimental\": {",
+        "    \"clash_api\": {",
+        "      \"external_controller\": \"127.0.0.1:9090\",",
+        "      \"external_ui\": \"ui\",",
+        "      \"external_ui_download_url\": \"https://cdn.jsdelivr.net/gh/MetaCubeX/metacubexd@gh-pages/metacubexd.zip\",",
+        "      \"external_ui_download_detour\": \"PROXY\",",
+        "      \"secret\": \"kSDuU2WHyf72taGMdDS0ib6klwFVF5QIM4HGhS5f4Jw=\",",
+        "      \"default_mode\": \"rule\"",
+        "    },",
+        "    \"cache_file\": {",
+        "      \"enabled\": true,",
+        "      \"path\": \"cache.db\",",
+        "      \"cache_id\": \"cinchov\",",
+        "      \"store_dns\": true,",
+        "      \"store_fakeip\": true",
+        "    }",
+        "  }",
+        "}"
+    ];
+    // 1.14.0-alpha.13 配置逐行对应注释（1:1匹配模板行数）
+    const baseComments = [
+        "sing-box 配置根对象起始括号，JSON格式要求必须成对闭合",
+        "日志配置模块，控制sing-box的日志输出行为，是排查问题的核心模块",
+        "日志级别设置为fatal，仅输出致命错误日志，减少日志体积，日常使用最优；排查问题可改为info/trace级别",
+        "开启日志时间戳，每条日志都会带上精确时间，方便回溯问题和定位故障",
+        "日志配置模块闭合",
+        "NTP时间同步模块，TLS加密连接对系统时间精度要求极高，时间误差过大会导致节点连接失败",
+        "开启NTP时间同步功能，强烈建议开启，尤其是路由器/旁路由等无系统时间同步的设备",
+        "NTP服务器地址，使用阿里云公共NTP服务器，国内访问延迟低、稳定性高",
+        "NTP服务标准端口123，无需修改",
+        "时间同步间隔设置为30分钟，平衡时间精度和设备资源占用",
+        "NTP时间同步模块闭合",
+        "DNS配置模块，核心防污染与分流模块，决定域名解析策略，直接影响防污染效果和访问速度",
+        "DNS服务器列表，定义所有可用的DNS解析服务",
+        "第一个DNS服务器：本地系统DNS",
+        "DNS服务器标签，全局唯一，大小写敏感，用于其他配置引用",
+        "DNS类型为local，调用设备系统自带的DNS配置进行解析",
+        "本地系统DNS配置闭合",
+        "第二个DNS服务器：hosts预解析服务器",
+        "服务器标签，全局唯一，用于其他DNS服务的域名解析依赖",
+        "DNS类型为hosts，内置静态域名-IP映射，解决DNS循环依赖问题",
+        "预定义的hosts映射表，提前写死公共DNS域名的IP，避免解析循环",
+        "阿里云公共DNS域名的预解析IP",
+        "阿里云DNS主IP 223.5.5.5",
+        "阿里云DNS备IP 223.6.6.6",
+        "阿里云DNS预解析配置闭合",
+        "DNSPod公共DNS域名的预解析IP",
+        "DNSPod DNS主IP 1.12.12.21",
+        "DNSPod DNS备IP 120.53.53.53",
+        "DNSPod DNS预解析配置闭合",
+        "Google公共DNS域名的预解析IP",
+        "Google DNS主IP 8.8.8.8",
+        "Google DNS备IP 8.8.4.4",
+        "Google DNS预解析配置闭合",
+        "Cloudflare公共DNS域名的预解析IP",
+        "Cloudflare DNS主IP 104.16.248.249",
+        "Cloudflare DNS备IP 104.16.249.249",
+        "Cloudflare DNS预解析配置闭合",
+        "hosts预解析映射表闭合",
+        "hosts_fix DNS服务器配置闭合",
+        "第三个DNS服务器：阿里云QUIC加密DNS",
+        "服务器标签，全局唯一，国内域名默认解析器",
+        "DNS类型为quic，使用HTTP/3 QUIC协议加密传输，防劫持、低延迟",
+        "DNS服务器地址，阿里云官方QUIC DoQ服务",
+        "该DNS的域名解析器使用hosts_fix，解决循环依赖问题",
+        "阿里云QUIC DNS配置闭合",
+        "第四个DNS服务器：Google DoH加密DNS",
+        "服务器标签，全局唯一，海外域名专用解析器",
+        "DNS类型为https，即DoH加密DNS协议，全程加密传输，彻底避免DNS劫持和污染",
+        "DoH服务器地址，Google官方公共DoH服务",
+        "该DNS的域名解析器使用hosts_fix，解决循环依赖问题",
+        "Google DoH DNS配置闭合",
+        "第五个DNS服务器：FakeIP虚拟IP DNS",
+        "服务器标签，全局唯一",
+        "DNS类型为fakeip，sing-box专属虚拟IP技术，用于防污染和提升连接速度",
+        "FakeIP的IPv4地址段，使用198.18.0.0/15公网保留网段，不会与正常公网IP冲突",
+        "FakeIP DNS配置闭合",
+        "DNS服务器列表闭合",
+        "DNS规则列表，分流核心，按从上到下的顺序匹配，匹配到第一条后不再继续",
+        "第一条DNS规则：统计/埋点/广告域名走阿里云DNS解析",
+        "匹配域名后缀列表，包含各大厂商的用户行为统计、埋点、广告追踪域名",
+        "匹配谷歌应用统计域名app-measurement.com",
+        "匹配百度统计域名hm.baidu.com",
+        "匹配Firebase日志上报域名firebaselogging.googleapis.com",
+        "匹配Firebase移动端日志上报域名firebaselogging-pa.googleapis.com",
+        "匹配谷歌广告信标域名beacons.gvt2.com",
+        "匹配谷歌备用广告信标域名beacons2.gvt2.com",
+        "匹配谷歌备用广告信标域名beacons3.gvt2.com",
+        "匹配小米MIUI系统追踪域名tracking.miui.com",
+        "域名后缀匹配列表闭合",
+        "匹配到的域名使用alidns阿里云DNS解析，后续配合规则直接拦截，减少无效代理流量",
+        "统计埋点域名DNS规则闭合",
+        "第二条DNS规则：广告域名直接拒绝解析",
+        "匹配广告规则集列表，包含两大主流广告拦截规则集",
+        "匹配AdGuard广告过滤规则集geosite_adguard",
+        "匹配官方全量广告域名规则集geosite-category-ads-all",
+        "广告规则集匹配列表闭合",
+        "匹配到的广告域名执行reject拒绝动作，从根源拦截广告",
+        "广告域名拦截DNS规则闭合",
+        "第三条DNS规则：内网/路由器管理域名走本地DNS解析",
+        "匹配域名后缀列表，包含内网常用域名和各大品牌路由器管理后台域名",
+        "匹配.local后缀的内网域名，局域网设备专用",
+        "匹配.lan后缀的内网域名，常见于OpenWRT等路由器系统",
+        "匹配小米/红米路由器管理后台域名miwifi.com",
+        "匹配TP-LINK路由器管理后台域名tplogin.cn",
+        "匹配华硕路由器管理后台域名router.asus.com",
+        "匹配腾达路由器管理后台域名tendawifi.com",
+        "匹配TP-LINK路由器备用管理后台域名tplinkwifi.net",
+        "域名后缀匹配列表闭合",
+        "匹配到的域名使用local本地DNS解析，确保能正常访问路由器后台和内网设备",
+        "内网域名DNS规则闭合",
+        "第四条DNS规则：SVCB/HTTPS特殊DNS记录类型直接拒绝",
+        "匹配DNS查询类型列表，包含日常代理场景几乎用不到的HTTP/3相关DNS记录",
+        "匹配SVCB类型DNS记录，HTTP/3相关服务绑定记录",
+        "匹配HTTPS类型DNS记录，HTTP/3相关加密服务记录",
+        "DNS查询类型匹配列表闭合",
+        "匹配到的记录类型执行reject拒绝动作，减少无效DNS请求，避免污染",
+        "特殊DNS记录拦截规则闭合",
+        "第五条DNS规则：PTR反向解析记录直接拒绝",
+        "匹配DNS查询类型列表",
+        "匹配PTR类型DNS记录，IP反向解析记录，代理场景几乎无使用需求",
+        "DNS查询类型匹配列表闭合",
+        "匹配到的记录类型执行reject拒绝动作，减少无效DNS请求",
+        "PTR记录拦截规则闭合",
+        "第六条DNS规则：代理/游戏/AI域名使用FakeIP解析",
+        "匹配规则集列表，包含三大类需要走代理的域名",
+        "匹配海外代理站点规则集proxy",
+        "匹配海外游戏规则集games",
+        "匹配海外AI站点规则集ai",
+        "规则集匹配列表闭合",
+        "匹配A类型（IPv4地址）和AAAA类型（IPv6地址）的DNS查询",
+        "匹配IPv4地址查询A记录",
+        "匹配IPv6地址查询AAAA记录",
+        "DNS查询类型匹配列表闭合",
+        "匹配到的域名使用fakeip虚拟IP DNS解析，提升连接速度，避免DNS污染",
+        "代理域名FakeIP解析规则闭合",
+        "第七条DNS规则：代理/游戏/AI域名使用Google DoH代理解析",
+        "匹配规则集列表，和上一条规则一致，确保覆盖所有代理类域名",
+        "匹配海外代理站点规则集proxy",
+        "匹配海外游戏规则集games",
+        "匹配海外AI站点规则集ai",
+        "规则集匹配列表闭合",
+        "匹配A类型（IPv4地址）和AAAA类型（IPv6地址）的DNS查询",
+        "匹配IPv4地址查询A记录",
+        "匹配IPv6地址查询AAAA记录",
+        "DNS查询类型匹配列表闭合",
+        "匹配到的域名使用ggdns Google DoH代理解析",
+        "设置EDNS客户端子网为广东茂名网段，让CDN节点返回离用户最近的接入点IP，提升访问速度",
+        "代理域名DoH代理解析规则闭合",
+        "第八条DNS规则：国内应用/缓存域名走阿里云DNS解析",
+        "匹配域名后缀列表，包含小米应用商店、Steam局域网缓存等国内直连域名",
+        "匹配小米应用商店域名market.xiaomi.com",
+        "匹配Steam局域网缓存域名lancache.steamcontent.com",
+        "域名后缀匹配列表闭合",
+        "匹配到的域名使用alidns阿里云DNS解析，国内直连访问速度最快",
+        "国内应用域名DNS规则闭合",
+        "第九条DNS规则：谷歌系核心域名使用FakeIP解析",
+        "匹配域名后缀列表，包含谷歌应用、谷歌图片、安卓系统等核心域名",
+        "匹配谷歌应用商店域名play.google.com",
+        "匹配谷歌图片域名ggpht.com",
+        "匹配谷歌用户内容域名googleusercontent.com",
+        "匹配安卓官方域名android.com",
+        "域名后缀匹配列表闭合",
+        "匹配到的域名使用fakeip虚拟IP DNS解析，提升高频访问站点的连接速度",
+        "谷歌系域名FakeIP解析规则闭合",
+        "第十条DNS规则：兜底评估规则，未匹配的域名走阿里云DNS",
+        "执行evaluate评估动作，继续执行后续规则匹配",
+        "默认使用alidns阿里云DNS解析",
+        "兜底评估规则闭合",
+        "第十一条DNS规则：内网IP响应规则",
+        "规则类型为logical逻辑规则，可组合多个子规则",
+        "逻辑模式为or，满足任意一个子规则即匹配该规则",
+        "逻辑规则的子规则列表",
+        "第一个子规则：匹配DNS响应结果，解析出的IP为内网私有IP",
+        "第一个子规则闭合",
+        "子规则列表闭合",
+        "匹配到的DNS响应执行respond动作，直接返回解析结果",
+        "内网IP响应规则闭合",
+        "第十二条DNS规则：全量响应兜底规则",
+        "匹配所有DNS响应结果",
+        "接受所有合法的IP解析结果",
+        "执行respond动作，直接返回解析结果",
+        "全量响应兜底规则闭合",
+        "DNS规则列表闭合",
+        "DNS兜底配置，所有未匹配到规则的域名，默认使用alidns阿里云DNS解析",
+        "DNS解析策略设置为ipv4_only，仅解析IPv4地址，禁用IPv6，避免IPv6泄露和访问异常",
+        "开启反向域名映射，将FakeIP反向映射回对应的域名，提升日志可读性，方便排查问题",
+        "DNS缓存容量设置为16000条，缓存最多16000条解析结果，提升访问速度，平衡内存占用",
+        "开启乐观DNS缓存，缓存过期后仍先返回缓存结果，同时后台异步更新，大幅提升访问速度",
+        "DNS配置模块闭合",
+        "入站配置模块，定义sing-box接收流量的入口",
+        "入站配置列表，可同时配置多个不同类型的入站",
+        "{{INBOUNDS_COMMENT}}",
+        "入站配置列表闭合",
+        "出站配置模块，定义sing-box流量的出口，节点管理、分流的核心",
+        "出站配置列表",
+        "第一个出站：DIRECT直连出站，流量直接访问目标地址，不经过代理",
+        "出站类型为direct直连",
+        "出站标签为DIRECT，全大写，大小写敏感，其他配置必须严格对应才能引用",
+        "该出站的域名解析器使用alidns阿里云DNS，与原模板完全一致",
+        "DIRECT直连出站配置闭合",
+        "第二个出站：PROXY选择器出站，用于手动切换节点/线路，支持Clash面板可视化切换",
+        "出站类型为selector选择器",
+        "出站标签为PROXY，是分流规则的默认代理出口",
+        "选择器包含的子出站列表，可在面板中手动切换",
+        "AUTO自动测速选点出站，默认首选",
+        "{{NODE_TAGS_COMMENT}}",
+        "DIRECT直连出站，可手动切换为直连",
+        "子出站列表闭合",
+        "选择器默认选中AUTO自动测速出站",
+        "切换节点时不中断已存在的连接，避免网页、视频、下载中断",
+        "PROXY选择器出站配置闭合",
+        "第三个出站：AUTO自动测速选线出站，自动测试节点延迟，选择延迟最低的节点",
+        "出站类型为urltest URL自动测速",
+        "出站标签为AUTO，被PROXY选择器引用",
+        "自动测速的节点列表，会对列表内的所有节点进行延迟测试",
+        "{{NODE_TAGS_COMMENT}}",
+        "测速节点列表闭合",
+        "测速地址，使用谷歌的generate_204地址，全球通用、稳定性高",
+        "测速间隔设置为10分钟，平衡节点切换实时性和节点负载",
+        "测速容忍值50ms，只有新节点延迟比当前低50ms以上才会切换，避免频繁切换",
+        "空闲超时30分钟，超过30分钟无流量的节点暂停测速，减少无效流量",
+        "切换节点时不中断已存在的连接",
+        "AUTO自动测速出站配置闭合",
+        "第四个出站：GLOBAL选择器出站，对应Clash的Global全局模式",
+        "出站类型为selector选择器",
+        "出站标签为GLOBAL，对应Clash全局模式的出口",
+        "选择器包含的子出站列表",
+        "PROXY代理出站，全局模式默认走代理",
+        "DIRECT直连出站，可手动切换全局直连",
+        "子出站列表闭合",
+        "选择器默认选中PROXY代理出站",
+        "切换节点时不中断已存在的连接",
+        "GLOBAL选择器出站配置闭合",
+        "第五个出站：CN选择器出站，用于国内流量的手动切换",
+        "出站类型为selector选择器",
+        "出站标签为CN，对应国内流量的出口",
+        "选择器包含的子出站列表",
+        "DIRECT直连出站，国内流量默认直连",
+        "PROXY代理出站，可手动切换国内流量走代理",
+        "子出站列表闭合",
+        "选择器默认选中DIRECT直连出站",
+        "切换节点时不中断已存在的连接",
+        "CN选择器出站配置闭合",
+        "{{NODES_COMMENT}}",
+        "出站配置列表闭合",
+        "HTTP客户端配置模块，用于远程规则集下载的HTTP客户端管理，原模板新增核心配置",
+        "HTTP客户端列表",
+        "默认HTTP客户端配置",
+        "客户端标签，全局唯一，被规则集引用",
+        "该HTTP客户端的流量走PROXY代理出站，确保国内能正常下载海外规则集",
+        "默认HTTP客户端配置闭合",
+        "HTTP客户端列表闭合",
+        "路由配置模块，流量分流核心，定义流量的最终走向",
+        "设置默认域名解析器为alidns阿里云DNS，与DNS模块的final配置保持一致",
+        "路由规则列表，按从上到下的顺序匹配，匹配到第一条后不再继续",
+        "第一条路由规则：DNS流量全局劫持",
+        "规则类型为logical逻辑规则，可组合多个子规则",
+        "逻辑模式为or，满足任意一个子规则即匹配该规则",
+        "逻辑规则的子规则列表",
+        "第一个子规则：匹配目标端口为53的流量，DNS协议标准端口",
+        "第一个子规则闭合",
+        "第二个子规则：匹配协议类型为dns的流量，通过嗅探识别的DNS流量",
+        "第二个子规则闭合",
+        "子规则列表闭合",
+        "匹配到的流量执行hijack-dns劫持动作，把所有DNS流量导入sing-box的DNS模块处理，防污染核心规则",
+        "DNS流量劫持规则闭合",
+        "第二条路由规则：全局流量嗅探，必须放在所有分流规则之前",
+        "执行sniff嗅探动作，识别流量中的域名、协议类型，是域名分流的基础",
+        "全局流量嗅探规则闭合",
+        "第三条路由规则：QUIC 443端口流量全量拦截",
+        "规则类型为logical逻辑规则，可组合多个子规则",
+        "逻辑模式为and，必须同时满足所有子规则才匹配该规则",
+        "逻辑规则的子规则列表",
+        "第一个子规则：匹配协议类型为quic的流量",
+        "第一个子规则闭合",
+        "第二个子规则：匹配目标端口为443的流量，HTTPS标准端口",
+        "第二个子规则闭合",
+        "子规则列表闭合",
+        "匹配到的流量执行reject拒绝动作，拦截QUIC流量，避免连接绕过代理",
+        "QUIC流量拦截规则闭合",
+        "第四条路由规则：路由器管理域名直连",
+        "匹配域名后缀为miwifi.com的小米路由器管理后台域名",
+        "域名后缀匹配列表闭合",
+        "匹配到的流量走DIRECT直连出站，确保能正常访问路由器后台",
+        "路由器域名直连规则闭合",
+        "第五条路由规则：内网私有IP流量直连",
+        "匹配目标IP为私有内网IP的流量，比如192.168.x.x、10.x.x.x等",
+        "匹配到的流量走DIRECT直连出站，确保能正常访问局域网内的NAS、打印机等设备",
+        "内网IP直连规则闭合",
+        "第六条路由规则：FakeIP网段流量走代理",
+        "匹配目标IP网段为198.18.0.0/15的流量，即FakeIP分配的虚拟IP段",
+        "IP网段匹配列表闭合",
+        "匹配到的流量走PROXY代理出站，是FakeIP功能正常工作的核心规则",
+        "FakeIP流量代理规则闭合",
+        "第七条路由规则：广告流量全量拦截",
+        "匹配广告规则集列表，和DNS模块的广告拦截规则形成双重保障",
+        "匹配AdGuard广告过滤规则集geosite_adguard",
+        "匹配官方全量广告域名规则集geosite-category-ads-all",
+        "广告规则集匹配列表闭合",
+        "匹配到的广告流量执行reject拒绝动作，直接拦截广告流量",
+        "广告流量拦截规则闭合",
+        "第八条路由规则：谷歌系域名走代理",
+        "匹配geosite-google谷歌系域名规则集，包含所有谷歌官方域名",
+        "匹配到的流量走PROXY代理出站，确保谷歌系域名正常访问",
+        "谷歌系域名代理规则闭合",
+        "第九条路由规则：国内常用域名直连",
+        "匹配域名后缀列表，包含国内常用的直连访问域名",
+        "匹配Steam游戏服务器域名steamserver.net",
+        "匹配知乎域名zhihu.com",
+        "匹配知乎静态资源域名zhimg.com",
+        "匹配京东域名jd.com",
+        "匹配京东静态资源域名360buyimg.com",
+        "匹配讯飞域名xfyun.cn",
+        "域名后缀匹配列表闭合",
+        "匹配到的流量走DIRECT直连出站，国内站点直连访问速度最快",
+        "国内常用域名直连规则闭合",
+        "第十条路由规则：海外代理站点走代理",
+        "匹配proxy海外代理站点规则集",
+        "匹配到的流量走PROXY代理出站",
+        "海外代理站点规则闭合",
+        "第十一条路由规则：海外游戏站点走代理",
+        "匹配games海外游戏规则集",
+        "匹配到的流量走PROXY代理出站，确保游戏连接稳定",
+        "海外游戏站点规则闭合",
+        "第十二条路由规则：海外AI站点走代理",
+        "匹配ai海外AI站点规则集，包含ChatGPT、Claude等AI平台",
+        "匹配到的流量走PROXY代理出站，确保AI站点正常访问",
+        "海外AI站点规则闭合",
+        "第十三条路由规则：国内直连规则集全量直连",
+        "匹配国内直连规则集列表，包含各类国内站点、服务的规则集",
+        "匹配内网私有地址规则集private",
+        "匹配国内域名规则集cn",
+        "匹配微软中国服务规则集microsoft-cn",
+        "匹配苹果中国服务规则集apple-cn",
+        "匹配谷歌中国服务规则集google-cn",
+        "匹配国内游戏规则集games-cn",
+        "匹配网络测试站点规则集networktest",
+        "国内直连规则集列表闭合",
+        "匹配到的流量走DIRECT直连出站，确保国内服务访问速度最快",
+        "国内直连规则集规则闭合",
+        "第十四条路由规则：强制域名解析",
+        "执行resolve解析动作，对未匹配到规则的流量，强制使用sing-box的DNS模块进行解析",
+        "强制解析规则闭合",
+        "第十五条路由规则：Telegram IP段走代理",
+        "匹配telegramip Telegram官方IP段规则集",
+        "匹配到的流量走PROXY代理出站，确保Telegram正常访问",
+        "Telegram IP段代理规则闭合",
+        "第十六条路由规则：中国IP段直连",
+        "匹配cnip中国IP段规则集，包含所有国内公网IP段",
+        "匹配到的流量走DIRECT直连出站，IP分流的核心兜底规则",
+        "中国IP段直连规则闭合",
+        "第十七条路由规则：安卓YouTube APP走代理",
+        "匹配安卓应用包名列表，包含YouTube官方版和ReVanced改版",
+        "匹配YouTube官方版包名com.google.android.youtube",
+        "匹配YouTube ReVanced改版包名app.revanced.android.youtube",
+        "应用包名匹配列表闭合",
+        "匹配到的APP流量走PROXY代理出站，安卓端专属APP分流规则",
+        "YouTube APP代理规则闭合",
+        "第十八条路由规则：安卓Telegram APP走代理",
+        "匹配安卓应用包名列表，包含Telegram官方版和测试版",
+        "匹配Telegram官方版包名org.telegram.messenger",
+        "匹配Telegram测试版包名org.telegram.messenger.beta",
+        "应用包名匹配列表闭合",
+        "匹配到的APP流量走PROXY代理出站，安卓端专属APP分流规则",
+        "Telegram APP代理规则闭合",
+        "路由规则列表闭合",
+        "规则集远程定义列表，提前定义所有需要用到的远程规则集，分流规则中可直接引用",
+        "第一个规则集：geosite-category-ads-all 官方全量广告域名规则集",
+        "规则集标签，全局唯一，用于其他配置引用",
+        "规则集类型为remote远程规则集，自动从指定URL下载",
+        "规则集格式为binary二进制srs格式，加载速度远快于文本格式",
+        "规则集文件下载地址，官方维护的规则集，jsDelivr CDN加速",
+        "规则集下载使用的HTTP客户端为default，与原模板完全一致",
+        "规则集自动更新间隔48小时，平衡规则时效性和流量消耗",
+        "全量广告域名规则集配置闭合",
+        "第二个规则集：geosite_adguard AdGuard广告过滤规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，AdGuard官方过滤规则转换的sing-box专用规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "AdGuard广告规则集配置闭合",
+        "第三个规则集：geosite-google 谷歌系域名规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，官方维护的谷歌系全域名规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "谷歌系域名规则集配置闭合",
+        "第四个规则集：geosite-youtube YouTube专属域名规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，官方维护的YouTube全域名规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "YouTube域名规则集配置闭合",
+        "第五个规则集：proxy 海外代理站点规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的全量海外代理站点规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "海外代理站点规则集配置闭合",
+        "第六个规则集：games 海外游戏规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的海外游戏服务器域名/IP规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "海外游戏规则集配置闭合",
+        "第七个规则集：ai 海外AI站点规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的海外AI站点规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "海外AI站点规则集配置闭合",
+        "第八个规则集：private 内网私有地址规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的内网私有地址规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "内网私有地址规则集配置闭合",
+        "第九个规则集：cn 国内域名规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的全量国内域名规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "国内域名规则集配置闭合",
+        "第十个规则集：microsoft-cn 微软中国服务规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的微软中国服务规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "微软中国服务规则集配置闭合",
+        "第十一个规则集：apple-cn 苹果中国服务规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的苹果中国服务规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "苹果中国服务规则集配置闭合",
+        "第十二个规则集：google-cn 谷歌中国服务规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的谷歌中国可直连服务规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "谷歌中国服务规则集配置闭合",
+        "第十三个规则集：games-cn 国内游戏规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的国内游戏服务器规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "国内游戏规则集配置闭合",
+        "第十四个规则集：networktest 网络测试站点规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的网络测试站点规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "网络测试站点规则集配置闭合",
+        "第十五个规则集：telegramip Telegram官方IP段规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的Telegram官方IP段规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "Telegram IP段规则集配置闭合",
+        "第十六个规则集：cnip 中国IP段规则集",
+        "规则集标签，全局唯一",
+        "规则集类型为remote远程",
+        "规则集格式为binary二进制",
+        "规则集文件下载地址，社区维护的全量中国公网IP段规则集",
+        "规则集下载使用的HTTP客户端为default",
+        "自动更新间隔48小时",
+        "中国IP段规则集配置闭合",
+        "规则集定义列表闭合",
+        "路由兜底配置，所有未匹配到规则的流量，默认走PROXY代理出站",
+        "开启自动检测网络接口，自动选择最优的出口网卡，避免多网卡设备出现路由异常",
+        "路由配置模块闭合",
+        "实验性功能模块，包含Clash API、缓存文件等稳定支持的实用功能",
+        "Clash API配置模块，用于对接Clash可视化面板，实现节点切换、流量监控等功能",
+        "Clash API监听地址和端口，127.0.0.1:9090仅本机可访问",
+        "Clash UI面板的本地存放目录",
+        "Clash UI面板的下载地址，使用metacubexd面板，功能全面、兼容性好",
+        "UI面板下载流量走PROXY代理出站，确保国内能正常下载",
+        "Clash API访问密钥，用于远程访问面板的身份验证，建议自行修改",
+        "Clash默认运行模式设置为rule规则模式",
+        "Clash API配置模块闭合",
+        "缓存文件配置模块，把缓存数据持久化到硬盘，重启后无需重新加载规则集、重建缓存",
+        "开启缓存文件功能，强烈建议开启，大幅提升启动速度",
+        "缓存文件的保存路径，默认保存在sing-box工作目录",
+        "缓存ID，用于区分不同配置的缓存文件，避免多配置共用缓存导致异常",
+        "开启DNS缓存持久化存储，重启后保留DNS解析缓存",
+        "开启FakeIP记录持久化存储，重启后保留FakeIP和域名的映射关系，提升重启后的访问速度",
+        "缓存文件配置模块闭合",
+        "实验性功能模块闭合",
+        "sing-box配置根对象闭合，JSON格式结束，必须和开头的{成对对应"
+    ];
+    // ========== 全局状态 ==========
+    let nodeList = []; // 已导入的节点列表
+    let inboundConfig = JSON.parse(JSON.stringify(inboundTemplates)); // 入站配置
+    let currentConfigLines = []; // 当前生成的配置行
+    let currentComments = []; // 当前生成的注释行
+    // ========== 工具函数 ==========
+    // HTML转义
+    function escapeHtml(text) {
+        return text.replace(/&/g, '&amp;')
+                   .replace(/</g, '&lt;')
+                   .replace(/>/g, '&gt;')
+                   .replace(/"/g, '&quot;');
+    }
+    // 安全JSON字符串化，处理特殊字符
+    function safeStringify(obj, indent = 2) {
+        return JSON.stringify(obj, null, indent).split('\n');
+    }
+    // ========== 协议解析函数 ==========
+    // 解析vmess://链接
+    function parseVmessLink(link) {
+        try {
+            const base64Part = link.replace('vmess://', '').trim();
+            const decoded = atob(base64Part);
+            const vmessConfig = JSON.parse(decoded);
+            
+            return {
+                name: vmessConfig.ps || `VMess-${vmessConfig.add}:${vmessConfig.port}`,
+                type: 'vmess',
+                server: vmessConfig.add,
+                server_port: parseInt(vmessConfig.port) || 443,
+                uuid: vmessConfig.id,
+                alterId: parseInt(vmessConfig.aid) || 0,
+                security: vmessConfig.scy || 'auto',
+                transport: vmessConfig.net || 'tcp',
+                path: vmessConfig.path || '',
+                host: vmessConfig.host || vmessConfig.add || '',
+                tls: vmessConfig.tls === 'tls',
+                flow: ''
+            };
+        } catch (e) {
+            throw new Error(`VMess链接解析失败: ${e.message}`);
+        }
+    }
+    // 解析vless://链接
+    function parseVlessLink(link) {
+        try {
+            const url = new URL(link);
+            const uuid = url.username;
+            const server = url.hostname;
+            const port = parseInt(url.port) || 443;
+            const params = url.searchParams;
+            
+            return {
+                name: url.hash ? url.hash.replace('#', '') : `VLESS-${server}:${port}`,
+                type: 'vless',
+                server: server,
+                server_port: port,
+                uuid: uuid,
+                security: 'none',
+                transport: params.get('type') || 'tcp',
+                path: params.get('path') || '',
+                host: params.get('host') || params.get('sni') || server,
+                tls: params.get('security') === 'tls',
+                flow: params.get('flow') || '',
+                sni: params.get('sni') || server
+            };
+        } catch (e) {
+            throw new Error(`VLESS链接解析失败: ${e.message}`);
+        }
+    }
+    // 解析trojan://链接
+    function parseTrojanLink(link) {
+        try {
+            const url = new URL(link);
+            const password = url.username;
+            const server = url.hostname;
+            const port = parseInt(url.port) || 443;
+            const params = url.searchParams;
+            
+            return {
+                name: url.hash ? url.hash.replace('#', '') : `Trojan-${server}:${port}`,
+                type: 'trojan',
+                server: server,
+                server_port: port,
+                password: password,
+                transport: params.get('type') || 'tcp',
+                path: params.get('path') || '',
+                host: params.get('host') || params.get('sni') || server,
+                tls: true,
+                sni: params.get('sni') || server
+            };
+        } catch (e) {
+            throw new Error(`Trojan链接解析失败: ${e.message}`);
+        }
+    }
+    // 解析ss://链接
+    function parseShadowsocksLink(link) {
+        try {
+            let base64Part = link.replace('ss://', '').trim();
+            let method, password, server, port, name = '';
+            
+            if (base64Part.includes('@')) {
+                const [authPart, serverPart] = base64Part.split('@');
+                const decodedAuth = atob(authPart);
+                [method, password] = decodedAuth.split(':');
+                
+                const url = new URL(`ss://${serverPart}`);
+                server = url.hostname;
+                port = parseInt(url.port) || 443;
+                name = url.hash ? url.hash.replace('#', '') : `SS-${server}:${port}`;
+            } else {
+                const decoded = atob(base64Part);
+                const url = new URL(`ss://${decoded}`);
+                [method, password] = url.username.split(':');
+                server = url.hostname;
+                port = parseInt(url.port) || 443;
+                name = url.hash ? url.hash.replace('#', '') : `SS-${server}:${port}`;
+            }
+            
+            return {
+                name: name,
+                type: 'shadowsocks',
+                server: server,
+                server_port: port,
+                method: method,
+                password: password
+            };
+        } catch (e) {
+            throw new Error(`Shadowsocks链接解析失败: ${e.message}`);
+        }
+    }
+    // 解析anytls://链接
+    function parseAnytlsLink(link) {
+        try {
+            const url = new URL(link);
+            const password = url.username;
+            const server = url.hostname;
+            const port = parseInt(url.port) || 443;
+            const params = url.searchParams;
+            
+            return {
+                name: url.hash ? url.hash.replace('#', '') : `AnyTLS-${server}:${port}`,
+                type: 'anytls',
+                server: server,
+                server_port: port,
+                password: password,
+                tls: true,
+                sni: params.get('sni') || server
+            };
+        } catch (e) {
+            throw new Error(`AnyTLS链接解析失败: ${e.message}`);
+        }
+    }
+    // 解析Clash YAML配置
+    function parseClashYaml(yamlContent) {
+        try {
+            const config = jsyaml.load(yamlContent);
+            const proxies = config.proxies || [];
+            const nodes = [];
+            
+            for (const proxy of proxies) {
+                const type = proxy.type?.toLowerCase();
+                if (!type) continue;
+                
+                let node = {
+                    name: proxy.name || `${type}-${proxy.server}:${proxy.port}`,
+                    type: type,
+                    server: proxy.server,
+                    server_port: parseInt(proxy.port) || 443
+                };
+                // 按协议类型处理字段
+                switch (type) {
+                    case 'vmess':
+                        node.uuid = proxy.uuid;
+                        node.alterId = proxy.alterId || 0;
+                        node.security = proxy.cipher || 'auto';
+                        node.transport = proxy.network || 'tcp';
+                        node.path = proxy['ws-path'] || proxy.path || '';
+                        node.host = proxy['ws-headers']?.Host || proxy.host || proxy.server;
+                        node.tls = proxy.tls || false;
+                        node.sni = proxy.sni || proxy.server;
+                        break;
+                    case 'vless':
+                        node.uuid = proxy.uuid;
+                        node.security = 'none';
+                        node.transport = proxy.network || 'tcp';
+                        node.path = proxy['ws-path'] || proxy.path || '';
+                        node.host = proxy['ws-headers']?.Host || proxy.host || proxy.server;
+                        node.tls = proxy.tls || false;
+                        node.flow = proxy.flow || '';
+                        node.sni = proxy.sni || proxy.server;
+                        break;
+                    case 'trojan':
+                        node.password = proxy.password;
+                        node.transport = proxy.network || 'tcp';
+                        node.path = proxy['ws-path'] || proxy.path || '';
+                        node.host = proxy['ws-headers']?.Host || proxy.host || proxy.server;
+                        node.tls = true;
+                        node.sni = proxy.sni || proxy.server;
+                        break;
+                    case 'ss':
+                    case 'shadowsocks':
+                        node.type = 'shadowsocks';
+                        node.method = proxy.cipher;
+                        node.password = proxy.password;
+                        break;
+                    case 'hysteria2':
+                    case 'hy2':
+                        node.type = 'hysteria2';
+                        node.password = proxy.password;
+                        node.tls = true;
+                        node.sni = proxy.sni || proxy.server;
+                        break;
+                    case 'tuic':
+                        node.uuid = proxy.uuid;
+                        node.password = proxy.password;
+                        node.tls = true;
+                        node.sni = proxy.sni || proxy.server;
+                        break;
+                    case 'naive':
+                        node.username = proxy.username;
+                        node.password = proxy.password;
+                        node.tls = true;
+                        break;
+                    default:
+                        continue;
+                }
+                
+                nodes.push(node);
+            }
+            
+            return nodes;
+        } catch (e) {
+            throw new Error(`Clash YAML解析失败: ${e.message}`);
+        }
+    }
+    // 批量解析导入内容
+    function parseImportContent(content) {
+        const lines = content.trim().split('\n').map(line => line.trim()).filter(line => line);
+        const nodes = [];
+        const errors = [];
+        for (const line of lines) {
+            try {
+                if (line.startsWith('vmess://')) {
+                    nodes.push(parseVmessLink(line));
+                } else if (line.startsWith('vless://')) {
+                    nodes.push(parseVlessLink(line));
+                } else if (line.startsWith('trojan://')) {
+                    nodes.push(parseTrojanLink(line));
+                } else if (line.startsWith('ss://')) {
+                    nodes.push(parseShadowsocksLink(line));
+                } else if (line.startsWith('anytls://')) {
+                    nodes.push(parseAnytlsLink(line));
+                } else if (line.startsWith('http://') || line.startsWith('https://')) {
+                    errors.push(`订阅链接请手动打开后粘贴内容到输入框: ${line}`);
+                } else if (line.includes('proxies:')) {
+                    const yamlNodes = parseClashYaml(content);
+                    nodes.push(...yamlNodes);
+                    break;
+                }
+            } catch (e) {
+                errors.push(e.message);
+            }
+        }
+        return { nodes, errors };
+    }
+    // 节点转换为sing-box出站配置（与原模板一致，添加domain_resolver: alidns）
+    function nodeToOutbound(node) {
+        const outbound = {
+            tag: node.name,
+            type: node.type,
+            server: node.server,
+            server_port: node.server_port,
+            domain_resolver: "alidns"
+        };
+        // 按协议类型补充字段
+        switch (node.type) {
+            case 'vless':
+                outbound.uuid = node.uuid;
+                if (node.flow) outbound.flow = node.flow;
+                // TLS配置
+                if (node.tls) {
+                    outbound.tls = {
+                        enabled: true,
+                        server_name: node.sni || node.host || node.server,
+                        utls: { enabled: true, fingerprint: 'chrome' },
+                        alpn: ["http/1.1"]
+                    };
+                }
+                // 传输配置
+                if (node.transport && node.transport !== 'tcp') {
+                    outbound.transport = { type: node.transport };
+                    if (node.path) outbound.transport.path = node.path;
+                    if (node.host) {
+                        outbound.transport.headers = { Host: node.host };
+                    }
+                }
+                break;
+            case 'vmess':
+                outbound.uuid = node.uuid;
+                outbound.alterId = node.alterId || 0;
+                outbound.security = node.security || 'auto';
+                // TLS配置
+                if (node.tls) {
+                    outbound.tls = {
+                        enabled: true,
+                        server_name: node.sni || node.host || node.server
+                    };
+                }
+                // 传输配置
+                if (node.transport && node.transport !== 'tcp') {
+                    outbound.transport = { type: node.transport };
+                    if (node.path) outbound.transport.path = node.path;
+                    if (node.host) {
+                        outbound.transport.headers = { Host: node.host };
+                    }
+                }
+                break;
+            case 'trojan':
+                outbound.password = node.password;
+                // TLS配置
+                outbound.tls = {
+                    enabled: true,
+                    server_name: node.sni || node.host || node.server,
+                    utls: { enabled: true, fingerprint: 'chrome' },
+                    alpn: ["http/1.1"]
+                };
+                // 传输配置
+                if (node.transport && node.transport !== 'tcp') {
+                    outbound.transport = { type: node.transport };
+                    if (node.path) outbound.transport.path = node.path;
+                    if (node.host) {
+                        outbound.transport.headers = { Host: node.host };
+                    }
+                }
+                break;
+            case 'shadowsocks':
+                outbound.method = node.method;
+                outbound.password = node.password;
+                break;
+            case 'hysteria2':
+                outbound.password = node.password;
+                outbound.tls = {
+                    enabled: true,
+                    server_name: node.sni || node.server
+                };
+                break;
+            case 'tuic':
+                outbound.uuid = node.uuid;
+                outbound.password = node.password;
+                outbound.tls = {
+                    enabled: true,
+                    server_name: node.sni || node.server,
+                    alpn: ['h3']
+                };
+                outbound.congestion_control = 'bbr';
+                break;
+            case 'naive':
+                outbound.username = node.username;
+                outbound.password = node.password;
+                outbound.tls = {
+                    enabled: true,
+                    server_name: node.server
+                };
+                break;
+            case 'shadowtls':
+                outbound.password = node.password;
+                outbound.tls = { enabled: true, server_name: node.sni || node.server };
+                break;
+            case 'anytls':
+                outbound.password = node.password;
+                outbound.tls = {
+                    enabled: true,
+                    server_name: node.sni || node.server
+                };
+                break;
+            case 'wireguard':
+                outbound.private_key = node.private_key;
+                outbound.address = node.address;
+                outbound.peers = node.peers;
+                break;
+        }
+        return outbound;
+    }
+    // ========== 配置生成函数 ==========
+    function generateFullConfig() {
+        // 1. 生成入站配置
+        const enabledInbounds = inboundConfig.filter(item => item.enabled);
+        const inboundLines = [];
+        const inboundComments = [];
+        
+        enabledInbounds.forEach((inbound, index) => {
+            const lines = safeStringify(inbound.defaultConfig, 4);
+            lines.forEach((line, i) => {
+                inboundLines.push(line + (index < enabledInbounds.length - 1 ? ',' : ''));
+                inboundComments.push(i === 0 ? inbound.comment : '');
+            });
+        });
+        // 2. 生成节点配置
+        const nodeTags = nodeList.map(node => JSON.stringify(node.name));
+        const nodeOutbounds = nodeList.map(node => nodeToOutbound(node));
+        const nodeLines = [];
+        const nodeComments = [];
+        
+        nodeOutbounds.forEach((outbound, index) => {
+            const lines = safeStringify(outbound, 4);
+            lines.forEach((line, i) => {
+                nodeLines.push(line + (index < nodeOutbounds.length - 1 ? ',' : ''));
+                nodeComments.push(i === 0 ? `用户节点: ${outbound.tag}` : '');
+            });
+        });
+        // 3. 处理节点标签占位符（带逗号分隔）
+        const nodeTagLines = nodeTags.map(tag => '        ' + tag + ',');
+        // 4. 替换模板占位符
+        let configLines = [...baseConfigTemplate];
+        let comments = [...baseComments];
+        // 替换入站
+        const inboundIndex = configLines.findIndex(line => line.includes('{{INBOUNDS}}'));
+        if (inboundIndex !== -1) {
+            configLines.splice(inboundIndex, 1, ...inboundLines);
+            comments.splice(inboundIndex, 1, ...inboundComments);
+        }
+        // 替换PROXY选择器中的节点标签
+        const proxyTagIndex = configLines.findIndex(line => line.includes('{{NODE_TAGS}}') && line.includes('PROXY'));
+        if (proxyTagIndex !== -1) {
+            configLines.splice(proxyTagIndex, 1, ...nodeTagLines);
+            comments.splice(proxyTagIndex, 1, ...nodeTagLines.map(() => '用户自定义节点'));
+        }
+        // 替换AUTO urltest中的节点标签
+        const autoTagIndex = configLines.findIndex(line => line.includes('{{NODE_TAGS}}') && line.includes('AUTO'));
+        if (autoTagIndex !== -1) {
+            configLines.splice(autoTagIndex, 1, ...nodeTagLines);
+            comments.splice(autoTagIndex, 1, ...nodeTagLines.map(() => '用户自定义节点'));
+        }
+        // 替换节点配置
+        const nodeIndex = configLines.findIndex(line => line.includes('{{NODES}}'));
+        if (nodeIndex !== -1) {
+            configLines.splice(nodeIndex, 1, ...nodeLines);
+            comments.splice(nodeIndex, 1, ...nodeComments);
+        }
+        // 保存当前配置
+        currentConfigLines = configLines;
+        currentComments = comments;
+        // 渲染表格
+        renderTable();
+    }
+    // 渲染配置表格
+    function renderTable() {
+        const tbody = document.getElementById('table-body');
+        let html = '';
+        for (let i = 0; i < currentConfigLines.length; i++) {
+            html += '<tr>';
+            html += '<td class="line-num">' + (i + 1) + '</td>';
+            html += '<td class="code-cell">' + escapeHtml(currentConfigLines[i]) + '</td>';
+            html += '<td class="comment-cell">' + escapeHtml(currentComments[i] || '') + '</td>';
+            html += '</tr>';
+        }
+        tbody.innerHTML = html;
+    }
+    // 渲染节点列表
+    function renderNodeList() {
+        const nodeListEl = document.getElementById('nodeList');
+        if (nodeList.length === 0) {
+            nodeListEl.innerHTML = '<div class="empty-tip">暂无节点，请先导入或手动添加节点</div>';
+            return;
+        }
+        let html = '';
+        nodeList.forEach((node, index) => {
+            html += `
+                <div class="node-item">
+                    <div class="node-info">
+                        <div class="node-name">${escapeHtml(node.name)}</div>
+                        <div class="node-meta">${node.type.toUpperCase()} | ${node.server}:${node.server_port}</div>
+                    </div>
+                    <div class="node-actions">
+                        <button class="node-btn btn-danger" onclick="window.deleteNode(${index})">删除</button>
+                    </div>
+                </div>
+            `;
+        });
+        nodeListEl.innerHTML = html;
+        // 绑定删除事件
+        window.deleteNode = function(index) {
+            nodeList.splice(index, 1);
+            renderNodeList();
+            generateFullConfig();
+        };
+    }
+    // 渲染入站配置列表
+    function renderInboundList() {
+        const inboundListEl = document.getElementById('inboundList');
+        let html = '';
+        inboundConfig.forEach((inbound, index) => {
+            const config = inbound.defaultConfig;
+            html += `
+                <div class="inbound-card">
+                    <div class="inbound-header">
+                        <div class="inbound-title">${inbound.name}</div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="inbound-${inbound.id}" ${inbound.enabled ? 'checked' : ''} onchange="window.toggleInbound(${index})">
+                            <label for="inbound-${inbound.id}">开启</label>
+                        </div>
+                    </div>
+                    <div class="inbound-form">
+                        <div class="form-group">
+                            <label>监听地址</label>
+                            <input type="text" value="${config.listen || ''}" onchange="window.updateInboundConfig(${index}, 'listen', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>监听端口</label>
+                            <input type="number" value="${config.listen_port || ''}" onchange="window.updateInboundConfig(${index}, 'listen_port', parseInt(this.value) || 0)">
+                        </div>
+                    </div>
+                    <p class="form-desc" style="margin: 0.8rem 0 0 0; font-size: 0.75rem;">${inbound.comment}</p>
+                </div>
+            `;
+        });
+        inboundListEl.innerHTML = html;
+        // 绑定全局函数
+        window.toggleInbound = function(index) {
+            inboundConfig[index].enabled = !inboundConfig[index].enabled;
+            generateFullConfig();
+        };
+        window.updateInboundConfig = function(index, key, value) {
+            inboundConfig[index].defaultConfig[key] = value;
+            generateFullConfig();
+        };
+    }
+    // ========== 事件绑定 ==========
+    // Tab切换
+    function initTabSwitcher() {
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+                // 切换按钮激活状态
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // 切换内容显示
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            });
+        });
+    }
+    // 主题切换
+    function initThemeSwitcher() {
+        const themeBtns = document.querySelectorAll('.theme-btn');
+        const body = document.body;
+        
+        function setTheme(theme) {
+            body.classList.remove('light', 'dark');
+            if (theme === 'light') {
+                body.classList.add('light');
+            } else if (theme === 'dark') {
+                body.classList.add('dark');
+            }
+            localStorage.setItem('singbox_converter_theme', theme);
+            
+            themeBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+        }
+        // 初始化主题
+        const savedTheme = localStorage.getItem('singbox_converter_theme') || 'auto';
+        if (savedTheme !== 'auto') {
+            setTheme(savedTheme);
+        }
+        // 绑定事件
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setTheme(btn.dataset.theme);
+            });
+        });
+    }
+    // 导入解析按钮
+    function initImportParser() {
+        const parseBtn = document.getElementById('parseImportBtn');
+        const clearImportBtn = document.getElementById('clearImportBtn');
+        const clearNodeBtn = document.getElementById('clearNodeBtn');
+        const importInput = document.getElementById('importInput');
+        const importAlert = document.getElementById('importAlert');
+        parseBtn.addEventListener('click', () => {
+            const content = importInput.value.trim();
+            if (!content) {
+                importAlert.innerHTML = '<div class="alert-error">请输入要解析的内容</div>';
+                return;
+            }
+            const { nodes, errors } = parseImportContent(content);
+            if (nodes.length === 0) {
+                importAlert.innerHTML = `<div class="alert-error">解析失败，未找到有效节点: ${errors.join(', ')}</div>`;
+                return;
+            }
+            // 去重
+            const existingNames = new Set(nodeList.map(n => n.name));
+            const newNodes = nodes.filter(n => !existingNames.has(n.name));
+            nodeList.push(...newNodes);
+            // 提示
+            let alertHtml = `<div class="alert-success">成功解析 ${nodes.length} 个节点，新增 ${newNodes.length} 个</div>`;
+            if (errors.length > 0) {
+                alertHtml += `<div class="alert-warning">警告: ${errors.join(', ')}</div>`;
+            }
+            importAlert.innerHTML = alertHtml;
+            // 刷新列表和配置
+            renderNodeList();
+            generateFullConfig();
+        });
+        clearImportBtn.addEventListener('click', () => {
+            importInput.value = '';
+            importAlert.innerHTML = '';
+        });
+        clearNodeBtn.addEventListener('click', () => {
+            if (confirm('确定要清空所有节点吗？')) {
+                nodeList = [];
+                renderNodeList();
+                generateFullConfig();
+                importAlert.innerHTML = '<div class="alert-success">已清空所有节点</div>';
+            }
+        });
+    }
+    // 手动添加节点
+    function initManualNodeAdd() {
+        const addBtn = document.getElementById('addManualNodeBtn');
+        addBtn.addEventListener('click', () => {
+            const protocol = document.getElementById('manualProtocol').value;
+            const name = document.getElementById('manualName').value.trim();
+            const server = document.getElementById('manualServer').value.trim();
+            const port = parseInt(document.getElementById('manualPort').value) || 443;
+            const uuid = document.getElementById('manualUuid').value.trim();
+            const alterId = parseInt(document.getElementById('manualAlterId').value) || 0;
+            const security = document.getElementById('manualSecurity').value.trim();
+            const transport = document.getElementById('manualTransport').value;
+            const path = document.getElementById('manualPath').value.trim();
+            const host = document.getElementById('manualHost').value.trim();
+            const tls = document.getElementById('manualTls').value === 'true';
+            const flow = document.getElementById('manualFlow').value.trim();
+            // 校验必填项
+            if (!name || !server) {
+                alert('请填写节点名称和服务器地址');
+                return;
+            }
+            // 构建节点对象
+            const node = {
+                name: name,
+                type: protocol,
+                server: server,
+                server_port: port,
+                uuid: uuid,
+                alterId: alterId,
+                security: security,
+                transport: transport,
+                path: path,
+                host: host,
+                tls: tls,
+                flow: flow,
+                sni: host || server
+            };
+            // 去重
+            const existingIndex = nodeList.findIndex(n => n.name === name);
+            if (existingIndex !== -1) {
+                nodeList[existingIndex] = node;
+            } else {
+                nodeList.push(node);
+            }
+            // 刷新
+            renderNodeList();
+            generateFullConfig();
+            alert('节点添加成功');
+        });
+    }
+    // 一键复制配置
+    function initCopyBtn() {
+        const copyBtn = document.getElementById('copyFullConfigBtn');
+        copyBtn.addEventListener('click', async () => {
+            if (currentConfigLines.length === 0) {
+                alert('请先生成配置');
+                return;
+            }
+            const fullConfig = currentConfigLines.join('\n');
+            try {
+                await navigator.clipboard.writeText(fullConfig);
+                copyBtn.textContent = '✅ 复制成功';
+                copyBtn.classList.add('success');
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 复制完整配置';
+                    copyBtn.classList.remove('success');
+                }, 2500);
+            } catch (err) {
+                // 降级方案
+                const textarea = document.createElement('textarea');
+                textarea.value = fullConfig;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                copyBtn.textContent = '✅ 复制成功';
+                copyBtn.classList.add('success');
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 复制完整配置';
+                    copyBtn.classList.remove('success');
+                }, 2500);
+            }
+        });
+    }
+    // ========== 页面初始化 ==========
+    document.addEventListener('DOMContentLoaded', () => {
+        // 初始化功能
+        initTabSwitcher();
+        initThemeSwitcher();
+        initImportParser();
+        initManualNodeAdd();
+        initCopyBtn();
+        // 渲染初始内容
+        renderInboundList();
+        renderNodeList();
+        generateFullConfig();
+    });
+})();
+</script>
+</body>
+</html>
