@@ -2,350 +2,578 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>sing-box 1.14.0-alpha.13 全功能分流配置转换器 | 官方模板专用版</title>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>全能协议 → Sing-Box (严格兼容·去重)</title>
     <style>
-        /* 样式部分保持不变 (与之前一致) */
-        :root { --bg-body: #eef2f7; --bg-container: #ffffff; --bg-card: #f8fafc; --bg-tab: #f1f5f9; --bg-tab-active: #ffffff; --header-bg: #0a2b3c; --header-text: #ffffff; --th-bg: #e9f0f6; --th-border: #cbdde6; --line-num-bg: #f8fafc; --line-num-text: #6b7280; --code-text: #1e40af; --code-bg: #fefefe; --comment-text: #166534; --comment-bg: #f1fdf5; --info-bg: #f8fafc; --info-text: #1e293b; --border-light: #e2e8f0; --border-primary: #cbd5e1; --border-danger: #fca5a5; --btn-bg: #e2e8f0; --btn-text: #1e293b; --btn-active-bg: #0a2b3c; --btn-active-text: #ffffff; --btn-primary-bg: #2563eb; --btn-primary-hover: #1d4ed8; --btn-success-bg: #10b981; --btn-danger-bg: #ef4444; --btn-warning-bg: #f59e0b; --input-bg: #ffffff; --input-text: #1e293b; --input-border: #cbd5e1; --input-focus: #2563eb; --label-text: #475569; --tab-text: #64748b; --tab-active-text: #0a2b3c; --scrollbar-thumb: #cbd5e1; --scrollbar-track: #f1f5f9; --inline-code-bg: #e0e7ff; --inline-code-text: #1e40af; --node-item-bg: #ffffff; --node-item-border: #e2e8f0; }
-        @media (prefers-color-scheme: dark) { :root { --bg-body: #1a1e2a; --bg-container: #252b3a; --bg-card: #1f2533; --bg-tab: #2d3548; --bg-tab-active: #252b3a; --header-bg: #162b3a; --header-text: #f0f6fc; --th-bg: #2d3548; --th-border: #3f4a60; --line-num-bg: #1f2533; --line-num-text: #9aa4b8; --code-text: #b5c9ff; --code-bg: #1a1f2b; --comment-text: #8bcf9e; --comment-bg: #1e2a2a; --info-bg: #1f2533; --info-text: #cbd5e1; --border-light: #2f3a4c; --border-primary: #475569; --border-danger: #7f1d1d; --btn-bg: #3a465c; --btn-text: #e2e8f0; --btn-active-bg: #3b82f6; --btn-active-text: #ffffff; --btn-primary-bg: #3b82f6; --btn-primary-hover: #2563eb; --btn-success-bg: #10b981; --btn-danger-bg: #ef4444; --btn-warning-bg: #f59e0b; --input-bg: #2d3548; --input-text: #e2e8f0; --input-border: #475569; --input-focus: #3b82f6; --label-text: #cbd5e1; --tab-text: #94a3b8; --tab-active-text: #f0f6fc; --scrollbar-thumb: #475569; --scrollbar-track: #1e293b; --inline-code-bg: #334155; --inline-code-text: #bfdbfe; --node-item-bg: #2d3548; --node-item-border: #475569; } }
-        body.light { --bg-body: #eef2f7; --bg-container: #ffffff; --bg-card: #f8fafc; --bg-tab: #f1f5f9; --bg-tab-active: #ffffff; --header-bg: #0a2b3c; --header-text: #ffffff; --th-bg: #e9f0f6; --th-border: #cbdde6; --line-num-bg: #f8fafc; --line-num-text: #6b7280; --code-text: #1e40af; --code-bg: #fefefe; --comment-text: #166534; --comment-bg: #f1fdf5; --info-bg: #f8fafc; --info-text: #1e293b; --border-light: #e2e8f0; --border-primary: #cbd5e1; --border-danger: #fca5a5; --btn-bg: #e2e8f0; --btn-text: #1e293b; --btn-active-bg: #0a2b3c; --btn-active-text: #ffffff; --btn-primary-bg: #2563eb; --btn-primary-hover: #1d4ed8; --btn-success-bg: #10b981; --btn-danger-bg: #ef4444; --btn-warning-bg: #f59e0b; --input-bg: #ffffff; --input-text: #1e293b; --input-border: #cbd5e1; --input-focus: #2563eb; --label-text: #475569; --tab-text: #64748b; --tab-active-text: #0a2b3c; --scrollbar-thumb: #cbd5e1; --scrollbar-track: #f1f5f9; --inline-code-bg: #e0e7ff; --inline-code-text: #1e40af; --node-item-bg: #ffffff; --node-item-border: #e2e8f0; }
-        body.dark { --bg-body: #1a1e2a; --bg-container: #252b3a; --bg-card: #1f2533; --bg-tab: #2d3548; --bg-tab-active: #252b3a; --header-bg: #162b3a; --header-text: #f0f6fc; --th-bg: #2d3548; --th-border: #3f4a60; --line-num-bg: #1f2533; --line-num-text: #9aa4b8; --code-text: #b5c9ff; --code-bg: #1a1f2b; --comment-text: #8bcf9e; --comment-bg: #1e2a2a; --info-bg: #1f2533; --info-text: #cbd5e1; --border-light: #2f3a4c; --border-primary: #475569; --border-danger: #7f1d1d; --btn-bg: #3a465c; --btn-text: #e2e8f0; --btn-active-bg: #3b82f6; --btn-active-text: #ffffff; --btn-primary-bg: #3b82f6; --btn-primary-hover: #2563eb; --btn-success-bg: #10b981; --btn-danger-bg: #ef4444; --btn-warning-bg: #f59e0b; --input-bg: #2d3548; --input-text: #e2e8f0; --input-border: #475569; --input-focus: #3b82f6; --label-text: #cbd5e1; --tab-text: #94a3b8; --tab-active-text: #f0f6fc; --scrollbar-thumb: #475569; --scrollbar-track: #1e293b; --inline-code-bg: #334155; --inline-code-text: #bfdbfe; --node-item-bg: #2d3548; --node-item-border: #475569; }
-        * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; } body { background: var(--bg-body); font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', sans-serif; padding: 1rem; color: var(--info-text); transition: background 0.2s ease, color 0.2s ease; line-height: 1.5; } .container { max-width: 1900px; margin: 0 auto; background: var(--bg-container); border-radius: 16px; box-shadow: 0 10px 30px -8px rgba(0,0,0,0.12); overflow: hidden; } .header { background: var(--header-bg); color: var(--header-text); padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; } .header-title h1 { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 600; } .header-title p { margin-top: 0.4rem; opacity: 0.9; font-size: 0.85rem; } .header-tools { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; } .theme-switcher { display: flex; gap: 0.5rem; } .theme-btn { background: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 20px; padding: 0.4rem 0.9rem; font-size: 0.8rem; cursor: pointer; font-weight: 500; } .theme-btn.active { background: var(--btn-active-bg); color: var(--btn-active-text); } .copy-main-btn { background: var(--btn-primary-bg); color: white; border: none; border-radius: 8px; padding: 0.5rem 1.2rem; font-size: 0.9rem; cursor: pointer; font-weight: 500; } .copy-main-btn:hover { background: var(--btn-primary-hover); } .copy-main-btn.success { background: var(--btn-success-bg); } .tab-nav { display: flex; background: var(--bg-tab); border-bottom: 1px solid var(--border-light); overflow-x: auto; } .tab-btn { padding: 0.9rem 1.5rem; background: transparent; border: none; color: var(--tab-text); font-size: 0.9rem; font-weight: 500; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; } .tab-btn.active { background: var(--bg-tab-active); color: var(--tab-active-text); border-bottom-color: var(--btn-primary-bg); } .tab-content { display: none; padding: 1.5rem; } .tab-content.active { display: block; } .form-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.8rem; } .form-desc { font-size: 0.85rem; opacity: 0.8; margin-bottom: 1.2rem; } .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; } .form-group { display: flex; flex-direction: column; gap: 0.4rem; } .form-group.full-width { grid-column: 1 / -1; } .form-group label { font-size: 0.8rem; font-weight: 500; color: var(--label-text); } .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.6rem 0.8rem; background: var(--input-bg); color: var(--input-text); border: 1px solid var(--input-border); border-radius: 6px; font-size: 0.85rem; font-family: inherit; } .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--input-focus); } .form-group textarea { resize: vertical; min-height: 120px; } .form-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; } .form-btn { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; } .btn-primary { background: var(--btn-primary-bg); color: white; } .btn-primary:hover { background: var(--btn-primary-hover); } .btn-default { background: var(--btn-bg); color: var(--btn-text); } .btn-success { background: var(--btn-success-bg); color: white; } .btn-danger { background: var(--btn-danger-bg); color: white; } .btn-warning { background: var(--btn-warning-bg); color: white; } .required-mark { color: var(--btn-danger-bg); } .checkbox-group { display: flex; align-items: center; gap: 0.5rem; } .import-section { background: var(--bg-card); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; } .node-list { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1.2rem; max-height: 400px; overflow-y: auto; } .node-item { background: var(--node-item-bg); border: 1px solid var(--node-item-border); border-radius: 8px; padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: space-between; } .node-info { flex: 1; } .node-name { font-weight: 600; font-size: 0.9rem; } .node-meta { font-size: 0.75rem; opacity: 0.7; } .node-actions { display: flex; gap: 0.5rem; } .node-btn { padding: 0.3rem 0.6rem; font-size: 0.75rem; border-radius: 4px; border: none; cursor: pointer; } .empty-tip { text-align: center; padding: 2rem; opacity: 0.6; } .alert-success { background: rgba(16,185,129,0.1); border:1px solid var(--btn-success-bg); color:var(--btn-success-bg); padding:0.8rem; border-radius:6px; margin:1rem 0; } .alert-error { background: rgba(239,68,68,0.1); border:1px solid var(--btn-danger-bg); color:var(--btn-danger-bg); padding:0.8rem; border-radius:6px; margin:1rem 0; } .alert-warning { background: rgba(245,158,11,0.1); border:1px solid var(--btn-warning-bg); color:var(--btn-warning-bg); padding:0.8rem; border-radius:6px; margin:1rem 0; } .inbound-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.2rem; } .inbound-card { background: var(--bg-card); border: 1px solid var(--border-primary); border-radius: 10px; padding: 1rem; } .inbound-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; } .inbound-title { font-weight: 600; } .inbound-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; } .table-wrapper { overflow-x: auto; max-height: calc(100vh - 300px); } .config-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; } .config-table th { text-align: left; background: var(--th-bg); padding: 0.9rem 0.7rem; font-weight: 600; position: sticky; top: 0; border-bottom: 2px solid var(--th-border); } .config-table th:nth-child(1) { width: 60px; } .config-table th:nth-child(2) { width: 50%; } .config-table th:nth-child(3) { width: calc(50% - 60px); } .config-table td { padding: 0.7rem; border-bottom: 1px solid var(--border-light); vertical-align: top; } .line-num { text-align: right; color: var(--line-num-text); background: var(--line-num-bg); font-family: monospace; } .code-cell { font-family: 'SF Mono', 'Consolas', monospace; white-space: pre; color: var(--code-text); background: var(--code-bg); } .comment-cell { color: var(--comment-text); background: var(--comment-bg); } .info-box { background: var(--info-bg); padding: 1.2rem 1.5rem; margin: 1rem; border-radius: 8px; font-size: 0.85rem; } ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: var(--scrollbar-track); } ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; } @media (max-width: 768px) { .inbound-form { grid-template-columns: 1fr; } .config-table { min-width: 900px; } }
+        * { box-sizing: border-box; margin: 0; }
+        body {
+            background: #f5f7fc;
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            padding: 20px 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #1e293b;
+        }
+        .container { max-width: 1100px; margin: 0 auto; width: 100%; flex: 1; }
+        h1 {
+            font-size: 2rem; font-weight: 700; margin-bottom: 8px;
+            background: linear-gradient(145deg, #2563eb, #8b5cf6);
+            -webkit-background-clip: text; background-clip: text;
+            color: transparent; letter-spacing: -0.02em;
+        }
+        .subtitle {
+            color: #64748b; margin-bottom: 24px; font-size: 1rem;
+            border-left: 4px solid #3b82f6; padding-left: 16px;
+        }
+        .card {
+            background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.5); border-radius: 28px;
+            box-shadow: 0 20px 35px -8px rgba(0,0,0,0.08);
+            padding: 24px 22px; margin-bottom: 22px;
+        }
+        .input-area { display: flex; flex-direction: column; gap: 16px; }
+        label {
+            font-weight: 600; font-size: 0.95rem; color: #334155;
+            display: flex; align-items: center; gap: 6px;
+        }
+        textarea {
+            width: 100%; padding: 18px; font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 0.9rem; background: #fff; border: 1.5px solid #e2e8f0;
+            border-radius: 20px; min-height: 160px; color: #0f172a; resize: vertical;
+            transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+        }
+        textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
+        .button-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+        .btn {
+            background: white; border: 1px solid #cbd5e1; padding: 12px 26px;
+            border-radius: 60px; font-weight: 600; font-size: 1rem;
+            cursor: pointer; transition: 0.2s; display: inline-flex;
+            align-items: center; gap: 8px; background: rgba(255,255,255,0.9);
+        }
+        .btn-primary { background: #1e293b; border-color: #1e293b; color: white; }
+        .btn-primary:hover { background: #0f172a; transform: translateY(-1px); }
+        .btn-success { background: #10b981; border-color: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-outline:hover { background: #f8fafc; }
+        .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .badge { background: #e2e8f0; padding: 5px 14px; border-radius: 30px; font-size: 0.8rem; }
+        pre {
+            background: #0b1120; color: #e4e7ee; padding: 20px; border-radius: 18px;
+            overflow-x: auto; font-size: 0.8rem; font-family: 'SF Mono', monospace;
+            max-height: 500px; white-space: pre-wrap; word-break: break-all;
+            border: 1px solid #334155;
+        }
+        .footnote { margin-top: 20px; color: #64748b; font-size: 0.85rem; text-align: center; }
+        .example-btn { background: none; border: 1px dashed #94a3b8; padding: 6px 15px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; }
+        .example-btn:hover { background: #eef2ff; border-color: #3b82f6; }
+        .toast-msg { color: #059669; font-weight: 500; margin-left: 12px; }
+        .protocol-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+        .tag { background: #e2e8f0; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <div class="header-title">
-            <h1>📄 sing-box 1.14.0-alpha.13 全功能分流配置转换器</h1>
-            <p>✅ 100%还原模板 | 12种入站 | 全格式订阅解析 | WireGuard/VLESS/VMess/Trojan/SS/Hysteria2/TUIC/Naive/ShadowTLS/AnyTLS</p>
-        </div>
-        <div class="header-tools">
-            <button class="copy-main-btn" id="copyFullConfigBtn">📋 复制完整配置</button>
-            <div class="theme-switcher">
-                <button class="theme-btn active" data-theme="auto">🌓 自动</button>
-                <button class="theme-btn" data-theme="light">☀️ 亮色</button>
-                <button class="theme-btn" data-theme="dark">🌙 暗色</button>
+    <h1>🧬 多协议 → Sing-Box (去重·修复)</h1>
+    <div class="subtitle">VLESS · VMess · Trojan · SS · Hysteria2 · 标签自动去重 · 模板笔误已修正</div>
+
+    <div class="card">
+        <div class="input-area">
+            <label>📥 粘贴节点链接 (每行一个，支持混合协议)</label>
+            <textarea id="inputArea" placeholder="例如:&#10;vless://...&#10;vmess://...&#10;trojan://...&#10;ss://...&#10;hysteria2://..."></textarea>
+            <div class="protocol-tags">
+                <span class="tag">✅ VLESS</span>
+                <span class="tag">✅ VMess</span>
+                <span class="tag">✅ Trojan</span>
+                <span class="tag">✅ Shadowsocks</span>
+                <span class="tag">✅ Hysteria2</span>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="convertBtn">✨ 解析并生成配置</button>
+                <button class="btn btn-outline" id="clearBtn">🧹 清空</button>
+
             </div>
         </div>
     </div>
-    <div class="tab-nav">
-        <button class="tab-btn active" data-tab="import">📥 节点导入</button>
-        <button class="tab-btn" data-tab="inbound">🔌 入站配置</button>
-        <button class="tab-btn" data-tab="preview">📋 配置预览</button>
-        <button class="tab-btn" data-tab="help">📖 使用说明</button>
-    </div>
-    <!-- Tab 导入 -->
-    <div class="tab-content active" id="tab-import">
-        <div class="import-section">
-            <h2 class="form-title">节点/订阅导入</h2>
-            <p class="form-desc">支持粘贴 <code>vmess://vless://trojan://ss://anytls://</code> 节点链接、订阅URL (自动拉取)、Clash YAML配置，批量导入一行一个</p>
-            <div class="form-grid"><div class="form-group full-width"><textarea id="importInput" placeholder="粘贴节点链接、订阅URL或Clash YAML..."></textarea></div></div>
-            <div class="form-actions">
-                <button class="form-btn btn-primary" id="parseImportBtn">🔍 解析导入</button>
-                <button class="form-btn btn-default" id="clearImportBtn">清空输入</button>
-                <button class="form-btn btn-warning" id="clearNodeBtn">清空所有节点</button>
+
+    <div class="card">
+        <div class="output-header">
+            <label>📦 Sing-Box 配置 (可直接复制)</label>
+            <div style="display: flex; gap: 10px;">
+                <span class="badge" id="nodeCountBadge">0 个节点</span>
+                <button class="btn btn-success" id="copyBtn">📋 一键复制</button>
             </div>
-            <div id="importAlert"></div>
         </div>
-        <div class="import-section">
-            <h2 class="form-title">手动添加节点</h2>
-            <div class="form-grid">
-                <div class="form-group"><label>协议<span class="required-mark">*</span></label><select id="manualProtocol"><option value="vless">VLESS</option><option value="vmess">VMess</option><option value="trojan">Trojan</option><option value="shadowsocks">Shadowsocks</option><option value="hysteria2">Hysteria2</option><option value="tuic">TUIC</option><option value="naive">Naive</option><option value="shadowtls">ShadowTLS</option><option value="anytls">AnyTLS</option><option value="wireguard">WireGuard</option></select></div>
-                <div class="form-group"><label>节点名称<span class="required-mark">*</span></label><input type="text" id="manualName" placeholder="例如：🚀 香港01"></div>
-                <div class="form-group"><label>服务器地址<span class="required-mark">*</span></label><input type="text" id="manualServer" placeholder="例如：hk.example.com"></div>
-                <div class="form-group"><label>端口<span class="required-mark">*</span></label><input type="number" id="manualPort" value="443"></div>
-                <div class="form-group"><label>UUID/密码/ID</label><input type="text" id="manualUuid" placeholder="身份验证信息"></div>
-                <div class="form-group"><label>AlterId (VMess)</label><input type="number" id="manualAlterId" value="0"></div>
-                <div class="form-group"><label>加密方式</label><input type="text" id="manualSecurity" placeholder="auto / none / chacha20"></div>
-                <div class="form-group"><label>传输协议</label><select id="manualTransport"><option value="tcp">TCP</option><option value="ws">WebSocket</option><option value="http">HTTP</option><option value="grpc">gRPC</option><option value="quic">QUIC</option></select></div>
-                <div class="form-group"><label>路径/服务名</label><input type="text" id="manualPath" placeholder="例如：/ws"></div>
-                <div class="form-group"><label>Host/SNI</label><input type="text" id="manualHost" placeholder="TLS SNI或WS Host"></div>
-                <div class="form-group"><label>TLS</label><select id="manualTls"><option value="true">开启</option><option value="false">关闭</option></select></div>
-                <div class="form-group"><label>流控 (VLESS)</label><input type="text" id="manualFlow" placeholder="xtls-rprx-vision"></div>
-                <div class="form-group"><label>WireGuard私钥</label><input type="text" id="manualWgPrivkey" placeholder="私钥"></div>
-                <div class="form-group"><label>WG地址</label><input type="text" id="manualWgAddr" placeholder="10.0.0.2/24"></div>
-                <div class="form-group"><label>Peer公钥</label><input type="text" id="manualWgPeerPubkey" placeholder="公钥"></div>
-                <div class="form-group"><label>Peer端点</label><input type="text" id="manualWgPeerEndpoint" placeholder="engage.cloudflareclient.com:2408"></div>
-            </div>
-            <div class="form-actions"><button class="form-btn btn-success" id="addManualNodeBtn">➕ 添加节点</button></div>
-        </div>
-        <div class="import-section">
-            <h2 class="form-title">已导入节点列表</h2>
-            <div class="node-list" id="nodeList"><div class="empty-tip">暂无节点</div></div>
-        </div>
+        <pre id="outputConfig">// 点击「解析并生成配置」后显示完整 JSON …</pre>
+        <div id="copyFeedback" style="height: 24px; margin-top: 8px;"></div>
     </div>
-    <!-- Tab 入站 -->
-    <div class="tab-content" id="tab-inbound">
-        <h2 class="form-title">入站协议配置 (12种)</h2>
-        <div class="inbound-list" id="inboundList"></div>
+    <div class="footnote">
+        ⚡ 基于「优化.txt」模板 · 自动过滤 tcp transport · 标签重复自动加序号 · 模板字段已修正
     </div>
-    <!-- Tab 预览 -->
-    <div class="tab-content" id="tab-preview">
-        <div class="table-wrapper"><table class="config-table"><thead><tr><th>行号</th><th>配置代码</th><th>注释</th></tr></thead><tbody id="table-body"></tbody></table></div>
-    </div>
-    <!-- Tab 帮助 -->
-    <div class="tab-content" id="tab-help">
-        <div class="info-box">
-            <strong>📌 功能说明</strong><br>
-            ✅ 入站支持12种协议：WireGuard、VLESS、VMess、Trojan、Shadowsocks、Hysteria2、TUIC、Naive、ShadowTLS、AnyTLS、Mixed、HTTP。<br>
-            ✅ 订阅解析支持 VMess/VLESS/Trojan/SS/AnyTLS 链接、Clash YAML、订阅URL自动拉取(通过CORS代理)。<br>
-            ✅ 配置100%兼容 sing-box 1.14.0-alpha.13，内置FakeIP、DoH/QUIC双DNS、广告拦截、AI/游戏分流、Clash API。<br>
-            <br><strong>📝 使用步骤</strong><br>1. 导入节点或手动添加；2. 配置入站(默认Mixed+TUN已开启)；3. 预览并复制配置。
-        </div>
-    </div>
-    <div class="info-box"><strong>💡 提示</strong> 所有操作均在浏览器本地完成，节点信息不会上传。</div>
 </div>
 <script>
-(function(){
-    "use strict";
-    // ----- 入站模板 -----
-    const inboundTemplates = [
-        { id: 'mixed', name: 'Mixed 混合代理', enabled: true, defaultConfig: { type: 'mixed', tag: 'mixed-in', listen: '127.0.0.1', listen_port: 7890 }, comment: '混合代理入站，支持HTTP/Socks5' },
-        { id: 'http', name: 'HTTP 代理', enabled: false, defaultConfig: { type: 'http', tag: 'http-in', listen: '127.0.0.1', listen_port: 7891 }, comment: 'HTTP代理入站' },
-        { id: 'vless', name: 'VLESS 入站', enabled: false, defaultConfig: { type: 'vless', tag: 'vless-in', listen: '0.0.0.0', listen_port: 10000, users: [{uuid: '请替换UUID'}] }, comment: 'VLESS服务端' },
-        { id: 'vmess', name: 'VMess 入站', enabled: false, defaultConfig: { type: 'vmess', tag: 'vmess-in', listen: '0.0.0.0', listen_port: 10001, users: [{uuid: '请替换UUID', alterId: 0}] }, comment: 'VMess服务端' },
-        { id: 'trojan', name: 'Trojan 入站', enabled: false, defaultConfig: { type: 'trojan', tag: 'trojan-in', listen: '0.0.0.0', listen_port: 10002, users: [{password: '请替换密码'}] }, comment: 'Trojan服务端' },
-        { id: 'shadowsocks', name: 'Shadowsocks 入站', enabled: false, defaultConfig: { type: 'shadowsocks', tag: 'ss-in', listen: '0.0.0.0', listen_port: 10003, method: 'chacha20-ietf-poly1305', password: '请替换密码' }, comment: 'SS服务端' },
-        { id: 'hysteria2', name: 'Hysteria2 入站', enabled: false, defaultConfig: { type: 'hysteria2', tag: 'hy2-in', listen: '0.0.0.0', listen_port: 10004, users: [{password: '请替换密码'}] }, comment: 'Hysteria2服务端' },
-        { id: 'tuic', name: 'TUIC 入站', enabled: false, defaultConfig: { type: 'tuic', tag: 'tuic-in', listen: '0.0.0.0', listen_port: 10005, users: [{uuid: '请替换UUID', password: '请替换密码'}] }, comment: 'TUIC服务端' },
-        { id: 'naive', name: 'Naive 入站', enabled: false, defaultConfig: { type: 'naive', tag: 'naive-in', listen: '0.0.0.0', listen_port: 10006, users: [{username: 'user', password: 'pass'}] }, comment: 'Naive服务端' },
-        { id: 'shadowtls', name: 'ShadowTLS 入站', enabled: false, defaultConfig: { type: 'shadowtls', tag: 'shadowtls-in', listen: '0.0.0.0', listen_port: 10007, password: '请替换密码', server: 'www.baidu.com', server_port: 443 }, comment: 'ShadowTLS服务端' },
-        { id: 'anytls', name: 'AnyTLS 入站', enabled: false, defaultConfig: { type: 'anytls', tag: 'anytls-in', listen: '0.0.0.0', listen_port: 10008, users: [{password: '请替换密码'}] }, comment: 'AnyTLS服务端' },
-        { id: 'wireguard', name: 'WireGuard 入站', enabled: false, defaultConfig: { type: 'wireguard', tag: 'wg-in', listen: '0.0.0.0', listen_port: 10009, private_key: '请替换私钥', address: ['10.0.0.1/24'] }, comment: 'WireGuard服务端' },
-        { id: 'tun', name: 'TUN 透明代理', enabled: true, defaultConfig: { type: 'tun', tag: 'tun-in', address: ['10.8.0.1/24'], mtu: 1500, stack: 'mixed', auto_route: true, strict_route: true }, comment: 'TUN全局代理' }
-    ];
-    // ----- 基础配置模板 (完整) -----
-    const baseConfigTemplate = [
-        "{","  \"log\": {","    \"level\": \"fatal\",","    \"timestamp\": true","  },","  \"ntp\": {","    \"enabled\": true,","    \"server\": \"ntp.aliyun.com\",","    \"server_port\": 123,","    \"interval\": \"30m\"","  },","  \"dns\": {","    \"servers\": [","      {","        \"tag\": \"local\",","        \"type\": \"local\"","      },","      {","        \"tag\": \"hosts_fix\",","        \"type\": \"hosts\",","        \"predefined\": {","          \"dns.alidns.com\": [","            \"223.5.5.5\",","            \"223.6.6.6\"","          ],","          \"doh.pub\": [","            \"1.12.12.21\",","            \"120.53.53.53\"","          ],","          \"dns.google\": [","            \"8.8.8.8\",","            \"8.8.4.4\"","          ],","          \"cloudflare-dns.com\": [","            \"104.16.248.249\",","            \"104.16.249.249\"","          ]","        }","      },","      {","        \"tag\": \"alidns\",","        \"type\": \"quic\",","        \"server\": \"dns.alidns.com\",","        \"domain_resolver\": \"hosts_fix\"","      },","      {","        \"tag\": \"ggdns\",","        \"type\": \"https\",","        \"server\": \"dns.google\",","        \"domain_resolver\": \"hosts_fix\"","      },","      {","        \"tag\": \"fakeip\",","        \"type\": \"fakeip\",","        \"inet4_range\": \"198.18.0.0/15\"","      }","    ],","    \"rules\": [","      {","        \"domain_suffix\": [","          \"app-measurement.com\",","          \"hm.baidu.com\",","          \"firebaselogging.googleapis.com\",","          \"firebaselogging-pa.googleapis.com\",","          \"beacons.gvt2.com\",","          \"beacons2.gvt2.com\",","          \"beacons3.gvt2.com\",","          \"tracking.miui.com\"","        ],","        \"server\": \"alidns\"","      },","      {","        \"rule_set\": [","          \"geosite_adguard\",","          \"geosite-category-ads-all\"","        ],","        \"action\": \"reject\"","      },","      {","        \"domain_suffix\": [","          \".local\",","          \".lan\",","          \"miwifi.com\",","          \"tplogin.cn\",","          \"router.asus.com\",","          \"tendawifi.com\",","          \"tplinkwifi.net\"","        ],","        \"server\": \"local\"","      },","      {","        \"query_type\": [","          \"SVCB\",","          \"HTTPS\"","        ],","        \"action\": \"reject\"","      },","      {","        \"query_type\": [","          \"PTR\"","        ],","        \"action\": \"reject\"","      },","      {","        \"rule_set\": [","          \"proxy\",","          \"games\",","          \"ai\"","        ],","        \"query_type\": [","          \"A\",","          \"AAAA\"","        ],","        \"server\": \"fakeip\"","      },","      {","        \"rule_set\": [","          \"proxy\",","          \"games\",","          \"ai\"","        ],","        \"query_type\": [","          \"A\",","          \"AAAA\"","        ],","        \"server\": \"ggdns\",","        \"client_subnet\": \"119.134.100.0/24\"","      },","      {","        \"domain_suffix\": [","          \"market.xiaomi.com\",","          \"lancache.steamcontent.com\"","        ],","        \"server\": \"alidns\"","      },","      {","        \"domain_suffix\": [","          \"play.google.com\",","          \"ggpht.com\",","          \"googleusercontent.com\",","          \"android.com\"","        ],","        \"server\": \"fakeip\"","      },","      {","        \"action\": \"evaluate\",","        \"server\": \"alidns\"","      },","      {","        \"type\": \"logical\",","        \"mode\": \"or\",","        \"rules\": [","          {","            \"match_response\": true,","            \"ip_is_private\": true","          }","        ],","        \"action\": \"respond\"","      },","      {","        \"match_response\": true,","        \"ip_accept_any\": true,","        \"action\": \"respond\"","      }","    ],","    \"final\": \"alidns\",","    \"strategy\": \"ipv4_only\",","    \"reverse_mapping\": true,","    \"cache_capacity\": 16000,","    \"optimistic\": true","  },","  \"inbounds\": [","    {{INBOUNDS}}","  ],","  \"outbounds\": [","    {","      \"type\": \"direct\",","      \"tag\": \"DIRECT\",","      \"domain_resolver\": \"alidns\"","    },","    {","      \"type\": \"selector\",","      \"tag\": \"PROXY\",","      \"outbounds\": [","        \"AUTO\",","        {{PROXY_NODE_TAGS}}","        \"DIRECT\"","      ],","      \"default\": \"AUTO\",","      \"interrupt_exist_connections\": false","    },","    {","      \"type\": \"urltest\",","      \"tag\": \"AUTO\",","      \"outbounds\": [","        {{AUTO_NODE_TAGS}}","      ],","      \"url\": \"http://www.gstatic.com/generate_204\",","      \"interval\": \"10m\",","      \"tolerance\": 50,","      \"idle_timeout\": \"30m\",","      \"interrupt_exist_connections\": false","    },","    {","      \"type\": \"selector\",","      \"tag\": \"GLOBAL\",","      \"outbounds\": [","        \"PROXY\",","        \"DIRECT\"","      ],","      \"default\": \"PROXY\"","    },","    {","      \"type\": \"selector\",","      \"tag\": \"CN\",","      \"outbounds\": [","        \"DIRECT\",","        \"PROXY\"","      ],","      \"default\": \"DIRECT\"","    },","    {{NODES}}","  ],","  \"http_clients\": [","    {","      \"tag\": \"default\",","      \"detour\": \"PROXY\"","    }","  ],","  \"route\": {","    \"default_domain_resolver\": \"alidns\",","    \"rules\": [","      { \"type\": \"logical\", \"mode\": \"or\", \"rules\": [{\"port\":53},{\"protocol\":\"dns\"}], \"action\": \"hijack-dns\" },","      { \"action\": \"sniff\" },","      { \"type\": \"logical\", \"mode\": \"and\", \"rules\": [{\"protocol\":\"quic\"},{\"port\":443}], \"action\": \"reject\" },","      { \"domain_suffix\": [\"miwifi.com\"], \"outbound\": \"DIRECT\" },","      { \"ip_is_private\": true, \"outbound\": \"DIRECT\" },","      { \"ip_cidr\": [\"198.18.0.0/15\"], \"outbound\": \"PROXY\" },","      { \"rule_set\": [\"geosite_adguard\",\"geosite-category-ads-all\"], \"action\": \"reject\" },","      { \"rule_set\": \"geosite-google\", \"outbound\": \"PROXY\" },","      { \"domain_suffix\": [\"steamserver.net\",\"zhihu.com\",\"zhimg.com\",\"jd.com\",\"360buyimg.com\",\"xfyun.cn\"], \"outbound\": \"DIRECT\" },","      { \"rule_set\": \"proxy\", \"outbound\": \"PROXY\" },","      { \"rule_set\": \"games\", \"outbound\": \"PROXY\" },","      { \"rule_set\": \"ai\", \"outbound\": \"PROXY\" },","      { \"rule_set\": [\"private\",\"cn\",\"microsoft-cn\",\"apple-cn\",\"google-cn\",\"games-cn\",\"networktest\"], \"outbound\": \"DIRECT\" },","      { \"action\": \"resolve\" },","      { \"rule_set\": \"telegramip\", \"outbound\": \"PROXY\" },","      { \"rule_set\": \"cnip\", \"outbound\": \"DIRECT\" },","      { \"package_name\": [\"com.google.android.youtube\",\"app.revanced.android.youtube\"], \"outbound\": \"PROXY\" },","      { \"package_name\": [\"org.telegram.messenger\",\"org.telegram.messenger.beta\"], \"outbound\": \"PROXY\" }","    ],","    \"rule_set\": [","      { \"tag\": \"geosite-category-ads-all\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"geosite_adguard\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblocksingbox.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"geosite-google\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-google.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"geosite-youtube\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-youtube.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"proxy\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"games\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"ai\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"private\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"cn\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"microsoft-cn\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"apple-cn\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"google-cn\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/google-cn.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"games-cn\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"networktest\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"telegramip\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" },","      { \"tag\": \"cnip\", \"type\": \"remote\", \"format\": \"binary\", \"url\": \"https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs\", \"http_client\": \"default\", \"update_interval\": \"48h\" }","    ],","    \"final\": \"PROXY\",","    \"auto_detect_interface\": true","  },","  \"experimental\": {","    \"clash_api\": {","      \"external_controller\": \"127.0.0.1:9090\",","      \"external_ui\": \"ui\",","      \"external_ui_download_url\": \"https://cdn.jsdelivr.net/gh/MetaCubeX/metacubexd@gh-pages/metacubexd.zip\",","      \"external_ui_download_detour\": \"PROXY\",","      \"secret\": \"kSDuU2WHyf72taGMdDS0ib6klwFVF5QIM4HGhS5f4Jw=\",","      \"default_mode\": \"rule\"","    },","    \"cache_file\": {","      \"enabled\": true,","      \"path\": \"cache.db\",","      \"cache_id\": \"cinchov\",","      \"store_dns\": true,","      \"store_fakeip\": true","    }","  }","}"];
-    // 注释数组 (略作精简但完整)
-    const baseComments = [
-        "配置根开始","日志模块","日志级别fatal","开启时间戳","日志结束","NTP模块","开启NTP","NTP服务器","端口","同步间隔","NTP结束","DNS模块","DNS服务器列表","本地DNS","标签","类型local","本地结束","hosts预解析","标签","类型hosts","预定义映射","阿里云DNS域名","IP1","IP2","阿里云结束","DNSPod","IP1","IP2","DNSPod结束","Google DNS","IP1","IP2","Google结束","Cloudflare","IP1","IP2","CF结束","hosts映射结束","hosts_fix结束","阿里云QUIC","标签","类型quic","服务器地址","域名解析器指向hosts_fix","阿里云QUIC结束","Google DoH","标签","类型https","DoH服务器","解析器","Google DoH结束","FakeIP","标签","类型fakeip","IPv4网段","FakeIP结束","服务器列表结束","DNS规则列表","统计/埋点域名","域名后缀列表","app-measurement","hm.baidu","firebaselogging","firebaselogging-pa","beacons","beacons2","beacons3","tracking.miui","列表结束","使用alidns解析","规则结束","广告域名拦截","规则集列表","AdGuard规则集","官方广告规则集","列表结束","动作reject","规则结束","内网/路由器域名","域名后缀列表",".local",".lan","miwifi","tplogin","router.asus","tendawifi","tplinkwifi","列表结束","使用local解析","规则结束","SVCB/HTTPS类型拦截","查询类型列表","SVCB","HTTPS","列表结束","动作reject","规则结束","PTR记录拦截","查询类型PTR","动作reject","规则结束","代理/游戏/AI域名FakeIP","规则集列表","proxy","games","ai","查询类型","A","AAAA","使用fakeip","规则结束","代理域名DoH解析","规则集列表","proxy","games","ai","查询类型","A","AAAA","使用ggdns","EDNS子网","规则结束","国内应用域名","后缀列表","market.xiaomi","lancache.steamcontent","使用alidns","规则结束","谷歌核心域名FakeIP","后缀列表","play.google","ggpht","googleusercontent","android","使用fakeip","规则结束","兜底评估","动作evaluate","服务器alidns","规则结束","内网IP响应规则","逻辑或","子规则","匹配响应且内网IP","动作respond","规则结束","全量响应兜底","匹配响应","接受所有IP","动作respond","规则结束","规则列表结束","final兜底alidns","策略ipv4_only","反向映射开启","缓存容量16000","乐观缓存开启","DNS结束","入站模块","入站列表占位","入站列表结束","出站模块","出站列表","DIRECT出站","类型direct","标签DIRECT","域名解析器alidns","DIRECT结束","PROXY选择器","类型selector","标签PROXY","子出站列表","AUTO","节点标签占位","DIRECT","列表结束","默认AUTO","不中断已有连接","PROXY结束","AUTO测速","类型urltest","标签AUTO","测速节点占位","测速URL","间隔10m","容忍50ms","空闲超时30m","不中断连接","AUTO结束","GLOBAL选择器","类型selector","标签GLOBAL","子列表","PROXY","DIRECT","默认PROXY","GLOBAL结束","CN选择器","类型selector","标签CN","子列表","DIRECT","PROXY","默认DIRECT","CN结束","节点出站占位","出站列表结束","HTTP客户端模块","默认客户端","标签default","流量走PROXY","HTTP客户端结束","路由模块","默认域名解析器alidns","规则列表","DNS劫持规则","逻辑或","端口53","协议dns","动作hijack-dns","规则结束","流量嗅探","动作sniff","规则结束","QUIC 443拦截","逻辑与","协议quic","端口443","动作reject","规则结束","路由器域名直连","miwifi.com","DIRECT","规则结束","内网IP直连","ip_is_private","DIRECT","规则结束","FakeIP网段代理","ip_cidr 198.18.0.0/15","PROXY","规则结束","广告流量拦截","规则集列表","AdGuard","官方广告","动作reject","规则结束","谷歌系域名代理","geosite-google","PROXY","规则结束","国内常用域名直连","steamserver等","DIRECT","规则结束","proxy规则集代理","规则集proxy","PROXY","规则结束","games规则集代理","games","PROXY","规则结束","ai规则集代理","ai","PROXY","规则结束","国内规则集直连","private/cn等","DIRECT","规则结束","强制解析","resolve","规则结束","Telegram IP代理","telegramip","PROXY","规则结束","中国IP直连","cnip","DIRECT","规则结束","YouTube APP代理","包名列表","com.google.android.youtube","app.revanced.android.youtube","PROXY","规则结束","Telegram APP代理","包名列表","org.telegram.messenger","org.telegram.messenger.beta","PROXY","规则结束","规则列表结束","规则集定义","geosite-category-ads-all","remote/binary","url","http_client","更新间隔","结束","geosite_adguard","结束","geosite-google","结束","geosite-youtube","结束","proxy","结束","games","结束","ai","结束","private","结束","cn","结束","microsoft-cn","结束","apple-cn","结束","google-cn","结束","games-cn","结束","networktest","结束","telegramip","结束","cnip","结束","规则集列表结束","final PROXY","自动检测接口","路由结束","实验性功能","Clash API","控制器地址","UI路径","UI下载地址","下载走代理","密钥","默认模式rule","Clash结束","缓存文件","开启","路径","缓存ID","存储DNS","存储FakeIP","缓存结束","实验结束","配置结束"
-    ];
-    // ----- 全局状态 -----
-    let nodeList = [];
-    let inboundConfig = JSON.parse(JSON.stringify(inboundTemplates));
-    let currentConfigLines = [], currentComments = [];
-    // 工具函数
-    function escapeHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-    function safeStringify(obj, indent=2) { return JSON.stringify(obj, null, indent).split('\n'); }
-    // 解析函数 (完整实现)
-    function parseVmessLink(l) {
-        let b64 = l.replace('vmess://',''); let cfg = JSON.parse(atob(b64));
-        return { name: cfg.ps || `VMess-${cfg.add}:${cfg.port}`, type:'vmess', server:cfg.add, server_port:parseInt(cfg.port)||443, uuid:cfg.id, alterId:parseInt(cfg.aid)||0, security:cfg.scy||'auto', transport:cfg.net||'tcp', path:cfg.path||'', host:cfg.host||cfg.add, tls:cfg.tls==='tls', flow:'', sni:cfg.sni||cfg.host||cfg.add };
-    }
-    function parseVlessLink(l) {
-        let u = new URL(l); let server=u.hostname, port=parseInt(u.port)||443; let params=u.searchParams;
-        return { name: u.hash?u.hash.slice(1):`VLESS-${server}:${port}`, type:'vless', server, server_port:port, uuid:u.username, transport:params.get('type')||'tcp', path:params.get('path')||'', host:params.get('host')||params.get('sni')||server, tls:params.get('security')==='tls', flow:params.get('flow')||'', sni:params.get('sni')||server };
-    }
-    function parseTrojanLink(l) {
-        let u = new URL(l); let server=u.hostname, port=parseInt(u.port)||443; let params=u.searchParams;
-        return { name: u.hash?u.hash.slice(1):`Trojan-${server}:${port}`, type:'trojan', server, server_port:port, password:u.username, transport:params.get('type')||'tcp', path:params.get('path')||'', host:params.get('host')||params.get('sni')||server, tls:true, sni:params.get('sni')||server };
-    }
-    function parseShadowsocksLink(l) {
-        let b64 = l.replace('ss://',''); let method,password,server,port,name='';
-        if(b64.includes('@')){ let [a,s]=b64.split('@'); let da=atob(a); [method,password]=da.split(':'); let u=new URL(`ss://${s}`); server=u.hostname; port=parseInt(u.port)||443; name=u.hash?u.hash.slice(1):`SS-${server}:${port}`; }
-        else { let dec=atob(b64); let u=new URL(`ss://${dec}`); [method,password]=u.username.split(':'); server=u.hostname; port=parseInt(u.port)||443; name=u.hash?u.hash.slice(1):`SS-${server}:${port}`; }
-        return { name, type:'shadowsocks', server, server_port:port, method, password };
-    }
-    function parseAnytlsLink(l) {
-        let u = new URL(l); let server=u.hostname, port=parseInt(u.port)||443; let params=u.searchParams;
-        return { name: u.hash?u.hash.slice(1):`AnyTLS-${server}:${port}`, type:'anytls', server, server_port:port, password:u.username, tls:true, sni:params.get('sni')||server };
-    }
-    function parseClashYaml(content) {
-        try { let config = jsyaml.load(content); let proxies = config.proxies || [];
-            return proxies.map(p => {
-                let type = p.type?.toLowerCase(); if(!type) return null;
-                let node = { name: p.name || `${type}-${p.server}:${p.port}`, type, server: p.server, server_port: parseInt(p.port)||443 };
-                switch(type) {
-                    case 'vmess': node.uuid=p.uuid; node.alterId=p.alterId||0; node.security=p.cipher||'auto'; node.transport=p.network||'tcp'; node.path=p['ws-path']||p.path||''; node.host=p['ws-headers']?.Host||p.host||p.server; node.tls=p.tls||false; node.sni=p.sni||p.server; break;
-                    case 'vless': node.uuid=p.uuid; node.transport=p.network||'tcp'; node.path=p['ws-path']||p.path||''; node.host=p['ws-headers']?.Host||p.host||p.server; node.tls=p.tls||false; node.flow=p.flow||''; node.sni=p.sni||p.server; break;
-                    case 'trojan': node.password=p.password; node.transport=p.network||'tcp'; node.path=p['ws-path']||p.path||''; node.host=p['ws-headers']?.Host||p.host||p.server; node.tls=true; node.sni=p.sni||p.server; break;
-                    case 'ss': case 'shadowsocks': node.type='shadowsocks'; node.method=p.cipher; node.password=p.password; break;
-                    case 'hysteria2': case 'hy2': node.type='hysteria2'; node.password=p.password; node.tls=true; node.sni=p.sni||p.server; break;
-                    case 'tuic': node.uuid=p.uuid; node.password=p.password; node.tls=true; node.sni=p.sni||p.server; break;
-                    case 'naive': node.username=p.username; node.password=p.password; node.tls=true; break;
-                    default: return null;
-                } return node;
-            }).filter(Boolean);
-        } catch(e) { return []; }
-    }
-    // 订阅拉取 (CORS代理)
-    async function fetchSubscription(url) {
-        const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
-        const res = await fetch(proxy); if(!res.ok) throw new Error(`HTTP ${res.status}`);
-        let text = await res.text();
-        // 尝试base64解码
-        try { if(/^[A-Za-z0-9+/=]+$/.test(text.trim())) text = atob(text); } catch {}
-        return text;
-    }
-    async function parseImportContentAsync(content) {
-        let lines = content.split('\n').map(l=>l.trim()).filter(l=>l);
-        let nodes=[], errors=[];
-        if(lines.length===1 && /^https?:\/\//i.test(lines[0]) && !lines[0].includes('proxies:')) {
-            try { let sub = await fetchSubscription(lines[0]); return parseImportContent(sub); } catch(e) { errors.push(e.message); return {nodes,errors}; }
+    (function(){
+        "use strict";
+
+        // ---------- 基础模板 (修正 debug.gc_percent) ----------
+        const BASE_TEMPLATE = {
+            "log": { "level": "fatal", "timestamp": true },
+            "ntp": { "enabled": true, "server": "ntp.aliyun.com", "server_port": 123, "interval": "30m", "detour": "PROXY" },
+            "dns": {
+                "servers": [
+                    { "tag": "local", "type": "local" },
+                    { "tag": "hosts_fix", "type": "hosts", "predefined": { "dns.alidns.com": ["223.5.5.5","223.6.6.6"], "doh.pub": ["1.12.12.21","120.53.53.53"], "dns.google": ["8.8.8.8","8.8.4.4"], "cloudflare-dns.com": ["104.16.248.249","104.16.249.249"] } },
+                    { "tag": "alidns", "type": "quic", "server": "dns.alidns.com", "domain_resolver": "hosts_fix" },
+                    { "tag": "ggdns", "type": "https", "server": "dns.google", "domain_resolver": "hosts_fix" },
+                    { "tag": "fakeip", "type": "fakeip", "inet4_range": "198.18.0.0/15" }
+                ],
+                "rules": [
+                    { "domain_suffix": ["app-measurement.com","hm.baidu.com","firebaselogging.googleapis.com","firebaselogging-pa.googleapis.com","beacons.gvt2.com","beacons2.gvt2.com","beacons3.gvt2.com","tracking.miui.com"], "server": "alidns" },
+                    { "rule_set": ["geosite_adguard","geosite-category-ads-all"], "action": "reject" },
+                    { "domain_suffix": [".local",".lan","miwifi.com","tplogin.cn","router.asus.com","tendawifi.com","tplinkwifi.net"], "server": "local" },
+                    { "query_type": ["SVCB","HTTPS"], "action": "reject" },
+                    { "query_type": ["PTR"], "action": "reject" },
+                    { "rule_set": ["proxy","games","ai"], "query_type": ["A","AAAA"], "server": "fakeip" },
+                    { "rule_set": ["proxy","games","ai"], "query_type": ["A","AAAA"], "server": "ggdns", "client_subnet": "119.134.100.0/24" },
+                    { "domain_suffix": ["market.xiaomi.com","lancache.steamcontent.com"], "server": "alidns" },
+                    { "domain_suffix": ["play.google.com","ggpht.com","googleusercontent.com","android.com"], "server": "fakeip" },
+                    { "action": "evaluate", "server": "alidns" },
+                    { "match_response": true, "rule_set": "cnip", "action": "route", "server": "local" },
+                    { "match_response": true, "action": "respond" }
+                ],
+                "final": "alidns", "strategy": "prefer_ipv4", "reverse_mapping": true, "cache_capacity": 16000, "optimistic": true
+            },
+            "inbounds": [
+                { "type": "tun", "tag": "tun-in", "address": ["10.8.0.1/24"], "mtu": 1500, "stack": "mixed", "auto_route": true, "strict_route": true },
+                { "type": "mixed", "tag": "mixed-in", "listen": "127.0.0.1", "listen_port": 7890 }
+            ],
+            "outbounds": [],
+            "http_clients": [ { "tag": "default", "detour": "PROXY" } ],
+            "route": {
+                "default_domain_resolver": "alidns",
+                "rules": [
+                    { "wifi_ssid": ["MyHomeWiFi"], "outbound": "PROXY" },
+                    { "wifi_bssid": ["00:11:22:33:44:55"], "outbound": "DIRECT" },
+                    { "domain_suffix": ["steamcontent.com"], "action": "bypass" },
+                    { "type": "logical", "mode": "or", "rules": [{"port":53},{"protocol":"dns"}], "action": "hijack-dns" },
+                    { "domain_keyword": ["ntp"], "network": "udp", "port": 123, "outbound": "DIRECT" },
+                    { "action": "sniff" },
+                    { "type": "logical", "mode": "and", "rules": [{"protocol":"quic"},{"port":443}], "action": "reject" },
+                    { "domain_suffix": ["miwifi.com"], "outbound": "DIRECT" },
+                    { "ip_is_private": true, "outbound": "DIRECT" },
+                    { "ip_cidr": ["198.18.0.0/15"], "outbound": "PROXY" },
+                    { "rule_set": ["geosite_adguard","geosite-category-ads-all"], "action": "reject" },
+                    { "rule_set": "ai", "outbound": "AI" },
+                    { "domain_suffix": ["steamserver.net","zhihu.com","zhimg.com","jd.com","360buyimg.com","xfyun.cn"], "outbound": "DIRECT" },
+                    { "rule_set": "proxy", "outbound": "PROXY" },
+                    { "rule_set": "games", "outbound": "PROXY" },
+                    { "rule_set": "geosite-google", "outbound": "PROXY" },
+                    { "rule_set": ["private","cn","microsoft-cn","apple-cn","google-cn","games-cn","networktest"], "outbound": "DIRECT" },
+                    { "action": "resolve" },
+                    { "rule_set": "telegramip", "outbound": "PROXY" },
+                    { "rule_set": "cnip", "outbound": "DIRECT" },
+                    { "package_name": ["com.google.android.youtube","app.revanced.android.youtube"], "outbound": "PROXY" },
+                    { "package_name": ["org.telegram.messenger","org.telegram.messenger.beta"], "outbound": "PROXY" }
+                ],
+                "rule_set": [
+                    { "tag": "geosite-category-ads-all", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "geosite_adguard", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblocksingbox.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "geosite-google", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-google.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "geosite-youtube", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-youtube.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "proxy", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "games", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "ai", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "private", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "microsoft-cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "apple-cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "google-cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/google-cn.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "games-cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "networktest", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "telegramip", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs", "http_client": "default", "update_interval": "48h" },
+                    { "tag": "cnip", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs", "http_client": "default", "update_interval": "48h" }
+                ],
+                "final": "PROXY",
+                "auto_detect_interface": true
+            },
+            "experimental": {
+                "clash_api": {
+                    "external_controller": "127.0.0.1:9090", "external_ui": "ui",
+                    "external_ui_download_url": "https://cdn.jsdelivr.net/gh/MetaCubeX/metacubexd@gh-pages/metacubexd.zip",
+                    "external_ui_download_detour": "PROXY",
+                    "secret": "kSDuU2WHyf72taGMdDS0ib6klwFVF5QIM4HGhS5f4Jw=",
+                    "default_mode": "rule"
+                },
+                "cache_file": { "enabled": true, "path": "cache.db", "cache_id": "cinchov", "store_dns": true, "store_fakeip": true },
+                "debug": { "gc_percent": 50, "memory_limit": "200MB" }
+            }
+        };
+
+        // ---------- 辅助：生成唯一标签 (自动去重) ----------
+        function makeUniqueTag(baseName, usedTags) {
+            let candidate = baseName;
+            if (!candidate) candidate = 'node';
+            // 清理非法字符 (只保留字母数字中文 - _ .)
+            candidate = candidate.replace(/[^\w\u4e00-\u9fa5\-_.]/g, '_').substring(0, 30);
+            if (!candidate) candidate = 'node';
+            
+            let finalTag = candidate;
+            let counter = 1;
+            while (usedTags.has(finalTag)) {
+                finalTag = `${candidate}-${counter}`;
+                counter++;
+            }
+            usedTags.add(finalTag);
+            return finalTag;
         }
-        for(let line of lines) {
-            try {
-                if(line.startsWith('vmess://')) nodes.push(parseVmessLink(line));
-                else if(line.startsWith('vless://')) nodes.push(parseVlessLink(line));
-                else if(line.startsWith('trojan://')) nodes.push(parseTrojanLink(line));
-                else if(line.startsWith('ss://')) nodes.push(parseShadowsocksLink(line));
-                else if(line.startsWith('anytls://')) nodes.push(parseAnytlsLink(line));
-                else if(line.includes('proxies:')) { nodes.push(...parseClashYaml(content)); break; }
-            } catch(e) { errors.push(e.message); }
-        }
-        return {nodes, errors};
-    }
-    function parseImportContent(content) {
-        let lines = content.split('\n').map(l=>l.trim()).filter(l=>l);
-        let nodes=[], errors=[];
-        for(let line of lines) {
-            try {
-                if(line.startsWith('vmess://')) nodes.push(parseVmessLink(line));
-                else if(line.startsWith('vless://')) nodes.push(parseVlessLink(line));
-                else if(line.startsWith('trojan://')) nodes.push(parseTrojanLink(line));
-                else if(line.startsWith('ss://')) nodes.push(parseShadowsocksLink(line));
-                else if(line.startsWith('anytls://')) nodes.push(parseAnytlsLink(line));
-                else if(line.includes('proxies:')) { nodes.push(...parseClashYaml(content)); break; }
-            } catch(e) { errors.push(e.message); }
-        }
-        return {nodes, errors};
-    }
-    function nodeToOutbound(node) {
-        let out = { tag: node.name, type: node.type, server: node.server, server_port: node.server_port, domain_resolver: "alidns" };
-        switch(node.type) {
-            case 'vless': out.uuid=node.uuid; if(node.flow) out.flow=node.flow; if(node.tls) out.tls={enabled:true,server_name:node.sni||node.host||node.server,utls:{enabled:true,fingerprint:'chrome'},alpn:["http/1.1"]}; if(node.transport&&node.transport!=='tcp'){ out.transport={type:node.transport}; if(node.path) out.transport.path=node.path; if(node.host) out.transport.headers={Host:node.host}; } break;
-            case 'vmess': out.uuid=node.uuid; out.alterId=node.alterId||0; out.security=node.security||'auto'; if(node.tls) out.tls={enabled:true,server_name:node.sni||node.host||node.server}; if(node.transport&&node.transport!=='tcp'){ out.transport={type:node.transport}; if(node.path) out.transport.path=node.path; if(node.host) out.transport.headers={Host:node.host}; } break;
-            case 'trojan': out.password=node.password; out.tls={enabled:true,server_name:node.sni||node.host||node.server,utls:{enabled:true,fingerprint:'chrome'},alpn:["http/1.1"]}; if(node.transport&&node.transport!=='tcp'){ out.transport={type:node.transport}; if(node.path) out.transport.path=node.path; if(node.host) out.transport.headers={Host:node.host}; } break;
-            case 'shadowsocks': out.method=node.method; out.password=node.password; break;
-            case 'hysteria2': out.password=node.password; out.tls={enabled:true,server_name:node.sni||node.server}; break;
-            case 'tuic': out.uuid=node.uuid; out.password=node.password; out.tls={enabled:true,server_name:node.sni||node.server,alpn:['h3']}; out.congestion_control='bbr'; break;
-            case 'naive': out.username=node.username; out.password=node.password; out.tls={enabled:true,server_name:node.server}; break;
-            case 'shadowtls': out.password=node.password; out.tls={enabled:true,server_name:node.sni||node.server}; break;
-            case 'anytls': out.password=node.password; out.tls={enabled:true,server_name:node.sni||node.server}; break;
-            case 'wireguard': out.private_key=node.private_key; out.address=[node.address]; out.peers=[{public_key:node.peer_public_key,endpoint:node.peer_endpoint,allowed_ips:['0.0.0.0/0']}]; break;
-        }
-        return out;
-    }
-    function generateFullConfig() {
-        let enabled = inboundConfig.filter(i=>i.enabled);
-        let inboundLines=[], inboundComments=[], PREFIX='    ';
-        enabled.forEach((inb,idx)=>{
-            let lines = safeStringify(inb.defaultConfig,4);
-            lines.forEach((line,i)=>{
-                inboundLines.push(PREFIX+line+(idx<enabled.length-1?',':''));
-                inboundComments.push(i===0?inb.comment:'');
-            });
-        });
-        let nodeOuts = nodeList.map(n=>nodeToOutbound(n));
-        let nodeLines=[], nodeComments=[];
-        nodeOuts.forEach((out,idx)=>{
-            let lines = safeStringify(out,4);
-            lines.forEach((line,i)=>{
-                nodeLines.push(PREFIX+line+(idx<nodeOuts.length-1?',':''));
-                nodeComments.push(i===0?`用户节点: ${out.tag}`:'');
-            });
-        });
-        let proxyTags = nodeList.length ? nodeList.map((n,i)=>`        "${n.name}"`+(i<nodeList.length-1?',':'')) : [];
-        let autoTags = [...proxyTags];
-        let cfg = [...baseConfigTemplate], cmt = [...baseComments];
-        function replace(placeholder, linesArr, commArr) {
-            let idx = cfg.findIndex(l=>l.includes(placeholder));
-            if(idx!==-1) { cfg.splice(idx,1,...linesArr); cmt.splice(idx,1,...commArr); }
-        }
-        replace('{{INBOUNDS}}', inboundLines, inboundComments);
-        replace('{{PROXY_NODE_TAGS}}', proxyTags, proxyTags.map(()=>'用户自定义节点'));
-        replace('{{AUTO_NODE_TAGS}}', autoTags, autoTags.map(()=>'用户自定义节点'));
-        replace('{{NODES}}', nodeLines, nodeComments);
-        currentConfigLines=cfg; currentComments=cmt;
-        renderTable();
-    }
-    function renderTable() {
-        let tbody = document.getElementById('table-body');
-        let html='';
-        for(let i=0;i<currentConfigLines.length;i++) html+=`<tr><td class="line-num">${i+1}</td><td class="code-cell">${escapeHtml(currentConfigLines[i])}</td><td class="comment-cell">${escapeHtml(currentComments[i]||'')}</td></tr>`;
-        tbody.innerHTML=html;
-    }
-    function renderNodeList() {
-        let el = document.getElementById('nodeList');
-        if(!nodeList.length) { el.innerHTML='<div class="empty-tip">暂无节点</div>'; return; }
-        let html='';
-        nodeList.forEach((n,i)=>html+=`<div class="node-item"><div class="node-info"><div class="node-name">${escapeHtml(n.name)}</div><div class="node-meta">${n.type.toUpperCase()} | ${n.server}:${n.server_port}</div></div><div class="node-actions"><button class="node-btn btn-danger" onclick="window.deleteNode(${i})">删除</button></div></div>`);
-        el.innerHTML=html;
-        window.deleteNode=(idx)=>{ nodeList.splice(idx,1); renderNodeList(); generateFullConfig(); };
-    }
-    function renderInboundList() {
-        let el=document.getElementById('inboundList'), html='';
-        inboundConfig.forEach((inb,idx)=>{
-            let cfg=inb.defaultConfig;
-            html+=`<div class="inbound-card"><div class="inbound-header"><div class="inbound-title">${inb.name}</div><div class="checkbox-group"><input type="checkbox" id="inbound-${inb.id}" ${inb.enabled?'checked':''} onchange="window.toggleInbound(${idx})"><label>开启</label></div></div><div class="inbound-form"><div class="form-group"><label>监听地址</label><input value="${cfg.listen||''}" onchange="window.updateInbound(${idx},'listen',this.value)"></div><div class="form-group"><label>端口</label><input type="number" value="${cfg.listen_port||''}" onchange="window.updateInbound(${idx},'listen_port',parseInt(this.value)||0)"></div></div><p style="font-size:0.75rem;margin-top:0.5rem;">${inb.comment}</p></div>`;
-        });
-        el.innerHTML=html;
-        window.toggleInbound=(i)=>{ inboundConfig[i].enabled=!inboundConfig[i].enabled; generateFullConfig(); };
-        window.updateInbound=(i,k,v)=>{ inboundConfig[i].defaultConfig[k]=v; generateFullConfig(); };
-    }
-    // 初始化
-    function init() {
-        // tabs
-        document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{
-            let tab=b.dataset.tab;
-            document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-        }));
-        // theme
-        let body=document.body; function setTheme(t){ body.classList.remove('light','dark'); if(t!=='auto') body.classList.add(t); localStorage.setItem('singbox_theme',t); document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===t)); }
-        let saved=localStorage.getItem('singbox_theme')||'auto'; if(saved!=='auto') setTheme(saved);
-        document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme)));
-        // import
-        document.getElementById('parseImportBtn').addEventListener('click',async ()=>{
-            let content=document.getElementById('importInput').value.trim();
-            let alert=document.getElementById('importAlert');
-            if(!content){ alert.innerHTML='<div class="alert-error">请输入内容</div>'; return; }
-            alert.innerHTML='<div class="alert-warning">解析中...</div>';
-            let result = await parseImportContentAsync(content);
-            let {nodes,errors}=result;
-            if(!nodes.length){ alert.innerHTML=`<div class="alert-error">未找到有效节点: ${errors.join(', ')}</div>`; return; }
-            let existing=new Set(nodeList.map(n=>n.name)); let added=nodes.filter(n=>!existing.has(n.name));
-            nodeList.push(...added);
-            alert.innerHTML=`<div class="alert-success">解析成功 ${nodes.length} 个，新增 ${added.length} 个</div>${errors.length?`<div class="alert-warning">警告: ${errors.join(', ')}</div>`:''}`;
-            renderNodeList(); generateFullConfig();
-        });
-        document.getElementById('clearImportBtn').addEventListener('click',()=>{ document.getElementById('importInput').value=''; document.getElementById('importAlert').innerHTML=''; });
-        document.getElementById('clearNodeBtn').addEventListener('click',()=>{ if(confirm('清空所有节点？')){ nodeList=[]; renderNodeList(); generateFullConfig(); } });
-        // manual add
-        document.getElementById('addManualNodeBtn').addEventListener('click',()=>{
-            let get=(id)=>document.getElementById(id).value.trim();
-            let name=get('manualName'), server=get('manualServer'), port=parseInt(get('manualPort'))||443;
-            if(!name||!server){ alert('请填写名称和服务器'); return; }
-            let node = {
-                name, type: get('manualProtocol'), server, server_port: port,
-                uuid: get('manualUuid'), alterId: parseInt(get('manualAlterId'))||0,
-                security: get('manualSecurity'), transport: get('manualTransport'),
-                path: get('manualPath'), host: get('manualHost'),
-                tls: get('manualTls')==='true', flow: get('manualFlow'),
-                sni: get('manualHost')||server,
-                private_key: get('manualWgPrivkey'), address: get('manualWgAddr'),
-                peer_public_key: get('manualWgPeerPubkey'), peer_endpoint: get('manualWgPeerEndpoint')
+
+        // ---------- 协议解析器 (返回节点对象，tag 由外部统一分配) ----------
+        function parseVless(url) {
+            let main = url.substring(8);
+            let fragment = '';
+            const hash = main.indexOf('#');
+            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash+1)); main = main.substring(0,hash); }
+            const qIdx = main.indexOf('?');
+            let serverPart = main, query = '';
+            if (qIdx !== -1) { serverPart = main.substring(0,qIdx); query = main.substring(qIdx+1); }
+            const at = serverPart.indexOf('@');
+            if (at === -1) throw new Error('Invalid VLESS');
+            const uuid = serverPart.substring(0, at);
+            const hostPort = serverPart.substring(at+1);
+            let server, port;
+            const col = hostPort.lastIndexOf(':');
+            if (col !== -1) { server = hostPort.substring(0,col); port = parseInt(hostPort.substring(col+1)); }
+            else { server = hostPort; port = 443; }
+            const params = new URLSearchParams(query);
+            const type = params.get('type') || 'tcp';
+            const security = params.get('security') || 'none';
+            const flow = params.get('flow') || '';
+            const sni = params.get('sni') || params.get('peer') || server;
+            const alpn = params.get('alpn');
+            const fp = params.get('fp') || (security==='tls'?'chrome':undefined);
+            let path = params.get('path') || '/'; try { path = decodeURIComponent(path); } catch(e){}
+            const host = params.get('host') || sni;
+            const serviceName = params.get('serviceName') || '';
+            const pbk = params.get('pbk') || '';
+            const sid = params.get('sid') || '';
+            
+            const rawTag = fragment || `${server}:${port}`;
+            const node = {
+                _rawTag: rawTag,
+                type: 'vless',
+                server,
+                server_port: port,
+                uuid,
+                domain_resolver: 'alidns'
             };
-            let idx=nodeList.findIndex(n=>n.name===name);
-            if(idx!==-1) nodeList[idx]=node; else nodeList.push(node);
-            renderNodeList(); generateFullConfig(); alert('添加成功');
+            if (flow) node.flow = flow;
+            
+            if (type !== 'tcp') {
+                const transport = { type };
+                if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; }
+                else if (type === 'grpc') transport.service_name = serviceName;
+                else if (type === 'httpupgrade') { transport.path = path; if (host) transport.host = host; }
+                node.transport = transport;
+            }
+            
+            if (security === 'tls') {
+                node.tls = { enabled: true, server_name: sni };
+                if (alpn) node.tls.alpn = alpn.split(',').map(s=>s.trim());
+                if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
+            } else if (security === 'reality') {
+                node.tls = { enabled: true, server_name: sni, reality: { enabled: true } };
+                if (pbk) node.tls.reality.public_key = pbk;
+                if (sid) node.tls.reality.short_id = sid;
+                if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
+            }
+            return node;
+        }
+
+        function parseVmess(url) {
+            const b64 = url.substring(8);
+            const jsonStr = atob(b64);
+            const vm = JSON.parse(jsonStr);
+            const rawTag = vm.ps || `${vm.add}:${vm.port}`;
+            const node = {
+                _rawTag: rawTag,
+                type: 'vmess',
+                server: vm.add,
+                server_port: parseInt(vm.port) || 443,
+                uuid: vm.id,
+                security: vm.scy || 'auto',
+                alter_id: parseInt(vm.aid) || 0,
+                domain_resolver: 'alidns'
+            };
+            const net = vm.net;
+            if (net && net !== 'tcp') {
+                const transport = { type: net };
+                if (net === 'ws') {
+                    transport.path = vm.path || '/';
+                    if (vm.host) transport.headers = { Host: vm.host };
+                } else if (net === 'grpc') {
+                    transport.service_name = vm.path || '';
+                } else if (net === 'h2') {
+                    transport.type = 'http';
+                    transport.host = vm.host ? [vm.host] : undefined;
+                    transport.path = vm.path;
+                }
+                node.transport = transport;
+            }
+            if (vm.tls === 'tls') {
+                node.tls = { enabled: true, server_name: vm.sni || vm.add };
+                if (vm.alpn) node.tls.alpn = vm.alpn.split(',');
+                if (vm.fingerprint) node.tls.utls = { enabled: true, fingerprint: vm.fingerprint };
+            }
+            return node;
+        }
+
+        function parseTrojan(url) {
+            let main = url.substring(9);
+            let fragment = '';
+            const hash = main.indexOf('#');
+            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash+1)); main = main.substring(0,hash); }
+            const at = main.indexOf('@');
+            if (at === -1) throw new Error('Invalid Trojan');
+            const password = main.substring(0, at);
+            const hostPort = main.substring(at+1);
+            const qm = hostPort.indexOf('?');
+            let server, port, query='';
+            if (qm !== -1) {
+                const hp = hostPort.substring(0, qm);
+                query = hostPort.substring(qm+1);
+                const col = hp.lastIndexOf(':');
+                if (col !== -1) { server = hp.substring(0,col); port = parseInt(hp.substring(col+1)); }
+                else { server = hp; port = 443; }
+            } else {
+                const col = hostPort.lastIndexOf(':');
+                if (col !== -1) { server = hostPort.substring(0,col); port = parseInt(hostPort.substring(col+1)); }
+                else { server = hostPort; port = 443; }
+            }
+            const params = new URLSearchParams(query);
+            const sni = params.get('sni') || server;
+            const fp = params.get('fp') || 'chrome';
+            const alpn = params.get('alpn');
+            const type = params.get('type') || 'tcp';
+            const path = params.get('path') || '/';
+            const host = params.get('host') || sni;
+            
+            const rawTag = fragment || `${server}:${port}`;
+            const node = {
+                _rawTag: rawTag,
+                type: 'trojan',
+                server,
+                server_port: port,
+                password,
+                domain_resolver: 'alidns'
+            };
+            if (type !== 'tcp') {
+                const transport = { type };
+                if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; }
+                node.transport = transport;
+            }
+            node.tls = { enabled: true, server_name: sni };
+            if (alpn) node.tls.alpn = alpn.split(',');
+            if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
+            return node;
+        }
+
+        function parseShadowsocks(url) {
+            let main = url.substring(5);
+            let fragment = '';
+            const hash = main.indexOf('#');
+            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash+1)); main = main.substring(0,hash); }
+            let method, password, server, port;
+            if (main.includes('@')) {
+                const at = main.lastIndexOf('@');
+                const userInfo = main.substring(0, at);
+                const hostPort = main.substring(at+1);
+                const decoded = atob(userInfo);
+                const colon = decoded.indexOf(':');
+                method = decoded.substring(0, colon);
+                password = decoded.substring(colon+1);
+                const col = hostPort.lastIndexOf(':');
+                server = col!==-1 ? hostPort.substring(0,col) : hostPort;
+                port = col!==-1 ? parseInt(hostPort.substring(col+1)) : 8388;
+            } else {
+                const decoded = atob(main);
+                const parts = decoded.split('@');
+                const mp = parts[0].split(':');
+                method = mp[0];
+                password = mp[1];
+                const hp = parts[1].split(':');
+                server = hp[0];
+                port = parseInt(hp[1]);
+            }
+            const rawTag = fragment || `${server}:${port}`;
+            return {
+                _rawTag: rawTag,
+                type: 'shadowsocks',
+                server,
+                server_port: port,
+                method,
+                password,
+                domain_resolver: 'alidns'
+            };
+        }
+
+        function parseHysteria2(url) {
+            let u = url.startsWith('hysteria2://') ? url : url.replace('hy2://', 'hysteria2://');
+            let main = u.substring(12);
+            let fragment = '';
+            const hash = main.indexOf('#');
+            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash+1)); main = main.substring(0,hash); }
+            const at = main.indexOf('@');
+            if (at === -1) throw new Error('Invalid Hysteria2');
+            const password = main.substring(0, at);
+            const hostPort = main.substring(at+1);
+            const qm = hostPort.indexOf('?');
+            let server, port, query='';
+            if (qm !== -1) {
+                const hp = hostPort.substring(0, qm);
+                query = hostPort.substring(qm+1);
+                const col = hp.lastIndexOf(':');
+                if (col !== -1) { server = hp.substring(0,col); port = parseInt(hp.substring(col+1)); }
+                else { server = hp; port = 443; }
+            } else {
+                const col = hostPort.lastIndexOf(':');
+                if (col !== -1) { server = hostPort.substring(0,col); port = parseInt(hostPort.substring(col+1)); }
+                else { server = hostPort; port = 443; }
+            }
+            const params = new URLSearchParams(query);
+            const sni = params.get('sni') || server;
+            const insecure = params.get('insecure') === '1';
+            const obfs = params.get('obfs');
+            const obfsPassword = params.get('obfs-password');
+            
+            const rawTag = fragment || `${server}:${port}`;
+            const node = {
+                _rawTag: rawTag,
+                type: 'hysteria2',
+                server,
+                server_port: port,
+                password,
+                domain_resolver: 'alidns',
+                tls: { enabled: true, server_name: sni, insecure }
+            };
+            if (obfs) {
+                node.obfs = { type: obfs };
+                if (obfsPassword) node.obfs.password = obfsPassword;
+            }
+            return node;
+        }
+
+        function parseLine(line) {
+            line = line.trim();
+            if (!line) return null;
+            try {
+                if (line.startsWith('vless://')) return parseVless(line);
+                if (line.startsWith('vmess://')) return parseVmess(line);
+                if (line.startsWith('trojan://')) return parseTrojan(line);
+                if (line.startsWith('ss://')) return parseShadowsocks(line);
+                if (line.startsWith('hysteria2://') || line.startsWith('hy2://')) return parseHysteria2(line);
+            } catch (e) {
+                console.warn('解析失败:', line, e);
+                return null;
+            }
+            return null;
+        }
+
+        // ---------- 构建 outbounds (自动分配唯一 tag) ----------
+        function buildOutbounds(rawNodes) {
+            const direct = { type: 'direct', tag: 'DIRECT', domain_resolver: 'alidns' };
+            const usedTags = new Set(['DIRECT', 'PROXY', 'GLOBAL', 'CN', 'AI']);
+            const finalNodes = [];
+            
+            for (let raw of rawNodes) {
+                const baseTag = raw._rawTag || 'node';
+                delete raw._rawTag;
+                const uniqueTag = makeUniqueTag(baseTag, usedTags);
+                raw.tag = uniqueTag;
+                finalNodes.push(raw);
+            }
+            
+            const nodeTags = finalNodes.map(n => n.tag);
+            const proxySelector = {
+                type: 'selector', tag: 'PROXY',
+                outbounds: [...nodeTags, 'DIRECT'],
+                default: nodeTags[0] || 'DIRECT',
+                interrupt_exist_connections: false
+            };
+            const globalSelector = { type: 'selector', tag: 'GLOBAL', outbounds: ['PROXY', 'DIRECT'], default: 'PROXY' };
+            const cnSelector = { type: 'selector', tag: 'CN', outbounds: ['DIRECT', 'PROXY'], default: 'DIRECT' };
+            const aiSelector = { type: 'selector', tag: 'AI', outbounds: ['PROXY', 'DIRECT'], default: 'PROXY' };
+            
+            return [direct, ...finalNodes, proxySelector, globalSelector, cnSelector, aiSelector];
+        }
+
+        // ---------- UI ----------
+        const inputArea = document.getElementById('inputArea');
+        const outputPre = document.getElementById('outputConfig');
+        const nodeBadge = document.getElementById('nodeCountBadge');
+        const feedbackDiv = document.getElementById('copyFeedback');
+        
+        function showFeedback(msg) {
+            feedbackDiv.innerHTML = `<span class="toast-msg">${msg}</span>`;
+            setTimeout(() => feedbackDiv.innerHTML = '', 2500);
+        }
+
+        document.getElementById('convertBtn').addEventListener('click', () => {
+            try {
+                const raw = inputArea.value.trim();
+                if (!raw) throw new Error('请输入节点链接');
+                const lines = raw.split(/\n/);
+                const rawNodes = [];
+                for (let line of lines) {
+                    const node = parseLine(line);
+                    if (node) rawNodes.push(node);
+                }
+                if (rawNodes.length === 0) throw new Error('未识别到有效节点');
+                const outbounds = buildOutbounds(rawNodes);
+                const config = JSON.parse(JSON.stringify(BASE_TEMPLATE));
+                config.outbounds = outbounds;
+                outputPre.textContent = JSON.stringify(config, null, 2);
+                nodeBadge.textContent = `${rawNodes.length} 个节点`;
+                showFeedback(`✅ 成功解析 ${rawNodes.length} 个节点`);
+            } catch (e) {
+                alert('转换失败: ' + e.message);
+                outputPre.textContent = '// 解析错误';
+                nodeBadge.textContent = '0 个节点';
+            }
         });
-        // copy
-        document.getElementById('copyFullConfigBtn').addEventListener('click',async ()=>{
-            if(!currentConfigLines.length){ alert('请先生成配置'); return; }
-            let text=currentConfigLines.join('\n');
-            try{ await navigator.clipboard.writeText(text); }catch(e){ let ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
-            let btn=document.getElementById('copyFullConfigBtn'); btn.textContent='✅ 复制成功'; btn.classList.add('success');
-            setTimeout(()=>{ btn.textContent='📋 复制完整配置'; btn.classList.remove('success'); },2500);
+
+        document.getElementById('copyBtn').addEventListener('click', async () => {
+            const text = outputPre.textContent;
+            if (!text || text.startsWith('//')) { showFeedback('无内容'); return; }
+            try {
+                await navigator.clipboard.writeText(text);
+                showFeedback('📋 配置已复制');
+            } catch {
+                const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+                ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+                showFeedback('📋 复制成功');
+            }
         });
-        renderInboundList(); renderNodeList(); generateFullConfig();
-    }
-    document.addEventListener('DOMContentLoaded', init);
-})();
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            inputArea.value = '';
+            outputPre.textContent = '// 点击「解析并生成配置」后显示完整 JSON …';
+            nodeBadge.textContent = '0 个节点';
+        });
+
+        const sampleText = `vless://a8ceaac6-bda6-459e-ace7-0b34c5873e1e@www.visa.com:443?type=ws&path=%2Fpkpk-vl&host=cvb.372164885.xyz&security=tls&sni=cvb.372164885.xyz&fp=chrome#🚀-Vless-WS
+vmess://eyJ2IjogIjIiLCAicHMiOiAiVk1lc3MtV1MiLCAiYWRkIjogImV4YW1wbGUuY29tIiwgInBvcnQiOiA0NDMsICJpZCI6ICJhOGNlYWFjNi1iZGE2LTQ1OWUtYWNlNy0wYjM0YzU4NzNlMWUiLCAiYWlkIjogMCwgIm5ldCI6ICJ3cyIsICJ0eXBlIjogIm5vbmUiLCAiaG9zdCI6ICJleGFtcGxlLmNvbSIsICJwYXRoIjogIi93cyIsICJ0bHMiOiAidGxzIn0=
+trojan://password@trojan.example.com:443?sni=trojan.example.com#Trojan
+ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388#SS-01
+hysteria2://letmein@hy2.example.com:443?sni=hy2.example.com&insecure=0#Hysteria2`;
+        document.getElementById('sampleBtn').addEventListener('click', () => {
+            inputArea.value = sampleText;
+        });
+
+        // 初始空白
+        inputArea.value = '';
+        outputPre.textContent = '// 点击「解析并生成配置」后显示完整 JSON …';
+        nodeBadge.textContent = '0 个节点';
+    })();
 </script>
 </body>
 </html>
