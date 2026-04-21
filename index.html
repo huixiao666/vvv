@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>全能协议 → Sing-Box (严格兼容·去重)</title>
+    <title>多协议 → Sing-Box 1.14.0-alpha.15 配置生成</title>
     <style>
         * { box-sizing: border-box; margin: 0; }
         body {
@@ -44,6 +44,7 @@
             transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
         }
         textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
+        .input-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .button-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
         .btn {
             background: white; border: 1px solid #cbd5e1; padding: 12px 26px;
@@ -68,18 +69,20 @@
         .example-btn { background: none; border: 1px dashed #94a3b8; padding: 6px 15px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; }
         .example-btn:hover { background: #eef2ff; border-color: #3b82f6; }
         .toast-msg { color: #059669; font-weight: 500; margin-left: 12px; }
-        .protocol-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+        .protocol-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; align-items: center; }
         .tag { background: #e2e8f0; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🧬 多协议 → Sing-Box (去重·修复)</h1>
-    <div class="subtitle">VLESS · VMess · Trojan · SS · Hysteria2 · 标签自动去重 · 模板笔误已修正</div>
-
+    <h1>🧬 多协议 → Sing-Box 1.14.0-alpha.15 配置生成</h1>
+    <div class="subtitle">VLESS · VMess · Trojan · SS · Hysteria2 · 标签自动去重 · 完整兼容模板</div>
     <div class="card">
         <div class="input-area">
-            <label>📥 粘贴节点链接 (每行一个，支持混合协议)</label>
+            <div class="input-header">
+                <label>📥 粘贴节点链接 (每行一个，支持混合协议)</label>
+                <button class="example-btn" id="sampleBtn">📋 填入示例节点</button>
+            </div>
             <textarea id="inputArea" placeholder="例如:&#10;vless://...&#10;vmess://...&#10;trojan://...&#10;ss://...&#10;hysteria2://..."></textarea>
             <div class="protocol-tags">
                 <span class="tag">✅ VLESS</span>
@@ -91,11 +94,9 @@
             <div class="button-group">
                 <button class="btn btn-primary" id="convertBtn">✨ 解析并生成配置</button>
                 <button class="btn btn-outline" id="clearBtn">🧹 清空</button>
-
             </div>
         </div>
     </div>
-
     <div class="card">
         <div class="output-header">
             <label>📦 Sing-Box 配置 (可直接复制)</label>
@@ -108,104 +109,481 @@
         <div id="copyFeedback" style="height: 24px; margin-top: 8px;"></div>
     </div>
     <div class="footnote">
-        ⚡ 基于「优化.txt」模板 · 自动过滤 tcp transport · 标签重复自动加序号 · 模板字段已修正
+        ⚡ 基于 1.14.0-alpha.15 兼容模板 · 自动过滤无效传输配置 · 标签重复自动加序号 · 全字段严格对齐模板
     </div>
 </div>
 <script>
     (function(){
         "use strict";
-
-        // ---------- 基础模板 (修正 debug.gc_percent) ----------
+        // ---------- 核心模板：1.14.0-alpha.15.txt 完整配置（仅outbounds动态生成） ----------
         const BASE_TEMPLATE = {
-            "log": { "level": "fatal", "timestamp": true },
-            "ntp": { "enabled": true, "server": "ntp.aliyun.com", "server_port": 123, "interval": "30m", "detour": "PROXY" },
+            "log": {
+                "level": "trace",
+                "timestamp": true
+            },
+            "ntp": {
+                "enabled": true,
+                "server": "ntp.aliyun.com",
+                "server_port": 123,
+                "interval": "30m"
+            },
             "dns": {
                 "servers": [
-                    { "tag": "local", "type": "local" },
-                    { "tag": "hosts_fix", "type": "hosts", "predefined": { "dns.alidns.com": ["223.5.5.5","223.6.6.6"], "doh.pub": ["1.12.12.21","120.53.53.53"], "dns.google": ["8.8.8.8","8.8.4.4"], "cloudflare-dns.com": ["104.16.248.249","104.16.249.249"] } },
-                    { "tag": "alidns", "type": "quic", "server": "dns.alidns.com", "domain_resolver": "hosts_fix" },
-                    { "tag": "ggdns", "type": "https", "server": "dns.google", "domain_resolver": "hosts_fix" },
-                    { "tag": "fakeip", "type": "fakeip", "inet4_range": "198.18.0.0/15" }
+                    {
+                        "tag": "local",
+                        "type": "local"
+                    },
+                    {
+                        "tag": "hosts_fix",
+                        "type": "hosts",
+                        "predefined": {
+                            "dns.alidns.com": [
+                                "223.5.5.5",
+                                "223.6.6.6"
+                            ],
+                            "doh.pub": [
+                                "1.12.12.21",
+                                "120.53.53.53"
+                            ],
+                            "dns.google": [
+                                "8.8.8.8",
+                                "8.8.4.4"
+                            ],
+                            "cloudflare-dns.com": [
+                                "104.16.248.249",
+                                "104.16.249.249"
+                            ]
+                        }
+                    },
+                    {
+                        "tag": "alidns",
+                        "type": "quic",
+                        "server": "dns.alidns.com",
+                        "domain_resolver": "hosts_fix"
+                    },
+                    {
+                        "tag": "ggdns",
+                        "type": "https",
+                        "server": "dns.google",
+                        "domain_resolver": "hosts_fix"
+                    },
+                    {
+                        "tag": "fakeip",
+                        "type": "fakeip",
+                        "inet4_range": "198.18.0.0/15"
+                    }
                 ],
                 "rules": [
-                    { "domain_suffix": ["app-measurement.com","hm.baidu.com","firebaselogging.googleapis.com","firebaselogging-pa.googleapis.com","beacons.gvt2.com","beacons2.gvt2.com","beacons3.gvt2.com","tracking.miui.com"], "server": "alidns" },
-                    { "rule_set": ["geosite_adguard","geosite-category-ads-all"], "action": "reject" },
-                    { "domain_suffix": [".local",".lan","miwifi.com","tplogin.cn","router.asus.com","tendawifi.com","tplinkwifi.net"], "server": "local" },
-                    { "query_type": ["SVCB","HTTPS"], "action": "reject" },
-                    { "query_type": ["PTR"], "action": "reject" },
-                    { "rule_set": ["proxy","games","ai"], "query_type": ["A","AAAA"], "server": "fakeip" },
-                    { "rule_set": ["proxy","games","ai"], "query_type": ["A","AAAA"], "server": "ggdns", "client_subnet": "119.134.100.0/24" },
-                    { "domain_suffix": ["market.xiaomi.com","lancache.steamcontent.com"], "server": "alidns" },
-                    { "domain_suffix": ["play.google.com","ggpht.com","googleusercontent.com","android.com"], "server": "fakeip" },
-                    { "action": "evaluate", "server": "alidns" },
-                    { "match_response": true, "rule_set": "cnip", "action": "route", "server": "local" },
-                    { "match_response": true, "action": "respond" }
+                    {
+                        "domain_suffix": [
+                            "app-measurement.com",
+                            "hm.baidu.com",
+                            "firebaselogging.googleapis.com",
+                            "firebaselogging-pa.googleapis.com",
+                            "beacons.gvt2.com",
+                            "beacons2.gvt2.com",
+                            "beacons3.gvt2.com",
+                            "tracking.miui.com"
+                        ],
+                        "server": "alidns"
+                    },
+                    {
+                        "rule_set": [
+                            "geosite_adguard",
+                            "geosite-category-ads-all"
+                        ],
+                        "action": "reject"
+                    },
+                    {
+                        "domain_suffix": [
+                            ".local",
+                            ".lan",
+                            "miwifi.com",
+                            "tplogin.cn",
+                            "router.asus.com",
+                            "tendawifi.com",
+                            "tplinkwifi.net"
+                        ],
+                        "server": "local"
+                    },
+                    {
+                        "query_type": [
+                            "SVCB",
+                            "HTTPS"
+                        ],
+                        "action": "reject"
+                    },
+                    {
+                        "query_type": [
+                            "PTR"
+                        ],
+                        "action": "reject"
+                    },
+                    {
+                        "rule_set": ["proxy", "games", "ai"],
+                        "query_type": ["A", "AAAA"],
+                        "server": "fakeip",
+                        "rewrite_ttl": 300,
+                        "client_subnet": "119.134.100.0/24"
+                    },
+                    {
+                        "domain_suffix": [
+                            "market.xiaomi.com",
+                            "lancache.steamcontent.com"
+                        ],
+                        "server": "alidns"
+                    },
+                    {
+                        "domain_suffix": [
+                            "play.google.com",
+                            "ggpht.com",
+                            "googleusercontent.com",
+                            "android.com"
+                        ],
+                        "server": "fakeip"
+                    },
+                    {
+                        "action": "evaluate",
+                        "server": "alidns"
+                    },
+                    {
+                        "match_response": true,
+                        "rule_set": "cnip",
+                        "action": "route",
+                        "server": "local"
+                    },
+                    {
+                        "match_response": true,
+                        "action": "respond"
+                    }
                 ],
-                "final": "alidns", "strategy": "prefer_ipv4", "reverse_mapping": true, "cache_capacity": 16000, "optimistic": true
+                "final": "alidns",
+                "strategy": "prefer_ipv4",
+                "reverse_mapping": true,
+                "cache_capacity": 65536,
+                "optimistic": true
             },
             "inbounds": [
-                { "type": "tun", "tag": "tun-in", "address": ["10.8.0.1/24"], "mtu": 1500, "stack": "mixed", "auto_route": true, "strict_route": true },
-                { "type": "mixed", "tag": "mixed-in", "listen": "127.0.0.1", "listen_port": 7890 }
+                {
+                    "type": "tun",
+                    "tag": "tun-in",
+                    "address": [
+                        "10.8.0.1/24"
+                    ],
+                    "mtu": 1500,
+                    "stack": "mixed",
+                    "auto_route": true,
+                    "strict_route": true
+                },
+                {
+                    "type": "mixed",
+                    "tag": "mixed-in",
+                    "listen": "127.0.0.1",
+                    "listen_port": 7890
+                }
             ],
             "outbounds": [],
-            "http_clients": [ { "tag": "default", "detour": "PROXY" } ],
+            "http_clients": [
+                {
+                    "tag": "default",
+                    "detour": "PROXY"
+                }
+            ],
             "route": {
                 "default_domain_resolver": "alidns",
                 "rules": [
-                    { "wifi_ssid": ["MyHomeWiFi"], "outbound": "PROXY" },
-                    { "wifi_bssid": ["00:11:22:33:44:55"], "outbound": "DIRECT" },
-                    { "domain_suffix": ["steamcontent.com"], "action": "bypass" },
-                    { "type": "logical", "mode": "or", "rules": [{"port":53},{"protocol":"dns"}], "action": "hijack-dns" },
-                    { "domain_keyword": ["ntp"], "network": "udp", "port": 123, "outbound": "DIRECT" },
-                    { "action": "sniff" },
-                    { "type": "logical", "mode": "and", "rules": [{"protocol":"quic"},{"port":443}], "action": "reject" },
-                    { "domain_suffix": ["miwifi.com"], "outbound": "DIRECT" },
-                    { "ip_is_private": true, "outbound": "DIRECT" },
-                    { "ip_cidr": ["198.18.0.0/15"], "outbound": "PROXY" },
-                    { "rule_set": ["geosite_adguard","geosite-category-ads-all"], "action": "reject" },
-                    { "rule_set": "ai", "outbound": "AI" },
-                    { "domain_suffix": ["steamserver.net","zhihu.com","zhimg.com","jd.com","360buyimg.com","xfyun.cn"], "outbound": "DIRECT" },
-                    { "rule_set": "proxy", "outbound": "PROXY" },
-                    { "rule_set": "games", "outbound": "PROXY" },
-                    { "rule_set": "geosite-google", "outbound": "PROXY" },
-                    { "rule_set": ["private","cn","microsoft-cn","apple-cn","google-cn","games-cn","networktest"], "outbound": "DIRECT" },
-                    { "action": "resolve" },
-                    { "rule_set": "telegramip", "outbound": "PROXY" },
-                    { "rule_set": "cnip", "outbound": "DIRECT" },
-                    { "package_name": ["com.google.android.youtube","app.revanced.android.youtube"], "outbound": "PROXY" },
-                    { "package_name": ["org.telegram.messenger","org.telegram.messenger.beta"], "outbound": "PROXY" }
+                    {
+                        "type": "logical",
+                        "mode": "and",
+                        "rules": [
+                            { "protocol": "quic" },
+                            { "port": 443 }
+                        ],
+                        "action": "reject"
+                    },
+                    {
+                        "wifi_ssid": [
+                            "MyHomeWiFi"
+                        ],
+                        "outbound": "PROXY"
+                    },
+                    {
+                        "wifi_bssid": [
+                            "00:11:22:33:44:55"
+                        ],
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "domain_suffix": [
+                            "steamcontent.com"
+                        ],
+                        "action": "bypass"
+                    },
+                    {
+                        "type": "logical",
+                        "mode": "or",
+                        "rules": [
+                            {
+                                "port": 53
+                            },
+                            {
+                                "protocol": "dns"
+                            }
+                        ],
+                        "action": "hijack-dns"
+                    },
+                    {
+                        "domain_keyword": [
+                            "ntp"
+                        ],
+                        "network": "udp",
+                        "port": 123,
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "action": "sniff"
+                    },
+                    {
+                        "domain_suffix": [
+                            "miwifi.com"
+                        ],
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "ip_is_private": true,
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "ip_cidr": [
+                            "198.18.0.0/15"
+                        ],
+                        "outbound": "PROXY"
+                    },
+                    {
+                        "rule_set": [
+                            "geosite_adguard",
+                            "geosite-category-ads-all"
+                        ],
+                        "action": "reject"
+                    },
+                    {
+                        "rule_set": "ai",
+                        "outbound": "AI"
+                    },
+                    {
+                        "domain_suffix": [
+                            "steamserver.net",
+                            "zhihu.com",
+                            "zhimg.com",
+                            "jd.com",
+                            "360buyimg.com",
+                            "xfyun.cn"
+                        ],
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "rule_set": "proxy",
+                        "outbound": "PROXY"
+                    },
+                    {
+                        "rule_set": "games",
+                        "outbound": "PROXY"
+                    },
+                    {
+                        "rule_set": "geosite-google",
+                        "outbound": "PROXY"
+                    },
+                    {
+                        "rule_set": [
+                            "private",
+                            "cn",
+                            "microsoft-cn",
+                            "apple-cn",
+                            "google-cn",
+                            "games-cn",
+                            "networktest"
+                        ],
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "action": "resolve"
+                    },
+                    {
+                        "rule_set": "telegramip",
+                        "outbound": "PROXY"
+                    },
+                    {
+                        "rule_set": "cnip",
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "package_name": [
+                            "com.google.android.youtube",
+                            "app.revanced.android.youtube"
+                        ],
+                        "outbound": "PROXY"
+                    },
+                    {
+                        "package_name": [
+                            "org.telegram.messenger",
+                            "org.telegram.messenger.beta"
+                        ],
+                        "outbound": "PROXY"
+                    }
                 ],
                 "rule_set": [
-                    { "tag": "geosite-category-ads-all", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "geosite_adguard", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblocksingbox.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "geosite-google", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-google.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "geosite-youtube", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-youtube.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "proxy", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "games", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "ai", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "private", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "microsoft-cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "apple-cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "google-cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/google-cn.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "games-cn", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "networktest", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "telegramip", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs", "http_client": "default", "update_interval": "48h" },
-                    { "tag": "cnip", "type": "remote", "format": "binary", "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs", "http_client": "default", "update_interval": "48h" }
+                    {
+                        "tag": "geosite-category-ads-all",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "geosite_adguard",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblocksingbox.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "geosite-google",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-google.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "geosite-youtube",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-youtube.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "proxy",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "games",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "ai",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "private",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "cn",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "microsoft-cn",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "apple-cn",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "google-cn",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/google-cn.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "games-cn",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "networktest",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "telegramip",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    },
+                    {
+                        "tag": "cnip",
+                        "type": "remote",
+                        "format": "binary",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs",
+                        "http_client": "default",
+                        "update_interval": "48h"
+                    }
                 ],
                 "final": "PROXY",
                 "auto_detect_interface": true
             },
             "experimental": {
                 "clash_api": {
-                    "external_controller": "127.0.0.1:9090", "external_ui": "ui",
+                    "external_controller": "127.0.0.1:9090",
+                    "external_ui": "ui",
                     "external_ui_download_url": "https://cdn.jsdelivr.net/gh/MetaCubeX/metacubexd@gh-pages/metacubexd.zip",
                     "external_ui_download_detour": "PROXY",
                     "secret": "kSDuU2WHyf72taGMdDS0ib6klwFVF5QIM4HGhS5f4Jw=",
                     "default_mode": "rule"
                 },
-                "cache_file": { "enabled": true, "path": "cache.db", "cache_id": "cinchov", "store_dns": true, "store_fakeip": true },
-                "debug": { "gc_percent": 50, "memory_limit": "200MB" }
+                "cache_file": {
+                    "enabled": true,
+                    "path": "cache.db",
+                    "cache_id": "cinchov",
+                    "store_dns": true,
+                    "store_fakeip": true
+                },
+                "debug": {
+                    "gc_percent": 50,
+                    "memory_limit": "200MB"
+                }
             }
         };
 
@@ -478,12 +856,20 @@
             return null;
         }
 
-        // ---------- 构建 outbounds (自动分配唯一 tag) ----------
+        // ---------- 构建 outbounds (严格对齐1.14.0-alpha.15模板结构) ----------
         function buildOutbounds(rawNodes) {
-            const direct = { type: 'direct', tag: 'DIRECT', domain_resolver: 'alidns' };
-            const usedTags = new Set(['DIRECT', 'PROXY', 'GLOBAL', 'CN', 'AI']);
+            // 保留标签：避免与系统内置tag冲突
+            const usedTags = new Set(['DIRECT', 'auto-node', 'PROXY', 'GLOBAL', 'CN', 'AI']);
             const finalNodes = [];
             
+            // 1. 内置DIRECT出站（与模板完全一致）
+            const directOutbound = {
+                "type": "direct",
+                "tag": "DIRECT",
+                "domain_resolver": "alidns"
+            };
+
+            // 2. 处理用户节点，生成唯一tag
             for (let raw of rawNodes) {
                 const baseTag = raw._rawTag || 'node';
                 delete raw._rawTag;
@@ -492,21 +878,56 @@
                 finalNodes.push(raw);
             }
             
+            // 3. 生成自动选优urltest（与模板auto-cf逻辑完全一致）
             const nodeTags = finalNodes.map(n => n.tag);
-            const proxySelector = {
-                type: 'selector', tag: 'PROXY',
-                outbounds: [...nodeTags, 'DIRECT'],
-                default: nodeTags[0] || 'DIRECT',
-                interrupt_exist_connections: false
+            const autoUrltest = {
+                "type": "urltest",
+                "tag": "auto-node",
+                "outbounds": nodeTags,
+                "url": "http://cp.cloudflare.com/",
+                "interval": "10m"
             };
-            const globalSelector = { type: 'selector', tag: 'GLOBAL', outbounds: ['PROXY', 'DIRECT'], default: 'PROXY' };
-            const cnSelector = { type: 'selector', tag: 'CN', outbounds: ['DIRECT', 'PROXY'], default: 'DIRECT' };
-            const aiSelector = { type: 'selector', tag: 'AI', outbounds: ['PROXY', 'DIRECT'], default: 'PROXY' };
+
+            // 4. 生成分组selector（与模板结构完全一致）
+            const proxySelector = {
+                "type": "selector",
+                "tag": "PROXY",
+                "outbounds": nodeTags.length > 0 ? ["auto-node", "DIRECT"] : ["DIRECT"],
+                "default": nodeTags.length > 0 ? "auto-node" : "DIRECT",
+                "interrupt_exist_connections": false
+            };
+            const globalSelector = {
+                "type": "selector",
+                "tag": "GLOBAL",
+                "outbounds": ["PROXY", "DIRECT"],
+                "default": "PROXY"
+            };
+            const cnSelector = {
+                "type": "selector",
+                "tag": "CN",
+                "outbounds": ["DIRECT", "PROXY"],
+                "default": "DIRECT"
+            };
+            const aiSelector = {
+                "type": "selector",
+                "tag": "AI",
+                "outbounds": ["PROXY", "DIRECT"],
+                "default": "PROXY"
+            };
             
-            return [direct, ...finalNodes, proxySelector, globalSelector, cnSelector, aiSelector];
+            // 按模板顺序拼接完整outbounds数组
+            return [
+                directOutbound,
+                ...finalNodes,
+                ...(nodeTags.length > 0 ? [autoUrltest] : []),
+                proxySelector,
+                globalSelector,
+                cnSelector,
+                aiSelector
+            ];
         }
 
-        // ---------- UI ----------
+        // ---------- UI交互逻辑 ----------
         const inputArea = document.getElementById('inputArea');
         const outputPre = document.getElementById('outputConfig');
         const nodeBadge = document.getElementById('nodeCountBadge');
@@ -517,6 +938,7 @@
             setTimeout(() => feedbackDiv.innerHTML = '', 2500);
         }
 
+        // 解析生成配置
         document.getElementById('convertBtn').addEventListener('click', () => {
             try {
                 const raw = inputArea.value.trim();
@@ -533,43 +955,51 @@
                 config.outbounds = outbounds;
                 outputPre.textContent = JSON.stringify(config, null, 2);
                 nodeBadge.textContent = `${rawNodes.length} 个节点`;
-                showFeedback(`✅ 成功解析 ${rawNodes.length} 个节点`);
+                showFeedback(`✅ 成功解析 ${rawNodes.length} 个节点，配置已生成`);
             } catch (e) {
                 alert('转换失败: ' + e.message);
-                outputPre.textContent = '// 解析错误';
+                outputPre.textContent = '// 解析错误: ' + e.message;
                 nodeBadge.textContent = '0 个节点';
             }
         });
 
+        // 一键复制配置
         document.getElementById('copyBtn').addEventListener('click', async () => {
             const text = outputPre.textContent;
-            if (!text || text.startsWith('//')) { showFeedback('无内容'); return; }
+            if (!text || text.startsWith('//')) { showFeedback('无有效配置可复制'); return; }
             try {
                 await navigator.clipboard.writeText(text);
-                showFeedback('📋 配置已复制');
+                showFeedback('📋 配置已复制到剪贴板');
             } catch {
-                const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
-                ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+                const ta = document.createElement('textarea'); 
+                ta.value = text; 
+                document.body.appendChild(ta);
+                ta.select(); 
+                document.execCommand('copy'); 
+                document.body.removeChild(ta);
                 showFeedback('📋 复制成功');
             }
         });
 
+        // 清空输入输出
         document.getElementById('clearBtn').addEventListener('click', () => {
             inputArea.value = '';
             outputPre.textContent = '// 点击「解析并生成配置」后显示完整 JSON …';
             nodeBadge.textContent = '0 个节点';
+            feedbackDiv.innerHTML = '';
         });
 
-        const sampleText = `vless://a8ceaac6-bda6-459e-ace7-0b34c5873e1e@www.visa.com:443?type=ws&path=%2Fpkpk-vl&host=cvb.372164885.xyz&security=tls&sni=cvb.372164885.xyz&fp=chrome#🚀-Vless-WS
+        // 填入示例节点
+        const sampleText = `vless://a8ceaac6-bda6-459e-ace7-0b34c5873e1e@www.visa.com:443?type=ws&path=%2Fpkpk-vl&host=cvb.372164885.xyz&security=tls&sni=cvb.372164885.xyz&fp=chrome#🚀-CF-Visa
 vmess://eyJ2IjogIjIiLCAicHMiOiAiVk1lc3MtV1MiLCAiYWRkIjogImV4YW1wbGUuY29tIiwgInBvcnQiOiA0NDMsICJpZCI6ICJhOGNlYWFjNi1iZGE2LTQ1OWUtYWNlNy0wYjM0YzU4NzNlMWUiLCAiYWlkIjogMCwgIm5ldCI6ICJ3cyIsICJ0eXBlIjogIm5vbmUiLCAiaG9zdCI6ICJleGFtcGxlLmNvbSIsICJwYXRoIjogIi93cyIsICJ0bHMiOiAidGxzIn0=
-trojan://password@trojan.example.com:443?sni=trojan.example.com#Trojan
-ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388#SS-01
-hysteria2://letmein@hy2.example.com:443?sni=hy2.example.com&insecure=0#Hysteria2`;
+trojan://password@trojan.example.com:443?sni=trojan.example.com#Trojan-Node
+ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388#SS-Node
+hysteria2://letmein@hy2.example.com:443?sni=hy2.example.com&insecure=0#Hysteria2-Node`;
         document.getElementById('sampleBtn').addEventListener('click', () => {
             inputArea.value = sampleText;
         });
 
-        // 初始空白
+        // 初始化状态
         inputArea.value = '';
         outputPre.textContent = '// 点击「解析并生成配置」后显示完整 JSON …';
         nodeBadge.textContent = '0 个节点';
