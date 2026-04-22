@@ -115,7 +115,7 @@
 <script>
     (function(){
         "use strict";
-        // ---------- 核心模板：合成.txt 完整配置（仅outbounds动态生成） ----------
+        // ---------- 核心模板：100% 对齐合成.txt 完整配置（仅outbounds动态生成） ----------
         const BASE_TEMPLATE = {
             "log": {
                 "level": "trace",
@@ -263,7 +263,7 @@
                         "server": "fakeip"
                     },
                     {
-                        "domain_suffix": ["cvb.372164885.xyz"],
+                        "domain_suffix": ["节点域名"],
                         "server": "doh-ech"
                     },
                     {
@@ -271,11 +271,7 @@
                         "action": "reject"
                     },
                     {
-                        "query_type": ["SVCB", "HTTPS"],
-                        "action": "reject"
-                    },
-                    {
-                        "query_type": ["PTR"],
+                        "query_type": ["SVCB", "HTTPS", "PTR"],
                         "action": "reject"
                     },
                     {
@@ -290,6 +286,7 @@
                         "server": "alidns-dot"
                     },
                     {
+                        "domain_suffix": [".cn", ".com.cn"],
                         "action": "evaluate",
                         "server": "alidns-quic"
                     },
@@ -304,7 +301,7 @@
                         "action": "respond"
                     }
                 ],
-                "final": "alidns-dot",
+                "final": "doh-ech",
                 "strategy": "prefer_ipv4",
                 "reverse_mapping": true,
                 "cache_capacity": 65536,
@@ -421,25 +418,14 @@
                         "action": "reject"
                     },
                     {
-                        "rule_set": "geosite-google",
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "rule_set": "proxy",
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "rule_set": "games",
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "rule_set": "ai",
+                        "rule_set": ["telegramip","geosite-google","proxy","games","ai"],
                         "outbound": "PROXY"
                     },
                     {
                         "rule_set": [
                             "private",
                             "cn",
+                            "cnip",
                             "microsoft-cn",
                             "apple-cn",
                             "google-cn",
@@ -452,22 +438,9 @@
                         "action": "resolve"
                     },
                     {
-                        "rule_set": "telegramip",
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "rule_set": "cnip",
-                        "outbound": "DIRECT"
-                    },
-                    {
                         "package_name": [
                             "com.google.android.youtube",
-                            "app.revanced.android.youtube"
-                        ],
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "package_name": [
+                            "app.revanced.android.youtube",
                             "org.telegram.messenger",
                             "org.telegram.messenger.beta"
                         ],
@@ -636,6 +609,7 @@
                 }
             }
         };
+
         // ---------- 辅助：生成唯一标签 (自动去重) ----------
         function makeUniqueTag(baseName, usedTags) {
             let candidate = baseName;
@@ -653,7 +627,8 @@
             usedTags.add(finalTag);
             return finalTag;
         }
-        // ---------- 协议解析器 (返回节点对象，tag 由外部统一分配) ----------
+
+        // ---------- 协议解析器 (返回节点对象，严格对齐合成.txt节点结构) ----------
         function parseVless(url) {
             let main = url.substring(8);
             let fragment = '';
@@ -706,7 +681,7 @@
                 node.tls = { enabled: true, server_name: sni };
                 if (alpn) node.tls.alpn = alpn.split(',').map(s=>s.trim());
                 if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
-                // 适配合成版模板，默认添加ech配置
+                // 严格对齐合成.txt模板，默认添加ech配置
                 node.tls.ech = { enabled: false };
             } else if (security === 'reality') {
                 node.tls = { enabled: true, server_name: sni, reality: { enabled: true } };
@@ -716,6 +691,7 @@
             }
             return node;
         }
+
         function parseVmess(url) {
             const b64 = url.substring(8);
             const jsonStr = atob(b64);
@@ -750,11 +726,12 @@
                 node.tls = { enabled: true, server_name: vm.sni || vm.add };
                 if (vm.alpn) node.tls.alpn = vm.alpn.split(',');
                 if (vm.fingerprint) node.tls.utls = { enabled: true, fingerprint: vm.fingerprint };
-                // 适配合成版模板，默认添加ech配置
+                // 严格对齐合成.txt模板，默认添加ech配置
                 node.tls.ech = { enabled: false };
             }
             return node;
         }
+
         function parseTrojan(url) {
             let main = url.substring(9);
             let fragment = '';
@@ -802,10 +779,11 @@
             node.tls = { enabled: true, server_name: sni };
             if (alpn) node.tls.alpn = alpn.split(',');
             if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
-            // 适配合成版模板，默认添加ech配置
+            // 严格对齐合成.txt模板，默认添加ech配置
             node.tls.ech = { enabled: false };
             return node;
         }
+
         function parseShadowsocks(url) {
             let main = url.substring(5);
             let fragment = '';
@@ -844,6 +822,7 @@
                 domain_resolver: 'alidns-quic'
             };
         }
+
         function parseHysteria2(url) {
             let u = url.startsWith('hysteria2://') ? url : url.replace('hy2://', 'hysteria2://');
             let main = u.substring(12);
@@ -889,6 +868,7 @@
             }
             return node;
         }
+
         function parseLine(line) {
             line = line.trim();
             if (!line) return null;
@@ -904,7 +884,8 @@
             }
             return null;
         }
-        // ---------- 构建 outbounds (严格对齐合成.txt模板结构) ----------
+
+        // ---------- 构建 outbounds (严格对齐合成.txt模板结构与顺序) ----------
         function buildOutbounds(rawNodes) {
             // 保留标签：避免与系统内置tag冲突
             const usedTags = new Set(['DIRECT', 'AUTO', 'PROXY', 'GLOBAL', 'CN']);
@@ -916,7 +897,8 @@
                 "tag": "DIRECT",
                 "domain_resolver": "alidns-quic"
             };
-            // 2. 处理用户节点，生成唯一tag
+
+            // 2. 处理用户节点，生成唯一tag，严格对齐合成.txt节点结构
             for (let raw of rawNodes) {
                 const baseTag = raw._rawTag || 'node';
                 delete raw._rawTag;
@@ -939,6 +921,7 @@
                 "idle_timeout": "30m",
                 "interrupt_exist_connections": false
             };
+
             // 5. 生成PROXY手动选择器（与合成.txt模板完全一致）
             const proxySelector = {
                 "type": "selector",
@@ -947,6 +930,7 @@
                 "default": nodeTags.length > 0 ? "AUTO" : "DIRECT",
                 "interrupt_exist_connections": false
             };
+
             // 6. 生成GLOBAL全局选择器（与合成.txt模板完全一致）
             const globalSelector = {
                 "type": "selector",
@@ -955,6 +939,7 @@
                 "default": "PROXY",
                 "interrupt_exist_connections": false
             };
+
             // 7. 生成CN国内选择器（与合成.txt模板完全一致）
             const cnSelector = {
                 "type": "selector",
@@ -964,7 +949,7 @@
                 "interrupt_exist_connections": false
             };
             
-            // 按sing-box引用规范拼接完整outbounds数组（先定义节点，再引用）
+            // 按sing-box引用规范拼接完整outbounds数组（先定义被引用项，后定义引用项，兼容合成模板逻辑）
             return [
                 directOutbound,
                 ...finalNodes,
@@ -974,6 +959,7 @@
                 cnSelector
             ];
         }
+
         // ---------- UI交互逻辑 ----------
         const inputArea = document.getElementById('inputArea');
         const outputPre = document.getElementById('outputConfig');
@@ -984,6 +970,7 @@
             feedbackDiv.innerHTML = `<span class="toast-msg">${msg}</span>`;
             setTimeout(() => feedbackDiv.innerHTML = '', 2500);
         }
+
         // 解析生成配置
         document.getElementById('convertBtn').addEventListener('click', () => {
             try {
@@ -1008,6 +995,7 @@
                 nodeBadge.textContent = '0 个节点';
             }
         });
+
         // 一键复制配置
         document.getElementById('copyBtn').addEventListener('click', async () => {
             const text = outputPre.textContent;
@@ -1025,6 +1013,7 @@
                 showFeedback('📋 复制成功');
             }
         });
+
         // 清空输入输出
         document.getElementById('clearBtn').addEventListener('click', () => {
             inputArea.value = '';
@@ -1032,6 +1021,7 @@
             nodeBadge.textContent = '0 个节点';
             feedbackDiv.innerHTML = '';
         });
+
         // 填入示例节点
         const sampleText = `vless://a8ceaac6-bda6-459e-ace7-0b34c5873e1e@www.visa.com:443?type=ws&path=%2Fpkpk-vl&host=cvb.372164885.xyz&security=tls&sni=cvb.372164885.xyz&fp=chrome#🚀-CF-Visa
 vmess://eyJ2IjogIjIiLCAicHMiOiAiVk1lc3MtV1MiLCAiYWRkIjogImV4YW1wbGUuY29tIiwgInBvcnQiOiA0NDMsICJpZCI6ICJhOGNlYWFjNi1iZGE2LTQ1OWUtYWNlNy0wYjM0YzU4NzNlMWUiLCAiYWlkIjogMCwgIm5ldCI6ICJ3cyIsICJ0eXBlIjogIm5vbmUiLCAiaG9zdCI6ICJleGFtcGxlLmNvbSIsICJwYXRoIjogIi93cyIsICJ0bHMiOiAidGxzIn0=
@@ -1041,6 +1031,7 @@ hysteria2://letmein@hy2.example.com:443?sni=hy2.example.com&insecure=0#Hysteria2
         document.getElementById('sampleBtn').addEventListener('click', () => {
             inputArea.value = sampleText;
         });
+
         // 初始化状态
         inputArea.value = '';
         outputPre.textContent = '// 点击「解析并生成配置」后显示完整 JSON …';
