@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>多协议 → Sing-Box 合成优化版 配置生成</title>
+    <title>多协议 → Sing-Box 1.14.0-alpha.20 配置生成</title>
     <style>
-        * { box-sizing: border-box; margin: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
         body {
             background: #f5f7fc;
             font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
@@ -15,177 +18,295 @@
             flex-direction: column;
             color: #1e293b;
         }
-        .container { max-width: 1100px; margin: 0 auto; width: 100%; flex: 1; }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
         h1 {
-            font-size: 2rem; font-weight: 700; margin-bottom: 8px;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
             background: linear-gradient(145deg, #2563eb, #8b5cf6);
-            -webkit-background-clip: text; background-clip: text;
-            color: transparent; letter-spacing: -0.02em;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
         }
         .subtitle {
-            color: #64748b; margin-bottom: 24px; font-size: 1rem;
-            border-left: 4px solid #3b82f6; padding-left: 16px;
+            color: #64748b;
+            margin-bottom: 24px;
+            font-size: 1rem;
+            border-left: 4px solid #3b82f6;
+            padding-left: 16px;
         }
         .card {
-            background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.5); border-radius: 28px;
-            box-shadow: 0 20px 35px -8px rgba(0,0,0,0.08);
-            padding: 24px 22px; margin-bottom: 22px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.08);
+            padding: 24px 22px;
+            margin-bottom: 22px;
         }
-        .input-area { display: flex; flex-direction: column; gap: 16px; }
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
         label {
-            font-weight: 600; font-size: 0.95rem; color: #334155;
-            display: flex; align-items: center; gap: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         textarea {
-            width: 100%; padding: 18px; font-family: 'SF Mono', 'Menlo', monospace;
-            font-size: 0.9rem; background: #fff; border: 1.5px solid #e2e8f0;
-            border-radius: 20px; min-height: 160px; color: #0f172a; resize: vertical;
-            transition: 0.2s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+            width: 100%;
+            padding: 18px;
+            font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 0.9rem;
+            background: #fff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 20px;
+            min-height: 160px;
+            color: #0f172a;
+            resize: vertical;
+            transition: 0.2s;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
         }
-        textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
-        .input-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .button-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
         .btn {
-            background: white; border: 1px solid #cbd5e1; padding: 12px 26px;
-            border-radius: 60px; font-weight: 600; font-size: 1rem;
-            cursor: pointer; transition: 0.2s; display: inline-flex;
-            align-items: center; gap: 8px; background: rgba(255,255,255,0.9);
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 12px 26px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.9);
         }
-        .btn-primary { background: #1e293b; border-color: #1e293b; color: white; }
-        .btn-primary:hover { background: #0f172a; transform: translateY(-1px); }
-        .btn-success { background: #10b981; border-color: #10b981; color: white; }
-        .btn-success:hover { background: #059669; }
-        .btn-outline:hover { background: #f8fafc; }
-        .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-        .badge { background: #e2e8f0; padding: 5px 14px; border-radius: 30px; font-size: 0.8rem; }
+        .btn-primary {
+            background: #1e293b;
+            border-color: #1e293b;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0f172a;
+            transform: translateY(-1px);
+        }
+        .btn-success {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .btn-outline:hover {
+            background: #f8fafc;
+        }
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #e2e8f0;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
         pre {
-            background: #0b1120; color: #e4e7ee; padding: 20px; border-radius: 18px;
-            overflow-x: auto; font-size: 0.8rem; font-family: 'SF Mono', monospace;
-            max-height: 500px; white-space: pre-wrap; word-break: break-all;
+            background: #0b1120;
+            color: #e4e7ee;
+            padding: 20px;
+            border-radius: 18px;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            font-family: 'SF Mono', monospace;
+            max-height: 500px;
+            white-space: pre-wrap;
+            word-break: break-all;
             border: 1px solid #334155;
         }
-        .footnote { margin-top: 20px; color: #64748b; font-size: 0.85rem; text-align: center; }
-        .example-btn { background: none; border: 1px dashed #94a3b8; padding: 6px 15px; border-radius: 40px; font-size: 0.8rem; cursor: pointer; }
-        .example-btn:hover { background: #eef2ff; border-color: #3b82f6; }
-        .toast-msg { color: #059669; font-weight: 500; margin-left: 12px; }
-        .protocol-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; align-items: center; }
-        .tag { background: #e2e8f0; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; }
+        .footnote {
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .example-btn {
+            background: none;
+            border: 1px dashed #94a3b8;
+            padding: 6px 15px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .example-btn:hover {
+            background: #eef2ff;
+            border-color: #3b82f6;
+        }
+        .toast-msg {
+            color: #059669;
+            font-weight: 500;
+            margin-left: 12px;
+        }
+        .protocol-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+            align-items: center;
+        }
+        .tag {
+            background: #e2e8f0;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🧬 多协议 → Sing-Box 合成优化版 配置生成</h1>
-    <div class="subtitle">VLESS · VMess · Trojan · SS · Hysteria2 · 标签自动去重 · 完全适配合成版模板</div>
-    <div class="card">
-        <div class="input-area">
-            <div class="input-header">
-                <label>📥 粘贴节点链接 (每行一个，支持混合协议)</label>
-                <button class="example-btn" id="sampleBtn">📋 填入示例节点</button>
-            </div>
-            <textarea id="inputArea" placeholder="例如:&#10;vless://...&#10;vmess://...&#10;trojan://...&#10;ss://...&#10;hysteria2://..."></textarea>
-            <div class="protocol-tags">
-                <span class="tag">✅ VLESS</span>
-                <span class="tag">✅ VMess</span>
-                <span class="tag">✅ Trojan</span>
-                <span class="tag">✅ Shadowsocks</span>
-                <span class="tag">✅ Hysteria2</span>
-            </div>
-            <div class="button-group">
-                <button class="btn btn-primary" id="convertBtn">✨ 解析并生成配置</button>
-                <button class="btn btn-outline" id="clearBtn">🧹 清空</button>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="output-header">
-            <label>📦 Sing-Box 配置 (可直接复制)</label>
-            <div style="display: flex; gap: 10px;">
-                <span class="badge" id="nodeCountBadge">0 个节点</span>
-                <button class="btn btn-success" id="copyBtn">📋 一键复制</button>
+    <div class="container">
+        <h1>🧬 多协议 → Sing-Box 1.14.0-alpha.20 配置生成</h1>
+        <div class="subtitle">VLESS · VMess · Trojan · SS · Hysteria2 · 标签自动去重 · 严格对齐 1.14.0-alpha.20 模板</div>
+        <div class="card">
+            <div class="input-area">
+                <div class="input-header">
+                    <label>📥 粘贴节点链接 (每行一个，支持混合协议)</label>
+                    <button class="example-btn" id="sampleBtn">📋 填入示例节点</button>
+                </div>
+                <textarea id="inputArea" placeholder="例如:&#10;vless://...&#10;vmess://...&#10;trojan://...&#10;ss://...&#10;hysteria2://..."></textarea>
+                <div class="protocol-tags">
+                    <span class="tag">✅ VLESS</span>
+                    <span class="tag">✅ VMess</span>
+                    <span class="tag">✅ Trojan</span>
+                    <span class="tag">✅ Shadowsocks</span>
+                    <span class="tag">✅ Hysteria2</span>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="convertBtn">✨ 解析并生成配置</button>
+                    <button class="btn btn-outline" id="clearBtn">🧹 清空</button>
+                </div>
             </div>
         </div>
-        <pre id="outputConfig">// 点击「解析并生成配置」后显示完整 JSON …</pre>
-        <div id="copyFeedback" style="height: 24px; margin-top: 8px;"></div>
+        <div class="card">
+            <div class="output-header">
+                <label>📦 Sing-Box 配置 (可直接复制)</label>
+                <div style="display: flex; gap: 10px;">
+                    <span class="badge" id="nodeCountBadge">0 个节点</span>
+                    <button class="btn btn-success" id="copyBtn">📋 一键复制</button>
+                </div>
+            </div>
+            <pre id="outputConfig">// 点击「解析并生成配置」后显示完整 JSON …</pre>
+            <div id="copyFeedback" style="height: 24px; margin-top: 8px;"></div>
+        </div>
+        <div class="footnote">
+            ⚡ 基于 1.14.0-alpha.20 完整模板 · 自动过滤无效传输配置 · 标签重复自动加序号 · 全字段严格对齐
+        </div>
     </div>
-    <div class="footnote">
-        ⚡ 基于合成优化版兼容模板 · 自动过滤无效传输配置 · 标签重复自动加序号 · 全字段严格对齐合成.txt模板
-    </div>
-</div>
-<script>
-    (function(){
-        "use strict";
-        // ---------- 核心模板：100% 对齐合成.txt 完整配置（仅outbounds动态生成） ----------
-        const BASE_TEMPLATE = {
-            "log": {
-                "level": "trace",
-                "timestamp": true
-            },
-            "ntp": {
-                "enabled": true,
-                "server": "ntp.aliyun.com",
-                "server_port": 123,
-                "interval": "30m",
-                "detour": "DIRECT"
-            },
-            "dns": {
-                "servers": [
-                    {
-                        "tag": "local",
-                        "type": "local"
-                    },
-                    {
-                        "tag": "hosts_fix",
+    <script>
+        (function() {
+            "use strict";
+
+            // ---------- 核心模板：100% 对齐 1.14.0-alpha.20.json 完整配置（仅outbounds动态生成） ----------
+            const BASE_TEMPLATE = {
+                "log": {
+                    "level": "trace",
+                    "timestamp": true
+                },
+                "dns": {
+                    "timeout": "3s",
+                    "servers": [{
+                        "type": "local",
+                        "tag": "local"
+                    }, {
                         "type": "hosts",
+                        "tag": "hosts_fix",
                         "predefined": {
                             "dns.huaweicloud.com": ["180.163.150.33", "180.163.151.33"],
                             "dns.alidns.com": ["223.5.5.5", "223.6.6.6"],
+                            "dns.adguard.com": ["94.140.14.15", "94.140.15.16",
+                                "2a10:50c0::ad1:ff", "2a10:50c0::ad2:ff"
+                            ],
                             "doh.pub": ["1.12.12.21", "120.53.53.53"],
                             "dns.google": ["8.8.8.8", "8.8.4.4"],
                             "cloudflare-dns.com": ["104.16.248.249", "104.16.249.249"],
-                            "mtalk.google.com": ["142.250.107.188", "142.251.170.188", "108.177.125.188"],
-                            "alt1-mtalk.google.com": ["2607:f8b0:4023:1c05::bc", "74.125.200.188"],
-                            "dl.google.com": ["180.163.151.161"],
-                            "dl.l.google.com": ["180.163.150.33"]
+                            "mtalk.google.com": ["142.250.107.188", "142.251.170.188",
+                                "108.177.125.188"
+                            ],
+                            "alt1-mtalk.google.com": ["2607:f8b0:4023:1c05::bc",
+                            "74.125.200.188"],
+                            "dl.google.com": "180.163.151.161",
+                            "dl.l.google.com": "180.163.150.33"
                         }
-                    },
-                    {
-                        "tag": "alidns-dot",
+                    }, {
                         "type": "tls",
-                        "server": "dns.alidns.com",
-                        "server_port": 853,
+                        "tag": "alidns-dot",
+                        "detour": "DIRECT",
                         "domain_resolver": "hosts_fix",
-                        "detour": "DIRECT"
-                    },
-                    {
-                        "tag": "alidns-quic",
+                        "server": "dns.alidns.com",
+                        "server_port": 853
+                    }, {
                         "type": "quic",
-                        "server": "dns.alidns.com",
+                        "tag": "alidns-quic",
+                        "detour": "DIRECT",
                         "domain_resolver": "hosts_fix",
-                        "detour": "DIRECT"
-                    },
-                    {
+                        "server": "dns.alidns.com"
+                    }, {
+                        "type": "https",
                         "tag": "ggdns",
-                        "type": "https",
-                        "server": "dns.google",
+                        "detour": "PROXY",
                         "domain_resolver": "hosts_fix",
-                        "detour": "PROXY"
-                    },
-                    {
-                        "tag": "doh-ech",
-                        "type": "https",
-                        "server": "dns.google",
-                        "path": "/dns-query",
-                        "detour": "PROXY"
-                    },
-                    {
-                        "tag": "fakeip",
+                        "server": "dns.google"
+                    }, {
                         "type": "fakeip",
-                        "inet4_range": "198.18.0.0/15"
-                    }
-                ],
-                "rules": [
-                    {
+                        "tag": "fakeip",
+                        "inet4_range": "198.18.0.0/15",
+                        "inet6_range": "fc00::/18"
+                    }, {
+                        "type": "tls",
+                        "tag": "adguard-dns",
+                        "detour": "PROXY",
+                        "domain_resolver": "hosts_fix",
+                        "server": "dns.adguard.com",
+                        "server_port": 853
+                    }],
+                    "rules": [{
+                        "domain_suffix": [
+                            "beacons.gvt2.com",
+                            "beacons2.gvt2.com",
+                            "beacons3.gvt2.com"
+                        ],
+                        "action": "reject"
+                    }, {
                         "domain_suffix": [
                             ".local",
                             ".lan",
@@ -232,12 +353,10 @@
                             "market.xiaomi.com"
                         ],
                         "server": "alidns-quic"
-                    },
-                    {
-                        "domain_suffix": ["lancache.steamcontent.com"],
+                    }, {
+                        "domain_suffix": "lancache.steamcontent.com",
                         "server": "local"
-                    },
-                    {
+                    }, {
                         "domain_suffix": [
                             "steamcontent.com",
                             "steamserver.net",
@@ -255,788 +374,922 @@
                             "android.com",
                             "app-measurement.com",
                             "firebaselogging.googleapis.com",
-                            "firebaselogging-pa.googleapis.com",
-                            "beacons.gvt2.com",
-                            "beacons2.gvt2.com",
-                            "beacons3.gvt2.com"
+                            "firebaselogging-pa.googleapis.com"
                         ],
                         "server": "fakeip"
-                    },
-                    {
-                        "domain_suffix": ["节点域名"],
-                        "server": "doh-ech"
-                    },
-                    {
-                        "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
-                        "action": "reject"
-                    },
-                    {
-                        "query_type": ["SVCB", "HTTPS", "PTR"],
-                        "action": "reject"
-                    },
-                    {
-                        "rule_set": ["proxy", "games", "ai"],
+                    }, {
                         "query_type": ["A", "AAAA"],
+                        "domain_suffix": "steamcontent.com",
+                        "server": "fakeip"
+                    }, {
+                        "query_type": ["A", "AAAA"],
+                        "rule_set": ["proxy", "games", "ai"],
+                        "server": "adguard-dns"
+                    }, {
+                        "query_type": ["A", "AAAA"],
+                        "rule_set": ["proxy", "games", "ai"],
                         "server": "fakeip",
-                        "rewrite_ttl": 300,
-                        "client_subnet": "119.134.100.0/24"
-                    },
-                    {
-                        "domain_suffix": [".cn", ".com.cn"],
-                        "server": "alidns-dot"
-                    },
-                    {
+                        "rewrite_ttl": 300
+                    }, {
                         "domain_suffix": [".cn", ".com.cn"],
                         "action": "evaluate",
+                        "server": "alidns-dot"
+                    }, {
+                        "query_type": ["A", "AAAA"],
+                        "invert": true,
+                        "action": "predefined",
+                        "rcode": "NOERROR"
+                    }, {
+                        "rule_set": ["httpDNS", "DNSreject", "Ads"],
+                        "action": "predefined",
+                        "rcode": "NOERROR"
+                    }, {
+                        "rule_set": ["private", "Filter"],
                         "server": "alidns-quic"
-                    },
-                    {
-                        "match_response": true,
+                    }, {
+                        "domain_suffix": [".cn", ".com.cn"],
+                        "server": "alidns-quic"
+                    }, {
                         "rule_set": "cnip",
-                        "action": "route",
+                        "match_response": true,
                         "server": "local"
-                    },
-                    {
+                    }, {
                         "match_response": true,
                         "action": "respond"
-                    }
-                ],
-                "final": "doh-ech",
-                "strategy": "prefer_ipv4",
-                "reverse_mapping": true,
-                "cache_capacity": 65536,
-                "optimistic": true
-            },
-            "inbounds": [
-                {
+                    }, {
+                        "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
+                        "action": "reject"
+                    }, {
+                        "query_type": ["SVCB", "HTTPS", "PTR"],
+                        "action": "reject"
+                    }],
+                    "final": "ggdns",
+                    "reverse_mapping": true,
+                    "strategy": "prefer_ipv4",
+                    "cache_capacity": 65536,
+                    "optimistic": true
+                },
+                "ntp": {
+                    "enabled": true,
+                    "interval": "30m0s",
+                    "server": "ntp.aliyun.com",
+                    "server_port": 123,
+                    "detour": "DIRECT"
+                },
+                "http_clients": [{
+                    "tag": "default",
+                    "version": 2,
+                    "detour": "PROXY",
+                    "stream_receive_window": 0,
+                    "connection_receive_window": 0
+                }],
+                "inbounds": [{
                     "type": "tun",
                     "tag": "tun-in",
-                    "address": ["10.8.0.1/24"],
                     "mtu": 1500,
-                    "stack": "mixed",
+                    "address": "10.8.0.1/24",
                     "auto_route": true,
-                    "strict_route": true
-                },
-                {
+                    "strict_route": true,
+                    "stack": "mixed"
+                }, {
                     "type": "mixed",
                     "tag": "mixed-in",
                     "listen": "127.0.0.1",
                     "listen_port": 7890
-                }
-            ],
-            "outbounds": [],
-            "http_clients": [
-                {
-                    "tag": "default",
-                    "detour": "PROXY"
-                }
-            ],
-            "route": {
-                "default_domain_resolver": "alidns-quic",
-                "rules": [
-                    {
-                        "type": "logical",
-                        "mode": "and",
-                        "rules": [
-                            { "protocol": "quic" },
-                            { "port": 443 }
-                        ],
-                        "action": "reject"
-                    },
-                    {
-                        "wifi_ssid": ["MyHomeWiFi"],
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "wifi_bssid": ["00:11:22:33:44:55"],
-                        "outbound": "DIRECT"
-                    },
-                    {
-                        "type": "logical",
-                        "mode": "or",
-                        "rules": [
-                            { "port": 53 },
-                            { "protocol": "dns" }
-                        ],
-                        "action": "hijack-dns"
-                    },
-                    {
+                }],
+                "outbounds": [],
+                "route": {
+                    "rules": [{
                         "action": "sniff"
-                    },
-                    {
+                    }, {
                         "type": "logical",
                         "mode": "or",
-                        "rules": [
-                            { "network": "udp", "port": [3478, 5349, 5350, 19302, 10000] },
-                            { "domain_regex": "^stun\\..+" },
-                            { "domain_keyword": ["stun", "turn", "httpdns"] },
-                            { "protocol": "stun" }
-                        ],
-                        "action": "reject"
-                    },
-                    {
-                        "domain_keyword": ["ntp", "time"],
-                        "network": "udp",
-                        "port": 123,
+                        "rules": [{
+                            "port": 53
+                        }, {
+                            "protocol": "dns"
+                        }],
+                        "action": "hijack-dns"
+                    }, {
+                        "action": "route-options",
+                        "udp_disable_domain_unmapping": true,
+                        "udp_connect": true
+                    }, {
+                        "rule_set": ["Ads", "adobe", "httpDNS", "DNSreject"],
+                        "action": "reject",
+                        "method": "drop"
+                    }, {
+                        "clash_mode": "Global",
+                        "outbound": "PROXY"
+                    }, {
+                        "clash_mode": "Direct",
                         "outbound": "DIRECT"
-                    },
-                    {
+                    }, {
+                        "rule_set": "Apple",
+                        "outbound": "DIRECT"
+                    }, {
+                        "rule_set": ["fcm", "Android"],
+                        "outbound": "PROXY"
+                    }, {
+                        "domain_suffix": ["google.cn", "googleapis.cn"],
+                        "outbound": "PROXY"
+                    }, {
+                        "rule_set": ["telegram", "telegram_ip", "youtube", "instagram",
+                            "Google", "ai", "GlobalMedia", "Proxy", "gfw"
+                        ],
+                        "outbound": "PROXY"
+                    }, {
+                        "package_name": "com.wwwscn.yuexingbao",
+                        "outbound": "DIRECT"
+                    }, {
+                        "protocol": ["ntp", "icmp"],
+                        "outbound": "DIRECT"
+                    }, {
+                        "rule_set": ["private", "Applications", "OnePlus"],
+                        "outbound": "DIRECT"
+                    }, {
+                        "domain_suffix": ["sponsor.ajay.app", "ifbapp.com", "allawnos.com",
+                            "heytapmobi.com", "steamserver.net"
+                        ],
+                        "outbound": "DIRECT"
+                    }, {
+                        "protocol": ["stun", "quic", "dtls"],
+                        "action": "reject"
+                    }, {
+                        "domain": ["astrategy.beacon.qq.com", "beacon.qq.com",
+                            "abyss.cyapi.cn", "ad.cyapi.cn",
+                            "gather.colorfulclouds.net"
+                        ],
+                        "action": "reject",
+                        "method": "drop"
+                    }, {
                         "type": "logical",
                         "mode": "and",
-                        "rules": [
-                            {
-                                "domain_suffix": [
-                                    "mtalk.google.com",
-                                    "alt1-mtalk.google.com",
-                                    "alt2-mtalk.google.com",
-                                    "alt3-mtalk.google.com",
-                                    "alt4-mtalk.google.com",
-                                    "alt5-mtalk.google.com",
-                                    "alt6-mtalk.google.com",
-                                    "alt7-mtalk.google.com",
-                                    "alt8-mtalk.google.com"
-                                ]
-                            },
-                            { "port": [443, 5228] }
-                        ],
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "rule_set": "anti_fraud",
+                        "rules": [{
+                            "ip_version": 6
+                        }, {
+                            "default_interface_address": "2000::/3",
+                            "invert": true
+                        }],
                         "action": "reject"
-                    },
-                    {
-                        "ip_is_private": true,
-                        "outbound": "DIRECT"
-                    },
-                    {
-                        "ip_cidr": ["198.18.0.0/15"],
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
-                        "action": "reject"
-                    },
-                    {
-                        "rule_set": ["telegramip","geosite-google","proxy","games","ai"],
-                        "outbound": "PROXY"
-                    },
-                    {
-                        "rule_set": [
-                            "private",
-                            "cn",
-                            "cnip",
-                            "microsoft-cn",
-                            "apple-cn",
-                            "google-cn",
-                            "games-cn",
-                            "networktest"
-                        ],
-                        "outbound": "DIRECT"
-                    },
-                    {
-                        "action": "resolve"
-                    },
-                    {
-                        "package_name": [
-                            "com.google.android.youtube",
+                    }, {
+                        "package_name": ["com.google.android.youtube",
                             "app.revanced.android.youtube",
                             "org.telegram.messenger",
                             "org.telegram.messenger.beta"
                         ],
                         "outbound": "PROXY"
-                    }
-                ],
-                "rule_set": [
-                    {
-                        "tag": "geosite-category-ads-all",
+                    }, {
+                        "type": "logical",
+                        "mode": "and",
+                        "rules": [{
+                            "domain_suffix": [
+                                "mtalk.google.com",
+                                "alt1-mtalk.google.com",
+                                "alt2-mtalk.google.com",
+                                "alt3-mtalk.google.com",
+                                "alt4-mtalk.google.com",
+                                "alt5-mtalk.google.com",
+                                "alt6-mtalk.google.com",
+                                "alt7-mtalk.google.com",
+                                "alt8-mtalk.google.com"
+                            ]
+                        }, {
+                            "port": [443, 5228]
+                        }],
+                        "outbound": "PROXY"
+                    }, {
+                        "rule_set": ["telegramip", "geosite-google", "proxy", "games", "ai"],
+                        "outbound": "PROXY"
+                    }, {
+                        "ip_cidr": "198.18.0.0/15",
+                        "outbound": "PROXY"
+                    }, {
+                        "rule_set": ["private", "cn", "cnip", "microsoft-cn", "apple-cn",
+                            "google-cn", "games-cn", "networktest"
+                        ],
+                        "outbound": "DIRECT"
+                    }, {
+                        "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
+                        "action": "reject"
+                    }, {
+                        "type": "logical",
+                        "mode": "or",
+                        "rules": [{
+                            "network": "udp",
+                            "port": [3478, 5349, 5350, 19302, 10000]
+                        }, {
+                            "domain_regex": "^stun\\..+"
+                        }, {
+                            "domain_keyword": ["stun", "turn", "httpdns"]
+                        }, {
+                            "protocol": "stun"
+                        }],
+                        "action": "reject"
+                    }, {
+                        "rule_set": "anti_fraud",
+                        "action": "reject"
+                    }, {
+                        "ip_is_private": true,
+                        "outbound": "DIRECT"
+                    }, {
+                        "action": "resolve"
+                    }],
+                    "rule_set": [{
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "geosite-category-ads-all",
                         "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "geosite_adguard",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "geosite_adguard",
                         "url": "https://cdn.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblocksingbox.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "geosite-google",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "geosite-google",
                         "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-google.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "geosite-youtube",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "geosite-youtube",
                         "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-youtube.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "proxy",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "proxy",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "games",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "games",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "ai",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "ai",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "private",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "private",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
                         "tag": "anti_fraud",
-                        "type": "remote",
-                        "format": "source",
                         "url": "https://raw.githubusercontent.com/hwsaya/nothing/refs/heads/main/rules/FuckFZ.json",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "cn",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "cn",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "microsoft-cn",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "microsoft-cn",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "apple-cn",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "apple-cn",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "google-cn",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "google-cn",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/google-cn.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "games-cn",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "games-cn",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "networktest",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "networktest",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "telegramip",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "telegramip",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
-                    },
-                    {
-                        "tag": "cnip",
+                        "update_interval": "48h0m0s"
+                    }, {
                         "type": "remote",
-                        "format": "binary",
+                        "tag": "telegram_ip",
+                        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/telegram.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "Proxy",
+                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "gfw",
+                        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/gfw.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "cnip",
                         "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs",
                         "http_client": "default",
-                        "update_interval": "48h"
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "Filter",
+                        "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/fakeip-filter.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "DNSreject",
+                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/AdGuardSDNSFilter/AdGuardSDNSFilter.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "httpDNS",
+                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/BlockHttpDNS/BlockHttpDNS.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "Ads",
+                        "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/ads.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "adobe",
+                        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/adobe.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "Apple",
+                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-apple.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "fcm",
+                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/GoogleFCM/GoogleFCM.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "Android",
+                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/Android/Android.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "telegram",
+                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-telegram.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "youtube",
+                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-youtube.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "instagram",
+                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-instagram.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "Google",
+                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/Google/Google.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "GlobalMedia",
+                        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-entertainment.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "Applications",
+                        "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/applications.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }, {
+                        "type": "remote",
+                        "tag": "OnePlus",
+                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/OnePlus/OnePlus.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
+                    }],
+                    "final": "Final",
+                    "auto_detect_interface": true,
+                    "default_domain_resolver": "alidns-quic"
+                },
+                "experimental": {
+                    "cache_file": {
+                        "enabled": true,
+                        "path": "cache.db",
+                        "cache_id": "cinchov",
+                        "store_fakeip": true,
+                        "store_dns": true
+                    },
+                    "clash_api": {
+                        "external_controller": "127.0.0.1:9090",
+                        "external_ui": "ui",
+                        "external_ui_download_url": "https://github.com/MetaCubeX/metacubexd/releases/download/v1.245.1/compressed-dist.tgz",
+                        "external_ui_download_detour": "PROXY",
+                        "secret": "kSDuU2WHyf72taGMdDS0ib6klwFVF5QIM4HGhS5f4Jw=",
+                        "default_mode": "rule"
+                    },
+                    "debug": {
+                        "gc_percent": 100,
+                        "memory_limit": "400MB"
                     }
-                ],
-                "final": "PROXY",
-                "auto_detect_interface": true
-            },
-            "experimental": {
-                "clash_api": {
-                    "external_controller": "127.0.0.1:9090",
-                    "external_ui": "ui",
-                    "external_ui_download_url": "https://github.com/MetaCubeX/metacubexd/releases/latest/download/metacubexd.zip",
-                    "external_ui_download_detour": "PROXY",
-                    "secret": "kSDuU2WHyf72taGMdDS0ib6klwFVF5QIM4HGhS5f4Jw=",
-                    "default_mode": "rule"
-                },
-                "cache_file": {
-                    "enabled": true,
-                    "path": "cache.db",
-                    "cache_id": "cinchov",
-                    "store_dns": true,
-                    "store_fakeip": true
-                },
-                "debug": {
-                    "gc_percent": 50,
-                    "memory_limit": "200MB"
                 }
-            }
-        };
-
-        // ---------- 辅助：生成唯一标签 (自动去重) ----------
-        function makeUniqueTag(baseName, usedTags) {
-            let candidate = baseName;
-            if (!candidate) candidate = 'node';
-            // 清理非法字符 (只保留字母数字中文 - _ .)
-            candidate = candidate.replace(/[^\w\u4e00-\u9fa5\-_.]/g, '_').substring(0, 30);
-            if (!candidate) candidate = 'node';
-            
-            let finalTag = candidate;
-            let counter = 1;
-            while (usedTags.has(finalTag)) {
-                finalTag = `${candidate}-${counter}`;
-                counter++;
-            }
-            usedTags.add(finalTag);
-            return finalTag;
-        }
-
-        // ---------- 协议解析器 (返回节点对象，严格对齐合成.txt节点结构) ----------
-        function parseVless(url) {
-            let main = url.substring(8);
-            let fragment = '';
-            const hash = main.indexOf('#');
-            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash+1)); main = main.substring(0,hash); }
-            const qIdx = main.indexOf('?');
-            let serverPart = main, query = '';
-            if (qIdx !== -1) { serverPart = main.substring(0,qIdx); query = main.substring(qIdx+1); }
-            const at = serverPart.indexOf('@');
-            if (at === -1) throw new Error('Invalid VLESS');
-            const uuid = serverPart.substring(0, at);
-            const hostPort = serverPart.substring(at+1);
-            let server, port;
-            const col = hostPort.lastIndexOf(':');
-            if (col !== -1) { server = hostPort.substring(0,col); port = parseInt(hostPort.substring(col+1)); }
-            else { server = hostPort; port = 443; }
-            const params = new URLSearchParams(query);
-            const type = params.get('type') || 'tcp';
-            const security = params.get('security') || 'none';
-            const flow = params.get('flow') || '';
-            const sni = params.get('sni') || params.get('peer') || server;
-            const alpn = params.get('alpn');
-            const fp = params.get('fp') || (security==='tls'?'chrome':undefined);
-            let path = params.get('path') || '/'; try { path = decodeURIComponent(path); } catch(e){}
-            const host = params.get('host') || sni;
-            const serviceName = params.get('serviceName') || '';
-            const pbk = params.get('pbk') || '';
-            const sid = params.get('sid') || '';
-            
-            const rawTag = fragment || `${server}:${port}`;
-            const node = {
-                _rawTag: rawTag,
-                type: 'vless',
-                server,
-                server_port: port,
-                uuid,
-                domain_resolver: 'alidns-quic'
             };
-            if (flow) node.flow = flow;
-            
-            if (type !== 'tcp') {
-                const transport = { type };
-                if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; }
-                else if (type === 'grpc') transport.service_name = serviceName;
-                else if (type === 'httpupgrade') { transport.path = path; if (host) transport.host = host; }
-                node.transport = transport;
-            }
-            
-            if (security === 'tls') {
-                node.tls = { enabled: true, server_name: sni };
-                if (alpn) node.tls.alpn = alpn.split(',').map(s=>s.trim());
-                if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
-                // 严格对齐合成.txt模板，默认添加ech配置
-                node.tls.ech = { enabled: false };
-            } else if (security === 'reality') {
-                node.tls = { enabled: true, server_name: sni, reality: { enabled: true } };
-                if (pbk) node.tls.reality.public_key = pbk;
-                if (sid) node.tls.reality.short_id = sid;
-                if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
-            }
-            return node;
-        }
 
-        function parseVmess(url) {
-            const b64 = url.substring(8);
-            const jsonStr = atob(b64);
-            const vm = JSON.parse(jsonStr);
-            const rawTag = vm.ps || `${vm.add}:${vm.port}`;
-            const node = {
-                _rawTag: rawTag,
-                type: 'vmess',
-                server: vm.add,
-                server_port: parseInt(vm.port) || 443,
-                uuid: vm.id,
-                security: vm.scy || 'auto',
-                alter_id: parseInt(vm.aid) || 0,
-                domain_resolver: 'alidns-quic'
-            };
-            const net = vm.net;
-            if (net && net !== 'tcp') {
-                const transport = { type: net };
-                if (net === 'ws') {
-                    transport.path = vm.path || '/';
-                    if (vm.host) transport.headers = { Host: vm.host };
-                } else if (net === 'grpc') {
-                    transport.service_name = vm.path || '';
-                } else if (net === 'h2') {
-                    transport.type = 'http';
-                    transport.host = vm.host ? [vm.host] : undefined;
-                    transport.path = vm.path;
+            // ---------- 辅助：生成唯一标签 (自动去重) ----------
+            function makeUniqueTag(baseName, usedTags) {
+                let candidate = baseName;
+                if (!candidate) candidate = 'node';
+                // 清理非法字符 (只保留字母数字中文 - _ . emoji)
+                candidate = candidate.replace(/[^\w\u4e00-\u9fa5\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\-_.]/gu, '_')
+                    .substring(0, 30);
+                if (!candidate) candidate = 'node';
+
+                let finalTag = candidate;
+                let counter = 1;
+                while (usedTags.has(finalTag)) {
+                    finalTag = `${candidate}-${counter}`;
+                    counter++;
                 }
-                node.transport = transport;
+                usedTags.add(finalTag);
+                return finalTag;
             }
-            if (vm.tls === 'tls') {
-                node.tls = { enabled: true, server_name: vm.sni || vm.add };
-                if (vm.alpn) node.tls.alpn = vm.alpn.split(',');
-                if (vm.fingerprint) node.tls.utls = { enabled: true, fingerprint: vm.fingerprint };
-                // 严格对齐合成.txt模板，默认添加ech配置
-                node.tls.ech = { enabled: false };
-            }
-            return node;
-        }
 
-        function parseTrojan(url) {
-            let main = url.substring(9);
-            let fragment = '';
-            const hash = main.indexOf('#');
-            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash+1)); main = main.substring(0,hash); }
-            const at = main.indexOf('@');
-            if (at === -1) throw new Error('Invalid Trojan');
-            const password = main.substring(0, at);
-            const hostPort = main.substring(at+1);
-            const qm = hostPort.indexOf('?');
-            let server, port, query='';
-            if (qm !== -1) {
-                const hp = hostPort.substring(0, qm);
-                query = hostPort.substring(qm+1);
-                const col = hp.lastIndexOf(':');
-                if (col !== -1) { server = hp.substring(0,col); port = parseInt(hp.substring(col+1)); }
-                else { server = hp; port = 443; }
-            } else {
+            // ---------- 协议解析器 (返回节点对象) ----------
+            function parseVless(url) {
+                let main = url.substring(8);
+                let fragment = '';
+                const hash = main.indexOf('#');
+                if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1));
+                    main = main.substring(0, hash); }
+                const qIdx = main.indexOf('?');
+                let serverPart = main,
+                    query = '';
+                if (qIdx !== -1) { serverPart = main.substring(0, qIdx);
+                    query = main.substring(qIdx + 1); }
+                const at = serverPart.indexOf('@');
+                if (at === -1) throw new Error('Invalid VLESS');
+                const uuid = serverPart.substring(0, at);
+                const hostPort = serverPart.substring(at + 1);
+                let server, port;
                 const col = hostPort.lastIndexOf(':');
-                if (col !== -1) { server = hostPort.substring(0,col); port = parseInt(hostPort.substring(col+1)); }
-                else { server = hostPort; port = 443; }
-            }
-            const params = new URLSearchParams(query);
-            const sni = params.get('sni') || server;
-            const fp = params.get('fp') || 'chrome';
-            const alpn = params.get('alpn');
-            const type = params.get('type') || 'tcp';
-            const path = params.get('path') || '/';
-            const host = params.get('host') || sni;
-            
-            const rawTag = fragment || `${server}:${port}`;
-            const node = {
-                _rawTag: rawTag,
-                type: 'trojan',
-                server,
-                server_port: port,
-                password,
-                domain_resolver: 'alidns-quic'
-            };
-            if (type !== 'tcp') {
-                const transport = { type };
-                if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; }
-                node.transport = transport;
-            }
-            node.tls = { enabled: true, server_name: sni };
-            if (alpn) node.tls.alpn = alpn.split(',');
-            if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
-            // 严格对齐合成.txt模板，默认添加ech配置
-            node.tls.ech = { enabled: false };
-            return node;
-        }
+                if (col !== -1) { server = hostPort.substring(0, col);
+                    port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort;
+                    port = 443; }
+                const params = new URLSearchParams(query);
+                const type = params.get('type') || 'tcp';
+                const security = params.get('security') || 'none';
+                const flow = params.get('flow') || '';
+                const sni = params.get('sni') || params.get('peer') || server;
+                const alpn = params.get('alpn');
+                const fp = params.get('fp') || (security === 'tls' ? 'chrome' : undefined);
+                let path = params.get('path') || '/';
+                try { path = decodeURIComponent(path); } catch (e) {}
+                const host = params.get('host') || sni;
+                const serviceName = params.get('serviceName') || '';
+                const pbk = params.get('pbk') || '';
+                const sid = params.get('sid') || '';
 
-        function parseShadowsocks(url) {
-            let main = url.substring(5);
-            let fragment = '';
-            const hash = main.indexOf('#');
-            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash+1)); main = main.substring(0,hash); }
-            let method, password, server, port;
-            if (main.includes('@')) {
-                const at = main.lastIndexOf('@');
-                const userInfo = main.substring(0, at);
-                const hostPort = main.substring(at+1);
-                const decoded = atob(userInfo);
-                const colon = decoded.indexOf(':');
-                method = decoded.substring(0, colon);
-                password = decoded.substring(colon+1);
-                const col = hostPort.lastIndexOf(':');
-                server = col!==-1 ? hostPort.substring(0,col) : hostPort;
-                port = col!==-1 ? parseInt(hostPort.substring(col+1)) : 8388;
-            } else {
-                const decoded = atob(main);
-                const parts = decoded.split('@');
-                const mp = parts[0].split(':');
-                method = mp[0];
-                password = mp[1];
-                const hp = parts[1].split(':');
-                server = hp[0];
-                port = parseInt(hp[1]);
-            }
-            const rawTag = fragment || `${server}:${port}`;
-            return {
-                _rawTag: rawTag,
-                type: 'shadowsocks',
-                server,
-                server_port: port,
-                method,
-                password,
-                domain_resolver: 'alidns-quic'
-            };
-        }
+                const rawTag = fragment || `${server}:${port}`;
+                const node = {
+                    _rawTag: rawTag,
+                    type: 'vless',
+                    server,
+                    server_port: port,
+                    uuid,
+                    domain_resolver: 'alidns-quic'
+                };
+                if (flow) node.flow = flow;
 
-        function parseHysteria2(url) {
-            let u = url.startsWith('hysteria2://') ? url : url.replace('hy2://', 'hysteria2://');
-            let main = u.substring(12);
-            let fragment = '';
-            const hash = main.indexOf('#');
-            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash+1)); main = main.substring(0,hash); }
-            const at = main.indexOf('@');
-            if (at === -1) throw new Error('Invalid Hysteria2');
-            const password = main.substring(0, at);
-            const hostPort = main.substring(at+1);
-            const qm = hostPort.indexOf('?');
-            let server, port, query='';
-            if (qm !== -1) {
-                const hp = hostPort.substring(0, qm);
-                query = hostPort.substring(qm+1);
-                const col = hp.lastIndexOf(':');
-                if (col !== -1) { server = hp.substring(0,col); port = parseInt(hp.substring(col+1)); }
-                else { server = hp; port = 443; }
-            } else {
-                const col = hostPort.lastIndexOf(':');
-                if (col !== -1) { server = hostPort.substring(0,col); port = parseInt(hostPort.substring(col+1)); }
-                else { server = hostPort; port = 443; }
-            }
-            const params = new URLSearchParams(query);
-            const sni = params.get('sni') || server;
-            const insecure = params.get('insecure') === '1';
-            const obfs = params.get('obfs');
-            const obfsPassword = params.get('obfs-password');
-            
-            const rawTag = fragment || `${server}:${port}`;
-            const node = {
-                _rawTag: rawTag,
-                type: 'hysteria2',
-                server,
-                server_port: port,
-                password,
-                domain_resolver: 'alidns-quic',
-                tls: { enabled: true, server_name: sni, insecure }
-            };
-            if (obfs) {
-                node.obfs = { type: obfs };
-                if (obfsPassword) node.obfs.password = obfsPassword;
-            }
-            return node;
-        }
+                if (type !== 'tcp') {
+                    const transport = { type };
+                    if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; } else if (
+                        type === 'grpc') transport.service_name = serviceName;
+                    else if (type === 'httpupgrade') { transport.path = path; if (host) transport.host = host; }
+                    node.transport = transport;
+                }
 
-        function parseLine(line) {
-            line = line.trim();
-            if (!line) return null;
-            try {
-                if (line.startsWith('vless://')) return parseVless(line);
-                if (line.startsWith('vmess://')) return parseVmess(line);
-                if (line.startsWith('trojan://')) return parseTrojan(line);
-                if (line.startsWith('ss://')) return parseShadowsocks(line);
-                if (line.startsWith('hysteria2://') || line.startsWith('hy2://')) return parseHysteria2(line);
-            } catch (e) {
-                console.warn('解析失败:', line, e);
+                if (security === 'tls') {
+                    node.tls = { enabled: true, server_name: sni, ech: { enabled: false } };
+                    if (alpn) node.tls.alpn = alpn.split(',').map(s => s.trim());
+                    if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
+                } else if (security === 'reality') {
+                    node.tls = { enabled: true, server_name: sni, reality: { enabled: true },
+                    ech: { enabled: false } };
+                    if (pbk) node.tls.reality.public_key = pbk;
+                    if (sid) node.tls.reality.short_id = sid;
+                    if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
+                }
+                return node;
+            }
+
+            function parseVmess(url) {
+                const b64 = url.substring(8);
+                const jsonStr = atob(b64);
+                const vm = JSON.parse(jsonStr);
+                const rawTag = vm.ps || `${vm.add}:${vm.port}`;
+                const node = {
+                    _rawTag: rawTag,
+                    type: 'vmess',
+                    server: vm.add,
+                    server_port: parseInt(vm.port) || 443,
+                    uuid: vm.id,
+                    security: vm.scy || 'auto',
+                    alter_id: parseInt(vm.aid) || 0,
+                    domain_resolver: 'alidns-quic'
+                };
+                const net = vm.net;
+                if (net && net !== 'tcp') {
+                    const transport = { type: net };
+                    if (net === 'ws') {
+                        transport.path = vm.path || '/';
+                        if (vm.host) transport.headers = { Host: vm.host };
+                    } else if (net === 'grpc') {
+                        transport.service_name = vm.path || '';
+                    } else if (net === 'h2') {
+                        transport.type = 'http';
+                        transport.host = vm.host ? [vm.host] : undefined;
+                        transport.path = vm.path;
+                    }
+                    node.transport = transport;
+                }
+                if (vm.tls === 'tls') {
+                    node.tls = { enabled: true, server_name: vm.sni || vm.add, ech: { enabled: false } };
+                    if (vm.alpn) node.tls.alpn = vm.alpn.split(',');
+                    if (vm.fingerprint) node.tls.utls = { enabled: true, fingerprint: vm.fingerprint };
+                }
+                return node;
+            }
+
+            function parseTrojan(url) {
+                let main = url.substring(9);
+                let fragment = '';
+                const hash = main.indexOf('#');
+                if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1));
+                    main = main.substring(0, hash); }
+                const at = main.indexOf('@');
+                if (at === -1) throw new Error('Invalid Trojan');
+                const password = main.substring(0, at);
+                const hostPort = main.substring(at + 1);
+                const qm = hostPort.indexOf('?');
+                let server, port, query = '';
+                if (qm !== -1) {
+                    const hp = hostPort.substring(0, qm);
+                    query = hostPort.substring(qm + 1);
+                    const col = hp.lastIndexOf(':');
+                    if (col !== -1) { server = hp.substring(0, col);
+                        port = parseInt(hp.substring(col + 1)); } else { server = hp;
+                        port = 443; }
+                } else {
+                    const col = hostPort.lastIndexOf(':');
+                    if (col !== -1) { server = hostPort.substring(0, col);
+                        port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort;
+                        port = 443; }
+                }
+                const params = new URLSearchParams(query);
+                const sni = params.get('sni') || server;
+                const fp = params.get('fp') || 'chrome';
+                const alpn = params.get('alpn');
+                const type = params.get('type') || 'tcp';
+                const path = params.get('path') || '/';
+                const host = params.get('host') || sni;
+
+                const rawTag = fragment || `${server}:${port}`;
+                const node = {
+                    _rawTag: rawTag,
+                    type: 'trojan',
+                    server,
+                    server_port: port,
+                    password,
+                    domain_resolver: 'alidns-quic'
+                };
+                if (type !== 'tcp') {
+                    const transport = { type };
+                    if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; }
+                    node.transport = transport;
+                }
+                node.tls = { enabled: true, server_name: sni, ech: { enabled: false } };
+                if (alpn) node.tls.alpn = alpn.split(',');
+                if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
+                return node;
+            }
+
+            function parseShadowsocks(url) {
+                let main = url.substring(5);
+                let fragment = '';
+                const hash = main.indexOf('#');
+                if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1));
+                    main = main.substring(0, hash); }
+                let method, password, server, port;
+                if (main.includes('@')) {
+                    const at = main.lastIndexOf('@');
+                    const userInfo = main.substring(0, at);
+                    const hostPort = main.substring(at + 1);
+                    const decoded = atob(userInfo);
+                    const colon = decoded.indexOf(':');
+                    method = decoded.substring(0, colon);
+                    password = decoded.substring(colon + 1);
+                    const col = hostPort.lastIndexOf(':');
+                    server = col !== -1 ? hostPort.substring(0, col) : hostPort;
+                    port = col !== -1 ? parseInt(hostPort.substring(col + 1)) : 8388;
+                } else {
+                    const decoded = atob(main);
+                    const parts = decoded.split('@');
+                    const mp = parts[0].split(':');
+                    method = mp[0];
+                    password = mp[1];
+                    const hp = parts[1].split(':');
+                    server = hp[0];
+                    port = parseInt(hp[1]);
+                }
+                const rawTag = fragment || `${server}:${port}`;
+                return {
+                    _rawTag: rawTag,
+                    type: 'shadowsocks',
+                    server,
+                    server_port: port,
+                    method,
+                    password,
+                    domain_resolver: 'alidns-quic'
+                };
+            }
+
+            function parseHysteria2(url) {
+                let u = url.startsWith('hysteria2://') ? url : url.replace('hy2://', 'hysteria2://');
+                let main = u.substring(12);
+                let fragment = '';
+                const hash = main.indexOf('#');
+                if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1));
+                    main = main.substring(0, hash); }
+                const at = main.indexOf('@');
+                if (at === -1) throw new Error('Invalid Hysteria2');
+                const password = main.substring(0, at);
+                const hostPort = main.substring(at + 1);
+                const qm = hostPort.indexOf('?');
+                let server, port, query = '';
+                if (qm !== -1) {
+                    const hp = hostPort.substring(0, qm);
+                    query = hostPort.substring(qm + 1);
+                    const col = hp.lastIndexOf(':');
+                    if (col !== -1) { server = hp.substring(0, col);
+                        port = parseInt(hp.substring(col + 1)); } else { server = hp;
+                        port = 443; }
+                } else {
+                    const col = hostPort.lastIndexOf(':');
+                    if (col !== -1) { server = hostPort.substring(0, col);
+                        port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort;
+                        port = 443; }
+                }
+                const params = new URLSearchParams(query);
+                const sni = params.get('sni') || server;
+                const insecure = params.get('insecure') === '1';
+                const obfs = params.get('obfs');
+                const obfsPassword = params.get('obfs-password');
+
+                const rawTag = fragment || `${server}:${port}`;
+                const node = {
+                    _rawTag: rawTag,
+                    type: 'hysteria2',
+                    server,
+                    server_port: port,
+                    password,
+                    domain_resolver: 'alidns-quic',
+                    tls: { enabled: true, server_name: sni, insecure,
+                    ech: { enabled: false } }
+                };
+                if (obfs) {
+                    node.obfs = { type: obfs };
+                    if (obfsPassword) node.obfs.password = obfsPassword;
+                }
+                return node;
+            }
+
+            function parseLine(line) {
+                line = line.trim();
+                if (!line) return null;
+                try {
+                    if (line.startsWith('vless://')) return parseVless(line);
+                    if (line.startsWith('vmess://')) return parseVmess(line);
+                    if (line.startsWith('trojan://')) return parseTrojan(line);
+                    if (line.startsWith('ss://')) return parseShadowsocks(line);
+                    if (line.startsWith('hysteria2://') || line.startsWith('hy2://')) return parseHysteria2(line);
+                } catch (e) {
+                    console.warn('解析失败:', line, e);
+                    return null;
+                }
                 return null;
             }
-            return null;
-        }
 
-        // ---------- 构建 outbounds (严格对齐合成.txt模板结构与顺序) ----------
-        function buildOutbounds(rawNodes) {
-            // 保留标签：避免与系统内置tag冲突
-            const usedTags = new Set(['DIRECT', 'AUTO', 'PROXY', 'GLOBAL', 'CN']);
-            const finalNodes = [];
-            
-            // 1. 内置DIRECT出站（与合成.txt模板完全一致）
-            const directOutbound = {
-                "type": "direct",
-                "tag": "DIRECT",
-                "domain_resolver": "alidns-quic"
-            };
+            // ---------- 构建 outbounds (严格对齐 1.14.0-alpha.20 模板结构与顺序) ----------
+            function buildOutbounds(rawNodes) {
+                const usedTags = new Set(['DIRECT', 'AUTO', 'PROXY', 'GLOBAL', 'CN', 'Final', 'REJECT-DROP']);
+                const finalNodes = [];
 
-            // 2. 处理用户节点，生成唯一tag，严格对齐合成.txt节点结构
-            for (let raw of rawNodes) {
-                const baseTag = raw._rawTag || 'node';
-                delete raw._rawTag;
-                const uniqueTag = makeUniqueTag(baseTag, usedTags);
-                raw.tag = uniqueTag;
-                finalNodes.push(raw);
-            }
-            
-            // 3. 提取用户节点tag列表，用于自动选路和选择器
-            const nodeTags = finalNodes.map(n => n.tag);
-            
-            // 4. 生成AUTO自动测速urltest（与合成.txt模板完全一致）
-            const autoUrltest = {
-                "type": "urltest",
-                "tag": "AUTO",
-                "outbounds": nodeTags,
-                "url": "http://cp.cloudflare.com/",
-                "interval": "10m",
-                "tolerance": 50,
-                "idle_timeout": "30m",
-                "interrupt_exist_connections": false
-            };
+                // 处理用户节点，生成唯一tag，添加1.14.0特有字段
+                for (let raw of rawNodes) {
+                    const baseTag = raw._rawTag || 'node';
+                    delete raw._rawTag;
+                    const uniqueTag = makeUniqueTag(baseTag, usedTags);
+                    raw.tag = uniqueTag;
 
-            // 5. 生成PROXY手动选择器（与合成.txt模板完全一致）
-            const proxySelector = {
-                "type": "selector",
-                "tag": "PROXY",
-                "outbounds": nodeTags.length > 0 ? ["AUTO", ...nodeTags, "DIRECT"] : ["DIRECT"],
-                "default": nodeTags.length > 0 ? "AUTO" : "DIRECT",
-                "interrupt_exist_connections": false
-            };
+                    // 添加 1.14.0-alpha.20 节点通用增强字段
+                    raw.tcp_fast_open = true;
+                    raw.connect_timeout = "5s";
 
-            // 6. 生成GLOBAL全局选择器（与合成.txt模板完全一致）
-            const globalSelector = {
-                "type": "selector",
-                "tag": "GLOBAL",
-                "outbounds": ["PROXY", "DIRECT"],
-                "default": "PROXY",
-                "interrupt_exist_connections": false
-            };
+                    // 对于vless/vmess/trojan类型，添加keep_alive和udp_fragment
+                    if (['vless', 'vmess', 'trojan'].includes(raw.type)) {
+                        raw.tcp_keep_alive = "30s";
+                        raw.tcp_keep_alive_interval = "5s";
+                        raw.udp_fragment = true;
+                        if (raw.type === 'vless') {
+                            raw.packet_encoding = "xudp";
+                        }
+                    }
 
-            // 7. 生成CN国内选择器（与合成.txt模板完全一致）
-            const cnSelector = {
-                "type": "selector",
-                "tag": "CN",
-                "outbounds": ["DIRECT", "PROXY"],
-                "default": "DIRECT",
-                "interrupt_exist_connections": false
-            };
-            
-            // 按sing-box引用规范拼接完整outbounds数组（先定义被引用项，后定义引用项，兼容合成模板逻辑）
-            return [
-                directOutbound,
-                ...finalNodes,
-                ...(nodeTags.length > 0 ? [autoUrltest] : []),
-                proxySelector,
-                globalSelector,
-                cnSelector
-            ];
-        }
+                    // 对于ws传输，添加max_early_data和early_data_header_name
+                    if (raw.transport && raw.transport.type === 'ws') {
+                        raw.transport.max_early_data = 2560;
+                        raw.transport.early_data_header_name = "Sec-WebSocket-Protocol";
+                    }
 
-        // ---------- UI交互逻辑 ----------
-        const inputArea = document.getElementById('inputArea');
-        const outputPre = document.getElementById('outputConfig');
-        const nodeBadge = document.getElementById('nodeCountBadge');
-        const feedbackDiv = document.getElementById('copyFeedback');
-        
-        function showFeedback(msg) {
-            feedbackDiv.innerHTML = `<span class="toast-msg">${msg}</span>`;
-            setTimeout(() => feedbackDiv.innerHTML = '', 2500);
-        }
+                    // 确保tls节点有ech配置
+                    if (raw.tls && !raw.tls.ech) {
+                        raw.tls.ech = { enabled: false };
+                    }
 
-        // 解析生成配置
-        document.getElementById('convertBtn').addEventListener('click', () => {
-            try {
-                const raw = inputArea.value.trim();
-                if (!raw) throw new Error('请输入节点链接');
-                const lines = raw.split(/\n/);
-                const rawNodes = [];
-                for (let line of lines) {
-                    const node = parseLine(line);
-                    if (node) rawNodes.push(node);
+                    finalNodes.push(raw);
                 }
-                if (rawNodes.length === 0) throw new Error('未识别到有效节点');
-                const outbounds = buildOutbounds(rawNodes);
-                const config = JSON.parse(JSON.stringify(BASE_TEMPLATE));
-                config.outbounds = outbounds;
-                outputPre.textContent = JSON.stringify(config, null, 2);
-                nodeBadge.textContent = `${rawNodes.length} 个节点`;
-                showFeedback(`✅ 成功解析 ${rawNodes.length} 个节点，配置已生成`);
-            } catch (e) {
-                alert('转换失败: ' + e.message);
-                outputPre.textContent = '// 解析错误: ' + e.message;
+
+                const nodeTags = finalNodes.map(n => n.tag);
+
+                // 按 1.14.0-alpha.20 顺序构建 outbounds
+                const directOutbound = {
+                    "type": "direct",
+                    "tag": "DIRECT",
+                    "domain_resolver": "alidns-quic"
+                };
+
+                const proxySelector = {
+                    "type": "selector",
+                    "tag": "PROXY",
+                    "outbounds": nodeTags.length > 0 ? ["AUTO", ...nodeTags, "DIRECT"] : ["DIRECT"],
+                    "default": nodeTags.length > 0 ? "AUTO" : "DIRECT"
+                };
+
+                const autoUrltest = nodeTags.length > 0 ? {
+                    "type": "urltest",
+                    "tag": "AUTO",
+                    "outbounds": nodeTags,
+                    "url": "http://www.gstatic.com/generate_204",
+                    "interval": "10m0s",
+                    "tolerance": 50,
+                    "idle_timeout": "30m0s"
+                } : null;
+
+                const globalSelector = {
+                    "type": "selector",
+                    "tag": "GLOBAL",
+                    "outbounds": ["PROXY", "DIRECT"],
+                    "default": "PROXY"
+                };
+
+                const cnSelector = {
+                    "type": "selector",
+                    "tag": "CN",
+                    "outbounds": ["DIRECT", "PROXY"],
+                    "default": "DIRECT"
+                };
+
+                const rejectDropBlock = {
+                    "type": "block",
+                    "tag": "REJECT-DROP"
+                };
+
+                const finalSelector = {
+                    "type": "selector",
+                    "tag": "Final",
+                    "outbounds": ["PROXY", "DIRECT", "REJECT-DROP"],
+                    "default": "PROXY"
+                };
+
+                // 按 1.14.0-alpha.20 顺序: DIRECT, PROXY, AUTO, GLOBAL, CN, Final, REJECT-DROP, 节点们
+                const outbounds = [directOutbound, proxySelector];
+                if (autoUrltest) outbounds.push(autoUrltest);
+                outbounds.push(globalSelector, cnSelector, finalSelector, rejectDropBlock);
+                outbounds.push(...finalNodes);
+
+                return outbounds;
+            }
+
+            // ---------- UI交互逻辑 ----------
+            const inputArea = document.getElementById('inputArea');
+            const outputPre = document.getElementById('outputConfig');
+            const nodeBadge = document.getElementById('nodeCountBadge');
+            const feedbackDiv = document.getElementById('copyFeedback');
+
+            function showFeedback(msg) {
+                feedbackDiv.innerHTML = `<span class="toast-msg">${msg}</span>`;
+                setTimeout(() => feedbackDiv.innerHTML = '', 2500);
+            }
+
+            document.getElementById('convertBtn').addEventListener('click', () => {
+                try {
+                    const raw = inputArea.value.trim();
+                    if (!raw) throw new Error('请输入节点链接');
+                    const lines = raw.split(/\n/);
+                    const rawNodes = [];
+                    for (let line of lines) {
+                        const node = parseLine(line);
+                        if (node) rawNodes.push(node);
+                    }
+                    if (rawNodes.length === 0) throw new Error('未识别到有效节点');
+                    const outbounds = buildOutbounds(rawNodes);
+                    const config = JSON.parse(JSON.stringify(BASE_TEMPLATE));
+                    config.outbounds = outbounds;
+                    outputPre.textContent = JSON.stringify(config, null, 2);
+                    nodeBadge.textContent = `${rawNodes.length} 个节点`;
+                    showFeedback(`✅ 成功解析 ${rawNodes.length} 个节点，配置已生成`);
+                } catch (e) {
+                    alert('转换失败: ' + e.message);
+                    outputPre.textContent = '// 解析错误: ' + e.message;
+                    nodeBadge.textContent = '0 个节点';
+                }
+            });
+
+            document.getElementById('copyBtn').addEventListener('click', async () => {
+                const text = outputPre.textContent;
+                if (!text || text.startsWith('//')) { showFeedback('无有效配置可复制'); return; }
+                try {
+                    await navigator.clipboard.writeText(text);
+                    showFeedback('📋 配置已复制到剪贴板');
+                } catch {
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showFeedback('📋 复制成功');
+                }
+            });
+
+            document.getElementById('clearBtn').addEventListener('click', () => {
+                inputArea.value = '';
+                outputPre.textContent = '// 点击「解析并生成配置」后显示完整 JSON …';
                 nodeBadge.textContent = '0 个节点';
-            }
-        });
+                feedbackDiv.innerHTML = '';
+            });
 
-        // 一键复制配置
-        document.getElementById('copyBtn').addEventListener('click', async () => {
-            const text = outputPre.textContent;
-            if (!text || text.startsWith('//')) { showFeedback('无有效配置可复制'); return; }
-            try {
-                await navigator.clipboard.writeText(text);
-                showFeedback('📋 配置已复制到剪贴板');
-            } catch {
-                const ta = document.createElement('textarea'); 
-                ta.value = text; 
-                document.body.appendChild(ta);
-                ta.select(); 
-                document.execCommand('copy'); 
-                document.body.removeChild(ta);
-                showFeedback('📋 复制成功');
-            }
-        });
+            const sampleText =
+                `vless://a8ceaac6-bda6-459e-ace7-0b34c5873e1e@www.visa.com:443?type=ws&path=%2Fpkpk-vl&host=cvb.372164885.xyz&security=tls&sni=cvb.372164885.xyz&fp=chrome#🚀-CF-Visa
+        vmess://eyJ2IjogIjIiLCAicHMiOiAiVk1lc3MtV1MiLCAiYWRkIjogImV4YW1wbGUuY29tIiwgInBvcnQiOiA0NDMsICJpZCI6ICJhOGNlYWFjNi1iZGE2LTQ1OWUtYWNlNy0wYjM0YzU4NzNlMWUiLCAiYWlkIjogMCwgIm5ldCI6ICJ3cyIsICJ0eXBlIjogIm5vbmUiLCAiaG9zdCI6ICJleGFtcGxlLmNvbSIsICJwYXRoIjogIi93cyIsICJ0bHMiOiAidGxzIn0=
+        trojan://password@trojan.example.com:443?sni=trojan.example.com#Trojan-Node
+        ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388#SS-Node
+        hysteria2://letmein@hy2.example.com:443?sni=hy2.example.com&insecure=0#Hysteria2-Node`;
+            document.getElementById('sampleBtn').addEventListener('click', () => {
+                inputArea.value = sampleText;
+            });
 
-        // 清空输入输出
-        document.getElementById('clearBtn').addEventListener('click', () => {
             inputArea.value = '';
             outputPre.textContent = '// 点击「解析并生成配置」后显示完整 JSON …';
             nodeBadge.textContent = '0 个节点';
-            feedbackDiv.innerHTML = '';
-        });
-
-        // 填入示例节点
-        const sampleText = `vless://a8ceaac6-bda6-459e-ace7-0b34c5873e1e@www.visa.com:443?type=ws&path=%2Fpkpk-vl&host=cvb.372164885.xyz&security=tls&sni=cvb.372164885.xyz&fp=chrome#🚀-CF-Visa
-vmess://eyJ2IjogIjIiLCAicHMiOiAiVk1lc3MtV1MiLCAiYWRkIjogImV4YW1wbGUuY29tIiwgInBvcnQiOiA0NDMsICJpZCI6ICJhOGNlYWFjNi1iZGE2LTQ1OWUtYWNlNy0wYjM0YzU4NzNlMWUiLCAiYWlkIjogMCwgIm5ldCI6ICJ3cyIsICJ0eXBlIjogIm5vbmUiLCAiaG9zdCI6ICJleGFtcGxlLmNvbSIsICJwYXRoIjogIi93cyIsICJ0bHMiOiAidGxzIn0=
-trojan://password@trojan.example.com:443?sni=trojan.example.com#Trojan-Node
-ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388#SS-Node
-hysteria2://letmein@hy2.example.com:443?sni=hy2.example.com&insecure=0#Hysteria2-Node`;
-        document.getElementById('sampleBtn').addEventListener('click', () => {
-            inputArea.value = sampleText;
-        });
-
-        // 初始化状态
-        inputArea.value = '';
-        outputPre.textContent = '// 点击「解析并生成配置」后显示完整 JSON …';
-        nodeBadge.textContent = '0 个节点';
-    })();
-</script>
+        })();
+    </script>
 </body>
 </html>
