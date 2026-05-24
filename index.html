@@ -201,7 +201,7 @@
 <body>
     <div class="container">
         <h1>🧬 多协议 → Sing-Box 配置生成</h1>
-        <div class="subtitle">VLESS · VMess · Trojan · SS · Hysteria2 · 基于 3(2).json 模板 · 自动去重</div>
+        <div class="subtitle">VLESS · VMess · Trojan · SS · Hysteria2 · 基于上传.json模板 · 自动去重</div>
         <div class="card">
             <div class="input-area">
                 <div class="input-header">
@@ -234,224 +234,236 @@
             <div id="copyFeedback" style="height: 24px; margin-top: 8px;"></div>
         </div>
         <div class="footnote">
-            ⚡ 基于 3(2).json 模板 · 已清除所有占位节点/敏感信息 · 节点标签自动去重 · 全字段对齐
+            ⚡ 基于上传.json模板 · 已清除所有占位节点/敏感信息 · 节点标签自动去重 · 全字段对齐
         </div>
     </div>
     <script>
         (function() {
             "use strict";
 
-            // ========== 核心模板：完全基于 3(2).json，已移除所有原始占位节点、敏感域名/IP ==========
+            // ========== 核心模板：完全基于上传.json，已移除所有原始占位节点 ==========
             const BASE_TEMPLATE = {
                 "log": {
                     "level": "trace",
                     "timestamp": true
                 },
                 "dns": {
-                    "servers": [{
-                        "type": "local",
-                        "tag": "local",
-                        "neighbor_domain": [".local", ".lan"]
-                    }, {
-                        "type": "mdns",
-                        "tag": "mdns-server"
-                    }, {
-                        "type": "hosts",
-                        "tag": "hosts_fix",
-                        "predefined": {
-                            "dns.huaweicloud.com": ["180.163.150.33", "180.163.151.33"],
-                            "dns.alidns.com": ["223.5.5.5", "223.6.6.6"],
-                            "dns.adguard.com": ["94.140.14.15", "94.140.15.16"],
-                            "doh.pub": ["1.12.12.21", "120.53.53.53"],
-                            "dns.google": ["8.8.8.8", "8.8.4.4"],
-                            "cloudflare-dns.com": ["104.16.248.249", "104.16.249.249"],
-                            "mtalk.google.com": ["142.250.107.188", "142.251.170.188", "108.177.125.188"],
-                            "alt1-mtalk.google.com": "74.125.200.188",
-                            "dl.google.com": "180.163.151.161",
-                            "dl.l.google.com": "180.163.150.33"
+                    "servers": [
+                        {
+                            "type": "local",
+                            "tag": "local",
+                            "neighbor_domain": [".local", ".lan"]
+                        },
+                        {
+                            "type": "hosts",
+                            "tag": "hosts_fix",
+                            "predefined": {
+                                "dns.huaweicloud.com": ["180.163.150.33", "180.163.151.33"],
+                                "dns.alidns.com": ["223.5.5.5", "223.6.6.6"],
+                                "dns.adguard.com": ["94.140.14.15", "94.140.15.16"],
+                                "doh.pub": ["1.12.12.21", "120.53.53.53"],
+                                "dns.google": ["8.8.8.8", "8.8.4.4"],
+                                "cloudflare-dns.com": ["104.16.248.249", "104.16.249.249"],
+                                "mtalk.google.com": ["142.250.107.188", "142.251.170.188", "108.177.125.188"],
+                                "alt1-mtalk.google.com": "74.125.200.188",
+                                "dl.google.com": "180.163.151.161",
+                                "dl.l.google.com": "180.163.150.33"
+                            }
+                        },
+                        {
+                            "type": "quic",
+                            "tag": "alidns-quic",
+                            "detour": "DIRECT",
+                            "domain_resolver": "hosts_fix",
+                            "server": "dns.alidns.com"
+                        },
+                        {
+                            "type": "udp",
+                            "tag": "dnspub-udp",
+                            "detour": "DIRECT",
+                            "server": "119.29.29.29",
+                            "server_port": 53
+                        },
+                        {
+                            "type": "https",
+                            "tag": "tx-doh",
+                            "detour": "DIRECT",
+                            "domain_resolver": "hosts_fix",
+                            "server": "doh.pub"
+                        },
+                        {
+                            "type": "https",
+                            "tag": "ali-doh",
+                            "detour": "DIRECT",
+                            "domain_resolver": "hosts_fix",
+                            "server": "dns.alidns.com"
+                        },
+                        {
+                            "type": "https",
+                            "tag": "ggdns",
+                            "detour": "PROXY",
+                            "domain_resolver": "hosts_fix",
+                            "server": "dns.google"
+                        },
+                        {
+                            "type": "tls",
+                            "tag": "cf-dot",
+                            "detour": "PROXY",
+                            "domain_resolver": "hosts_fix",
+                            "server": "cloudflare-dns.com",
+                            "server_port": 853
+                        },
+                        {
+                            "type": "https",
+                            "tag": "quad9-doh",
+                            "detour": "PROXY",
+                            "domain_resolver": "hosts_fix",
+                            "server": "dns.quad9.net"
+                        },
+                        {
+                            "type": "https",
+                            "tag": "doh-ech",
+                            "detour": "PROXY",
+                            "domain_resolver": "hosts_fix",
+                            "server": "dns.cloudflare.com"
+                        },
+                        {
+                            "type": "udp",
+                            "tag": "adguard-dns",
+                            "detour": "PROXY",
+                            "domain_resolver": "hosts_fix",
+                            "server": "107.172.252.185",
+                            "server_port": 53
+                        },
+                        {
+                            "type": "fakeip",
+                            "tag": "fakeip",
+                            "inet4_range": "198.18.0.0/15",
+                            "inet6_range": "fc00::/18"
                         }
-                    }, {
-                        "type": "tls",
-                        "tag": "alidns-dot",
-                        "detour": "DIRECT",
-                        "domain_resolver": "hosts_fix",
-                        "server": "dns.alidns.com",
-                        "server_port": 853
-                    }, {
-                        "type": "quic",
-                        "tag": "alidns-quic",
-                        "detour": "DIRECT",
-                        "domain_resolver": "hosts_fix",
-                        "server": "dns.alidns.com"
-                    }, {
-                        "type": "udp",
-                        "tag": "dnspub-udp",
-                        "detour": "DIRECT",
-                        "server": "119.29.29.29",
-                        "server_port": 53
-                    }, {
-                        "type": "https",
-                        "tag": "tx-doh",
-                        "detour": "DIRECT",
-                        "domain_resolver": "hosts_fix",
-                        "server": "doh.pub"
-                    }, {
-                        "type": "https",
-                        "tag": "ali-doh",
-                        "detour": "DIRECT",
-                        "domain_resolver": "hosts_fix",
-                        "server": "dns.alidns.com"
-                    }, {
-                        "type": "https",
-                        "tag": "ggdns",
-                        "detour": "PROXY",
-                        "domain_resolver": "hosts_fix",
-                        "server": "dns.google"
-                    }, {
-                        "type": "tls",
-                        "tag": "cf-dot",
-                        "detour": "PROXY",
-                        "domain_resolver": "hosts_fix",
-                        "server": "cloudflare-dns.com",
-                        "server_port": 853
-                    }, {
-                        "type": "https",
-                        "tag": "quad9-doh",
-                        "detour": "PROXY",
-                        "domain_resolver": "hosts_fix",
-                        "server": "dns.quad9.net"
-                    }, {
-                        "type": "https",
-                        "tag": "doh-ech",
-                        "detour": "PROXY",
-                        "server": "dns.cloudflare.com"
-                    }, {
-                        "type": "fakeip",
-                        "tag": "fakeip",
-                        "inet4_range": "198.18.0.0/15"
-                    }, {
-                        "type": "udp",
-                        "tag": "adguard-dns",
-                        "detour": "PROXY",
-                        "domain_resolver": "hosts_fix",
-                        "server": "dns.adguard.com",
-                        "server_port": 53
-                    }, {
-                        "type": "udp",
-                        "tag": "tor-dns",
-                        "server": "127.0.0.1",
-                        "server_port": 5353
-                    }],
-                    "rules": [{
-                        "domain_suffix": ".onion",
-                        "server": "tor-dns"
-                    }, {
-                        "ip_version": 6,
-                        "server": "ali-doh"
-                    }, {
-                        "domain_suffix": [
-                            "beacons.gvt2.com",
-                            "beacons2.gvt2.com",
-                            "beacons3.gvt2.com"
-                        ],
-                        "action": "reject"
-                    }, {
-                        "rule_set": "cn",
-                        "server": "tx-doh"
-                    }, {
-                        "rule_set": "private",
-                        "server": "dnspub-udp"
-                    }, {
-                        "domain_suffix": [".cn", ".com.cn"],
-                        "server": "ali-doh"
-                    }, {
-                        "domain_suffix": "lancache.steamcontent.com",
-                        "server": "local"
-                    }, {
-                        "domain_suffix": [
-                            "local", "lan", "home", "internal", "corp", "example.com"
-                        ],
-                        "server": "local"
-                    }, {
-                        "domain_suffix": ["msftncsi.com", "msftconnecttest.com"],
-                        "server": "local"
-                    }, {
-                        "domain_suffix": [
-                            "steamcontent.com", "steamserver.net", "epicgames.com", "gog.com",
-                            "battle.net", "blizzard.com", "origin.com", "ea.com", "ubisoft.com",
-                            "rockstargames.com", "play.google.com", "ggpht.com", "googleusercontent.com",
-                            "android.com", "app-measurement.com", "firebaselogging.googleapis.com",
-                            "firebaselogging-pa.googleapis.com"
-                        ],
-                        "server": "fakeip"
-                    }, {
-                        "domain_suffix": [
-                            "google.com", "google.com.hk", "googleapis.com", "gstatic.com",
-                            "ggpht.com", "youtube.com", "ytimg.com", "googlevideo.com",
-                            "twitter.com", "twimg.com", "facebook.com", "fbcdn.net",
-                            "instagram.com", "cdninstagram.com"
-                        ],
-                        "server": "fakeip"
-                    }, {
-                        "rule_set": [
-                            "telegram", "youtube", "instagram", "Proxy", "gfw", "ai", "games", "GlobalMedia"
-                        ],
-                        "server": "fakeip"
-                    }, {
-                        "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
-                        "server": "ali-doh"
-                    }, {
-                        "rule_set": ["geosite-google", "geosite-youtube"],
-                        "server": "quad9-doh"
-                    }, {
-                        "rule_set": "GlobalMedia",
-                        "server": "cf-dot"
-                    }, {
-                        "query_type": ["A", "AAAA"],
-                        "domain_suffix": "steamcontent.com",
-                        "server": "fakeip"
-                    }, {
-                        "query_type": ["A", "AAAA"],
-                        "invert": true,
-                        "action": "reject"
-                    }, {
-                        "query_type": ["A", "AAAA"],
-                        "rule_set": ["proxy", "games", "ai"],
-                        "server": "fakeip",
-                        "rewrite_ttl": 300
-                    }, {
-                        "rule_set": ["httpDNS", "DNSreject", "Ads"],
-                        "action": "predefined",
-                        "rcode": "NOERROR"
-                    }, {
-                        "rule_set": ["private", "Filter"],
-                        "server": "alidns-quic"
-                    }, {
-                        "domain_suffix": "bkl.372164885.xyz",
-                        "server": "doh-ech"
-                    }, {
-                        "domain": [
-                            "*.doubleclick.net", "*.googlesyndication.com", "*.googleadservices.com",
-                            "*.adservice.google.com", "*.addthis.com", "*.adnxs.com", "*.adsrvr.org",
-                            "*.casalemedia.com", "*.rubiconproject.com", "*.openx.net"
-                        ],
-                        "action": "reject"
-                    }, {
-                        "domain_regex": "^(ad|ads|advert|banner|sponsor|popup|tracker|analytics)\\.|doubleclick\\.|googleadservices\\.|googlesyndication\\.",
-                        "action": "reject"
-                    }, {
-                        "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
-                        "action": "reject"
-                    }, {
-                        "query_type": ["SVCB", "HTTPS", "PTR"],
-                        "action": "reject"
-                    }],
+                    ],
+                    "rules": [
+                        {
+                            "rule_set": "cn",
+                            "server": "tx-doh"
+                        },
+                        {
+                            "rule_set": "private",
+                            "server": "dnspub-udp"
+                        },
+                        {
+                            "domain_suffix": [".cn", ".com.cn"],
+                            "server": "ali-doh"
+                        },
+                        {
+                            "domain_suffix": "lancache.steamcontent.com",
+                            "server": "local"
+                        },
+                        {
+                            "domain_suffix": ["local", "lan", "home", "internal", "corp", "example.com"],
+                            "server": "local"
+                        },
+                        {
+                            "domain_suffix": ["msftncsi.com", "msftconnecttest.com"],
+                            "server": "local"
+                        },
+                        {
+                            "query_type": ["A", "AAAA"],
+                            "domain_suffix": [
+                                "steamcontent.com", "steamserver.net", "epicgames.com", "gog.com",
+                                "battle.net", "blizzard.com", "origin.com", "ea.com", "ubisoft.com",
+                                "rockstargames.com", "play.google.com", "ggpht.com", "googleusercontent.com",
+                                "android.com", "app-measurement.com", "firebaselogging.googleapis.com",
+                                "firebaselogging-pa.googleapis.com"
+                            ],
+                            "server": "fakeip"
+                        },
+                        {
+                            "query_type": ["A", "AAAA"],
+                            "domain_suffix": [
+                                "google.com", "google.com.hk", "googleapis.com", "gstatic.com",
+                                "ggpht.com", "youtube.com", "ytimg.com", "googlevideo.com",
+                                "twitter.com", "twimg.com", "facebook.com", "fbcdn.net",
+                                "instagram.com", "cdninstagram.com"
+                            ],
+                            "server": "fakeip"
+                        },
+                        {
+                            "query_type": ["A", "AAAA"],
+                            "rule_set": ["telegram", "geosite-youtube", "instagram", "Proxy", "gfw", "ai", "games", "GlobalMedia"],
+                            "server": "fakeip"
+                        },
+                        {
+                            "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
+                            "server": "ali-doh"
+                        },
+                        {
+                            "rule_set": ["geosite-google", "geosite-youtube"],
+                            "server": "quad9-doh"
+                        },
+                        {
+                            "rule_set": "GlobalMedia",
+                            "server": "cf-dot"
+                        },
+                        {
+                            "query_type": ["A", "AAAA"],
+                            "invert": true,
+                            "action": "reject"
+                        },
+                        {
+                            "query_type": ["A", "AAAA"],
+                            "rule_set": ["proxy", "games", "ai"],
+                            "server": "fakeip",
+                            "rewrite_ttl": 300
+                        },
+                        {
+                            "rule_set": ["httpDNS", "DNSreject", "Ads"],
+                            "action": "predefined",
+                            "rcode": "NOERROR"
+                        },
+                        {
+                            "rule_set": ["private", "Filter"],
+                            "server": "alidns-quic"
+                        },
+                        {
+                            "domain_suffix": "fff.372164885.xyz",
+                            "server": "doh-ech"
+                        },
+                        {
+                            "domain": [
+                                "*.doubleclick.net", "*.googlesyndication.com", "*.googleadservices.com",
+                                "*.adservice.google.com", "*.addthis.com", "*.adnxs.com", "*.adsrvr.org",
+                                "*.casalemedia.com", "*.rubiconproject.com", "*.openx.net"
+                            ],
+                            "action": "reject"
+                        },
+                        {
+                            "domain_regex": "^(ad|ads|advert|banner|sponsor|popup|tracker|analytics)\\.|doubleclick\\.|googleadservices\\.|googlesyndication\\.",
+                            "action": "reject"
+                        },
+                        {
+                            "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
+                            "action": "reject"
+                        },
+                        {
+                            "query_type": ["SVCB", "HTTPS", "PTR"],
+                            "action": "reject"
+                        },
+                        {
+                            "domain_suffix": ["beacons.gvt2.com", "beacons2.gvt2.com", "beacons3.gvt2.com"],
+                            "action": "reject"
+                        }
+                    ],
                     "final": "adguard-dns",
                     "reverse_mapping": true,
                     "strategy": "prefer_ipv4",
                     "timeout": "3s",
                     "cache_capacity": 256000,
-                    "optimistic": true
+                    "optimistic": {
+                        "enabled": true,
+                        "timeout": "1h0m0s"
+                    },
+                    "client_subnet": "114.114.114.114"
                 },
                 "ntp": {
                     "enabled": true,
@@ -460,523 +472,436 @@
                     "server_port": 123,
                     "detour": "DIRECT"
                 },
-                "http_clients": [{
-                    "tag": "default",
-                    "version": 2,
-                    "detour": "PROXY",
-                    "stream_receive_window": 0,
-                    "connection_receive_window": 0
-                }],
-                "inbounds": [{
-                    "type": "tun",
-                    "tag": "tun-in",
-                    "mtu": 1500,
-                    "address": "10.8.0.1/24",
-                    "dns_mode": "hijack",
-                    "dns_address": "10.8.0.2",
-                    "auto_route": true,
-                    "strict_route": true,
-                    "stack": "system"
-                }, {
-                    "type": "mixed",
-                    "tag": "mixed-in",
-                    "listen": "127.0.0.1",
-                    "listen_port": 7890
-                }, {
-                    "type": "http",
-                    "tag": "http-in",
-                    "listen": "127.0.0.1",
-                    "listen_port": 7891
-                }, {
-                    "type": "socks",
-                    "tag": "socks-in",
-                    "listen": "127.0.0.1",
-                    "listen_port": 7892
-                }, {
-                    "type": "redirect",
-                    "tag": "redirect-in",
-                    "listen": "127.0.0.1",
-                    "listen_port": 7893
-                }, {
-                    "type": "vmess",
-                    "tag": "vmess-in",
-                    "listen": "127.0.0.1",
-                    "listen_port": 7897,
-                    "users": [{
-                        "name": "",
-                        "uuid": ""
-                    }]
-                }, {
-                    "type": "vless",
-                    "tag": "vless-in",
-                    "listen": "127.0.0.1",
-                    "listen_port": 7898,
-                    "users": [{
-                        "name": "",
-                        "uuid": ""
-                    }]
-                }],
+                "http_clients": [
+                    {
+                        "tag": "default",
+                        "version": 2,
+                        "detour": "DIRECT",
+                        "stream_receive_window": 0,
+                        "connection_receive_window": 0
+                    }
+                ],
+                "inbounds": [
+                    {
+                        "type": "tun",
+                        "tag": "tun-in",
+                        "mtu": 1500,
+                        "address": "10.8.0.1/24",
+                        "dns_mode": "hijack",
+                        "dns_address": "10.8.0.2",
+                        "auto_route": true,
+                        "strict_route": true,
+                        "stack": "system"
+                    },
+                    {
+                        "type": "mixed",
+                        "tag": "mixed-in",
+                        "listen": "127.0.0.1",
+                        "listen_port": 7890
+                    },
+                    {
+                        "type": "http",
+                        "tag": "http-in",
+                        "listen": "127.0.0.1",
+                        "listen_port": 7891
+                    },
+                    {
+                        "type": "socks",
+                        "tag": "socks-in",
+                        "listen": "127.0.0.1",
+                        "listen_port": 7892
+                    },
+                    {
+                        "type": "redirect",
+                        "tag": "redirect-in",
+                        "listen": "127.0.0.1",
+                        "listen_port": 7893
+                    }
+                ],
                 "outbounds": [],
                 "route": {
-                    "rules": [{
-                        "domain_suffix": ".onion",
-                        "outbound": "tor-socks"
-                    }, {
-                        "process_path": "org.torproject.torbrowser",
-                        "outbound": "tor-proxy"
-                    }, {
-                        "action": "sniff"
-                    }, {
-                        "type": "logical",
-                        "mode": "or",
-                        "rules": [{
-                            "port": 53
-                        }, {
-                            "protocol": "dns"
-                        }],
-                        "action": "hijack-dns"
-                    }, {
-                        "domain_suffix": [
-                            "api.bilibili.com", "www.bilibili.com", "bilivideo.com",
-                            "hdslb.com", "bilicdn1.com", "bilicdn.com"
-                        ],
-                        "outbound": "DIRECT"
-                    }, {
-                        "domain_suffix": [
-                            "xiaohongshu.com", "xhscdn.com", "kuaishou.com", "ixigua.com"
-                        ],
-                        "outbound": "DIRECT"
-                    }, {
-                        "ip_cidr": "198.18.0.0/15",
-                        "outbound": "PROXY"
-                    }, {
-                        "action": "route-options",
-                        "udp_disable_domain_unmapping": true,
-                        "udp_connect": true
-                    }, {
-                        "rule_set": ["Ads", "httpDNS", "DNSreject"],
-                        "action": "reject",
-                        "method": "drop"
-                    }, {
-                        "clash_mode": "Global",
-                        "outbound": "PROXY"
-                    }, {
-                        "clash_mode": "Direct",
-                        "outbound": "DIRECT"
-                    }, {
-                        "rule_set": "Apple",
-                        "outbound": "DIRECT"
-                    }, {
-                        "rule_set": ["geosite-youtube", "geosite-google", "telegram"],
-                        "outbound": "PROXY"
-                    }, {
-                        "rule_set": ["fcm", "Android"],
-                        "outbound": "PROXY"
-                    }, {
-                        "domain_suffix": ["google.cn", "googleapis.cn"],
-                        "outbound": "PROXY"
-                    }, {
-                        "domain_suffix": [
-                            "netflix", "spotify", "github", "steam", "discord", "reddit",
-                            "tiktok", "twitter", "facebook", "amazon", "microsoft", "apple", "paypal"
-                        ],
-                        "outbound": "PROXY"
-                    }, {
-                        "rule_set": [
-                            "telegram", "telegram_ip", "youtube", "instagram", "Google",
-                            "ai", "GlobalMedia", "Proxy", "gfw"
-                        ],
-                        "outbound": "PROXY"
-                    }, {
-                        "package_name": "com.wwwscn.yuexingbao",
-                        "outbound": "DIRECT"
-                    }, {
-                        "protocol": ["ntp", "icmp"],
-                        "outbound": "DIRECT"
-                    }, {
-                        "domain_suffix": [
-                            "sponsor.ajay.app", "ifbapp.com", "allawnos.com",
-                            "heytapmobi.com", "steamserver.net"
-                        ],
-                        "outbound": "DIRECT"
-                    }, {
-                        "protocol": ["stun", "quic", "dtls"],
-                        "action": "reject"
-                    }, {
-                        "domain": [
-                            "astrategy.beacon.qq.com", "beacon.qq.com",
-                            "abyss.cyapi.cn", "ad.cyapi.cn", "gather.colorfulclouds.net"
-                        ],
-                        "action": "reject",
-                        "method": "drop"
-                    }, {
-                        "type": "logical",
-                        "mode": "and",
-                        "rules": [{
-                            "ip_version": 6
-                        }, {
-                            "default_interface_address": "2000::/3",
-                            "invert": true
-                        }],
-                        "action": "reject"
-                    }, {
-                        "package_name": [
-                            "com.google.android.youtube", "app.revanced.android.youtube",
-                            "org.telegram.messenger", "org.telegram.messenger.beta"
-                        ],
-                        "outbound": "PROXY"
-                    }, {
-                        "type": "logical",
-                        "mode": "and",
-                        "rules": [{
-                            "domain_suffix": [
-                                "mtalk.google.com", "alt1-mtalk.google.com", "alt2-mtalk.google.com",
-                                "alt3-mtalk.google.com", "alt4-mtalk.google.com", "alt5-mtalk.google.com",
-                                "alt6-mtalk.google.com", "alt7-mtalk.google.com", "alt8-mtalk.google.com"
-                            ]
-                        }, {
-                            "port": [443, 5228]
-                        }],
-                        "outbound": "PROXY"
-                    }, {
-                        "rule_set": ["telegramip", "geosite-google", "proxy", "games", "ai"],
-                        "outbound": "PROXY"
-                    }, {
-                        "rule_set": [
-                            "private", "cn", "cnip", "microsoft-cn", "apple-cn",
-                            "google-cn", "games-cn", "networktest"
-                        ],
-                        "outbound": "DIRECT"
-                    }, {
-                        "domain_suffix": [
-                            "alipay.com", "alicdn.com", "aliyuncs.com", "qcloud.com",
-                            "cloud.tencent.com", "mi.com", "xiaomi.com", "huawei.com",
-                            "vivo.com.cn", "oppo.com", "coolapk.com", "wps.cn", "biliapi.com"
-                        ],
-                        "outbound": "DIRECT"
-                    }, {
-                        "rule_set": [
-                            "geosite-google", "geosite-youtube", "instagram", "telegram",
-                            "GlobalMedia", "gfw", "Proxy"
-                        ],
-                        "outbound": "PROXY"
-                    }, {
-                        "rule_set": ["cn", "apple-cn", "microsoft-cn", "google-cn", "games-cn"],
-                        "outbound": "DIRECT"
-                    }, {
-                        "ip_cidr": [
-                            "0.0.0.0/8", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16",
-                            "172.16.0.0/12", "192.168.0.0/16", "224.0.0.0/4", "240.0.0.0/4"
-                        ],
-                        "action": "reject"
-                    }, {
-                        "package_name": [
-                            "com.tencent.mm", "com.eg.android.AlipayGphone", "com.netease.cloudmusic"
-                        ],
-                        "outbound": "DIRECT"
-                    }, {
-                        "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
-                        "action": "reject"
-                    }, {
-                        "type": "logical",
-                        "mode": "or",
-                        "rules": [{
-                            "network": "udp",
-                            "port": [3478, 5349, 5350, 19302, 10000]
-                        }, {
-                            "domain_regex": "^stun\\..+"
-                        }, {
-                            "domain_keyword": ["stun", "turn", "httpdns"]
-                        }, {
-                            "protocol": "stun"
-                        }],
-                        "action": "reject"
-                    }, {
-                        "rule_set": "anti_fraud",
-                        "action": "reject"
-                    }, {
-                        "ip_is_private": true,
-                        "outbound": "DIRECT"
-                    }, {
-                        "action": "resolve"
-                    }],
-                    "rule_set": [{
-                        "type": "remote",
-                        "tag": "geosite-category-ads-all",
-                        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "geosite_adguard",
-                        "url": "https://cdn.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblocksingbox.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "geosite-google",
-                        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-google.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "geosite-youtube",
-                        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-youtube.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "proxy",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "games",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "ai",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "private",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "anti_fraud",
-                        "url": "https://raw.githubusercontent.com/hwsaya/nothing/refs/heads/main/rules/FuckFZ.json",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "microsoft-cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "apple-cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "geosite-category-games",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-games.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "netflix",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-netflix.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "spotify",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-spotify.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "github",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-github.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "steam",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-steam.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "discord",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-discord.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "reddit",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-reddit.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "tiktok",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-tiktok.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "twitter",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-twitter.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "facebook",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-facebook.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "amazon",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-amazon.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "microsoft",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-microsoft.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "apple",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-apple.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "paypal",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-paypal.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "google-cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/google-cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "games-cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "networktest",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "telegramip",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "telegram_ip",
-                        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/telegram.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "Proxy",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "gfw",
-                        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/gfw.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "cnip",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "Filter",
-                        "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/fakeip-filter.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "DNSreject",
-                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/AdGuardSDNSFilter/AdGuardSDNSFilter.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "httpDNS",
-                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/BlockHttpDNS/BlockHttpDNS.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "Ads",
-                        "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/ads.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "Apple",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-apple.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "fcm",
-                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/GoogleFCM/GoogleFCM.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "Android",
-                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/Android/Android.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "telegram",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-telegram.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "youtube",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-youtube.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "instagram",
-                        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-instagram.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "Google",
-                        "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/Google/Google.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }, {
-                        "type": "remote",
-                        "tag": "GlobalMedia",
-                        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-entertainment.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    }],
+                    "rules": [
+                        { "action": "sniff" },
+                        {
+                            "type": "logical",
+                            "mode": "or",
+                            "rules": [
+                                { "port": 53 },
+                                { "protocol": "dns" }
+                            ],
+                            "action": "hijack-dns"
+                        },
+                        {
+                            "type": "logical",
+                            "mode": "and",
+                            "rules": [
+                                { "ip_version": 6 },
+                                { "default_interface_address": "2000::/3", "invert": true }
+                            ],
+                            "action": "reject"
+                        },
+                        {
+                            "domain_suffix": ["api.bilibili.com", "www.bilibili.com", "bilivideo.com", "hdslb.com", "bilicdn1.com", "bilicdn.com"],
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "domain_suffix": ["xiaohongshu.com", "xhscdn.com", "kuaishou.com", "ixigua.com"],
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "protocol": ["ntp", "icmp"],
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "domain_suffix": ["sponsor.ajay.app", "ifbapp.com", "allawnos.com", "heytapmobi.com", "steamserver.net"],
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "rule_set": ["private", "cn", "cnip", "microsoft-cn", "apple-cn", "google-cn", "games-cn", "networktest"],
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "domain_suffix": ["alipay.com", "alicdn.com", "aliyuncs.com", "qcloud.com", "cloud.tencent.com", "mi.com", "xiaomi.com", "huawei.com", "vivo.com.cn", "oppo.com", "coolapk.com", "wps.cn", "biliapi.com"],
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "package_name": ["com.tencent.mm", "com.eg.android.AlipayGphone", "com.netease.cloudmusic"],
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "package_name": "com.wwwscn.yuexingbao",
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "clash_mode": "Direct",
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "rule_set": "Apple",
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "type": "logical",
+                            "mode": "and",
+                            "rules": [
+                                {
+                                    "domain_suffix": [
+                                        "mtalk.google.com", "alt1-mtalk.google.com", "alt2-mtalk.google.com",
+                                        "alt3-mtalk.google.com", "alt4-mtalk.google.com", "alt5-mtalk.google.com",
+                                        "alt6-mtalk.google.com", "alt7-mtalk.google.com", "alt8-mtalk.google.com"
+                                    ]
+                                },
+                                { "port": [443, 5228] }
+                            ],
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "rule_set": ["fcm", "Android"],
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "domain_suffix": ["google.cn", "googleapis.cn"],
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "domain_suffix": ["netflix", "spotify", "github", "steam", "discord", "reddit", "tiktok", "twitter", "facebook", "amazon", "microsoft", "apple", "paypal"],
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "rule_set": ["telegram", "telegram_ip", "geosite-youtube", "instagram", "Google", "ai", "GlobalMedia", "Proxy", "gfw"],
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "clash_mode": "Global",
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "rule_set": ["geosite-youtube", "geosite-google", "telegram"],
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "rule_set": ["telegramip", "geosite-google", "proxy", "games", "ai"],
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "rule_set": ["geosite-google", "geosite-youtube", "instagram", "telegram", "GlobalMedia", "gfw", "Proxy"],
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "package_name_regex": "^(com\\.google\\.android\\.(youtube|apps\\.(maps|docs|drive))|app\\.revanced\\.android\\.youtube|org\\.telegram\\.messenger(\\..*)?)$",
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "ip_is_private": true,
+                            "outbound": "DIRECT"
+                        },
+                        {
+                            "ip_cidr": "198.18.0.0/15",
+                            "outbound": "PROXY"
+                        },
+                        {
+                            "action": "route-options",
+                            "udp_disable_domain_unmapping": true,
+                            "udp_connect": true
+                        },
+                        {
+                            "rule_set": ["Ads", "httpDNS", "DNSreject"],
+                            "action": "reject",
+                            "method": "drop"
+                        },
+                        {
+                            "domain": ["beacon.qq.com", "abyss.cyapi.cn", "ad.cyapi.cn", "gather.colorfulclouds.net"],
+                            "action": "reject",
+                            "method": "drop"
+                        },
+                        {
+                            "protocol": ["stun", "quic", "dtls"],
+                            "action": "reject"
+                        },
+                        {
+                            "ip_cidr": ["0.0.0.0/8", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.168.0.0/16", "224.0.0.0/4", "240.0.0.0/4"],
+                            "action": "reject"
+                        },
+                        {
+                            "rule_set": ["geosite_adguard", "geosite-category-ads-all"],
+                            "action": "reject"
+                        },
+                        {
+                            "type": "logical",
+                            "mode": "or",
+                            "rules": [
+                                { "network": "udp", "port": [3478, 5349, 5350, 19302, 10000] },
+                                { "domain_regex": "^stun\\..+" },
+                                { "domain_keyword": ["stun", "turn", "httpdns"] },
+                                { "protocol": "stun" }
+                            ],
+                            "action": "reject"
+                        },
+                        {
+                            "rule_set": "anti_fraud",
+                            "action": "reject"
+                        },
+                        { "action": "resolve" }
+                    ],
+                    "rule_set": [
+                        {
+                            "type": "remote",
+                            "tag": "geosite-category-ads-all",
+                            "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "geosite_adguard",
+                            "url": "https://cdn.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblocksingbox.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "geosite-google",
+                            "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-google.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "geosite-youtube",
+                            "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-youtube.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "proxy",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "games",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "ai",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "private",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "anti_fraud",
+                            "url": "https://raw.githubusercontent.com/hwsaya/nothing/refs/heads/main/rules/FuckFZ.json",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "cn",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "microsoft-cn",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "apple-cn",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "google-cn",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/google-cn.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "games-cn",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "networktest",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "telegramip",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/telegramip.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "telegram_ip",
+                            "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/telegram.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "Proxy",
+                            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "gfw",
+                            "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/gfw.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "cnip",
+                            "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "Filter",
+                            "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/fakeip-filter.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "DNSreject",
+                            "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/AdGuardSDNSFilter/AdGuardSDNSFilter.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "httpDNS",
+                            "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/BlockHttpDNS/BlockHttpDNS.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "Ads",
+                            "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/ads.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "Apple",
+                            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-apple.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "fcm",
+                            "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/GoogleFCM/GoogleFCM.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "Android",
+                            "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/Android/Android.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "telegram",
+                            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-telegram.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "instagram",
+                            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-instagram.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "Google",
+                            "url": "https://raw.githubusercontent.com/senshinya/singbox_ruleset/main/rule/Google/Google.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        },
+                        {
+                            "type": "remote",
+                            "tag": "GlobalMedia",
+                            "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-entertainment.srs",
+                            "http_client": "default",
+                            "update_interval": "48h0m0s"
+                        }
+                    ],
                     "final": "Final",
                     "auto_detect_interface": true,
                     "default_domain_resolver": "alidns-quic"
@@ -1005,8 +930,7 @@
             function makeUniqueTag(baseName, usedTags) {
                 let candidate = baseName;
                 if (!candidate) candidate = 'node';
-                candidate = candidate.replace(/[^\w\u4e00-\u9fa5\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\-_.]/gu, '_')
-                    .substring(0, 30);
+                candidate = candidate.replace(/[^\w\u4e00-\u9fa5\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\-_.]/gu, '_').substring(0, 30);
                 if (!candidate) candidate = 'node';
                 let finalTag = candidate;
                 let counter = 1;
@@ -1023,22 +947,29 @@
                 let main = url.substring(8);
                 let fragment = '';
                 const hash = main.indexOf('#');
-                if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1));
-                    main = main.substring(0, hash); }
+                if (hash !== -1) {
+                    fragment = decodeURIComponent(main.substring(hash + 1));
+                    main = main.substring(0, hash);
+                }
                 const qIdx = main.indexOf('?');
-                let serverPart = main,
-                    query = '';
-                if (qIdx !== -1) { serverPart = main.substring(0, qIdx);
-                    query = main.substring(qIdx + 1); }
+                let serverPart = main, query = '';
+                if (qIdx !== -1) {
+                    serverPart = main.substring(0, qIdx);
+                    query = main.substring(qIdx + 1);
+                }
                 const at = serverPart.indexOf('@');
                 if (at === -1) throw new Error('Invalid VLESS');
                 const uuid = serverPart.substring(0, at);
                 const hostPort = serverPart.substring(at + 1);
                 let server, port;
                 const col = hostPort.lastIndexOf(':');
-                if (col !== -1) { server = hostPort.substring(0, col);
-                    port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort;
-                    port = 443; }
+                if (col !== -1) {
+                    server = hostPort.substring(0, col);
+                    port = parseInt(hostPort.substring(col + 1));
+                } else {
+                    server = hostPort;
+                    port = 443;
+                }
                 const params = new URLSearchParams(query);
                 const type = params.get('type') || 'tcp';
                 const security = params.get('security') || 'none';
@@ -1054,14 +985,26 @@
                 const sid = params.get('sid') || '';
 
                 const rawTag = fragment || `${server}:${port}`;
-                const node = { _rawTag: rawTag, type: 'vless', server, server_port: port, uuid,
-                    domain_resolver: 'alidns-quic' };
+                const node = {
+                    _rawTag: rawTag,
+                    type: 'vless',
+                    server: server,
+                    server_port: port,
+                    uuid: uuid,
+                    domain_resolver: 'alidns-quic'
+                };
                 if (flow) node.flow = flow;
                 if (type !== 'tcp') {
-                    const transport = { type };
-                    if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; } else if (
-                        type === 'grpc') transport.service_name = serviceName;
-                    else if (type === 'httpupgrade') { transport.path = path; if (host) transport.host = host; }
+                    const transport = { type: type };
+                    if (type === 'ws') {
+                        transport.path = path;
+                        if (host) transport.headers = { Host: host };
+                    } else if (type === 'grpc') {
+                        transport.service_name = serviceName;
+                    } else if (type === 'httpupgrade') {
+                        transport.path = path;
+                        if (host) transport.host = host;
+                    }
                     node.transport = transport;
                 }
                 if (security === 'tls') {
@@ -1095,11 +1038,16 @@
                 const net = vm.net;
                 if (net && net !== 'tcp') {
                     const transport = { type: net };
-                    if (net === 'ws') { transport.path = vm.path || '/'; if (vm.host) transport.headers = { Host: vm
-                            .host }; } else if (net === 'grpc') { transport.service_name = vm.path || ''; } else if (
-                        net === 'h2') { transport.type = 'http';
+                    if (net === 'ws') {
+                        transport.path = vm.path || '/';
+                        if (vm.host) transport.headers = { Host: vm.host };
+                    } else if (net === 'grpc') {
+                        transport.service_name = vm.path || '';
+                    } else if (net === 'h2') {
+                        transport.type = 'http';
                         transport.host = vm.host ? [vm.host] : undefined;
-                        transport.path = vm.path; }
+                        transport.path = vm.path;
+                    }
                     node.transport = transport;
                 }
                 if (vm.tls === 'tls') {
@@ -1114,22 +1062,37 @@
                 let main = url.substring(9);
                 let fragment = '';
                 const hash = main.indexOf('#');
-                if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1));
-                    main = main.substring(0, hash); }
+                if (hash !== -1) {
+                    fragment = decodeURIComponent(main.substring(hash + 1));
+                    main = main.substring(0, hash);
+                }
                 const at = main.indexOf('@');
                 if (at === -1) throw new Error('Invalid Trojan');
                 const password = main.substring(0, at);
                 const hostPort = main.substring(at + 1);
                 const qm = hostPort.indexOf('?');
                 let server, port, query = '';
-                if (qm !== -1) { const hp = hostPort.substring(0, qm);
-                    query = hostPort.substring(qm + 1); const col = hp.lastIndexOf(':'); if (col !== -1) { server = hp
-                            .substring(0, col);
-                    port = parseInt(hp.substring(col + 1)); } else { server = hp;
-                        port = 443; } } else { const col = hostPort.lastIndexOf(':'); if (col !== -1) { server = hostPort
-                            .substring(0, col);
-                    port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort;
-                        port = 443; } }
+                if (qm !== -1) {
+                    const hp = hostPort.substring(0, qm);
+                    query = hostPort.substring(qm + 1);
+                    const col = hp.lastIndexOf(':');
+                    if (col !== -1) {
+                        server = hp.substring(0, col);
+                        port = parseInt(hp.substring(col + 1));
+                    } else {
+                        server = hp;
+                        port = 443;
+                    }
+                } else {
+                    const col = hostPort.lastIndexOf(':');
+                    if (col !== -1) {
+                        server = hostPort.substring(0, col);
+                        port = parseInt(hostPort.substring(col + 1));
+                    } else {
+                        server = hostPort;
+                        port = 443;
+                    }
+                }
                 const params = new URLSearchParams(query);
                 const sni = params.get('sni') || server;
                 const fp = params.get('fp') || 'chrome';
@@ -1139,11 +1102,20 @@
                 const host = params.get('host') || sni;
 
                 const rawTag = fragment || `${server}:${port}`;
-                const node = { _rawTag: rawTag, type: 'trojan', server, server_port: port, password,
-                    domain_resolver: 'alidns-quic' };
+                const node = {
+                    _rawTag: rawTag,
+                    type: 'trojan',
+                    server: server,
+                    server_port: port,
+                    password: password,
+                    domain_resolver: 'alidns-quic'
+                };
                 if (type !== 'tcp') {
-                    const transport = { type };
-                    if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; }
+                    const transport = { type: type };
+                    if (type === 'ws') {
+                        transport.path = path;
+                        if (host) transport.headers = { Host: host };
+                    }
                     node.transport = transport;
                 }
                 node.tls = { enabled: true, server_name: sni };
@@ -1156,8 +1128,10 @@
                 let main = url.substring(5);
                 let fragment = '';
                 const hash = main.indexOf('#');
-                if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1));
-                    main = main.substring(0, hash); }
+                if (hash !== -1) {
+                    fragment = decodeURIComponent(main.substring(hash + 1));
+                    main = main.substring(0, hash);
+                }
                 let method, password, server, port;
                 if (main.includes('@')) {
                     const at = main.lastIndexOf('@');
@@ -1181,8 +1155,15 @@
                     port = parseInt(hp[1]);
                 }
                 const rawTag = fragment || `${server}:${port}`;
-                return { _rawTag: rawTag, type: 'shadowsocks', server, server_port: port, method, password,
-                    domain_resolver: 'alidns-quic' };
+                return {
+                    _rawTag: rawTag,
+                    type: 'shadowsocks',
+                    server: server,
+                    server_port: port,
+                    method: method,
+                    password: password,
+                    domain_resolver: 'alidns-quic'
+                };
             }
 
             function parseHysteria2(url) {
@@ -1190,22 +1171,37 @@
                 let main = u.substring(12);
                 let fragment = '';
                 const hash = main.indexOf('#');
-                if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1));
-                    main = main.substring(0, hash); }
+                if (hash !== -1) {
+                    fragment = decodeURIComponent(main.substring(hash + 1));
+                    main = main.substring(0, hash);
+                }
                 const at = main.indexOf('@');
                 if (at === -1) throw new Error('Invalid Hysteria2');
                 const password = main.substring(0, at);
                 const hostPort = main.substring(at + 1);
                 const qm = hostPort.indexOf('?');
                 let server, port, query = '';
-                if (qm !== -1) { const hp = hostPort.substring(0, qm);
-                    query = hostPort.substring(qm + 1); const col = hp.lastIndexOf(':'); if (col !== -1) { server = hp
-                            .substring(0, col);
-                    port = parseInt(hp.substring(col + 1)); } else { server = hp;
-                        port = 443; } } else { const col = hostPort.lastIndexOf(':'); if (col !== -1) { server = hostPort
-                            .substring(0, col);
-                    port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort;
-                        port = 443; } }
+                if (qm !== -1) {
+                    const hp = hostPort.substring(0, qm);
+                    query = hostPort.substring(qm + 1);
+                    const col = hp.lastIndexOf(':');
+                    if (col !== -1) {
+                        server = hp.substring(0, col);
+                        port = parseInt(hp.substring(col + 1));
+                    } else {
+                        server = hp;
+                        port = 443;
+                    }
+                } else {
+                    const col = hostPort.lastIndexOf(':');
+                    if (col !== -1) {
+                        server = hostPort.substring(0, col);
+                        port = parseInt(hostPort.substring(col + 1));
+                    } else {
+                        server = hostPort;
+                        port = 443;
+                    }
+                }
                 const params = new URLSearchParams(query);
                 const sni = params.get('sni') || server;
                 const insecure = params.get('insecure') === '1';
@@ -1213,9 +1209,19 @@
                 const obfsPassword = params.get('obfs-password');
 
                 const rawTag = fragment || `${server}:${port}`;
-                const node = { _rawTag: rawTag, type: 'hysteria2', server, server_port: port, password,
-                    domain_resolver: 'alidns-quic', tls: { enabled: true, server_name: sni, insecure: insecure } };
-                if (obfs) { node.obfs = { type: obfs }; if (obfsPassword) node.obfs.password = obfsPassword; }
+                const node = {
+                    _rawTag: rawTag,
+                    type: 'hysteria2',
+                    server: server,
+                    server_port: port,
+                    password: password,
+                    domain_resolver: 'alidns-quic',
+                    tls: { enabled: true, server_name: sni, insecure: insecure }
+                };
+                if (obfs) {
+                    node.obfs = { type: obfs };
+                    if (obfsPassword) node.obfs.password = obfsPassword;
+                }
                 return node;
             }
 
@@ -1235,11 +1241,11 @@
                 return null;
             }
 
-            // ========== 构建 outbounds (动态填充) ==========
+            // ========== 构建 outbounds (动态填充，不包含任何预设节点) ==========
             function buildOutbounds(rawNodes) {
                 const usedTags = new Set([
                     'DIRECT', 'PROXY', '🟢 自动-测速', '🔵 自动-稳定',
-                    'GLOBAL', 'CN', 'Final', 'REJECT-DROP', 'tor-proxy', 'tor-socks'
+                    'GLOBAL', 'CN', 'Final', 'REJECT-DROP'
                 ]);
                 const finalNodes = [];
                 for (let raw of rawNodes) {
@@ -1262,48 +1268,53 @@
                     finalNodes.push(raw);
                 }
                 const nodeTags = finalNodes.map(n => n.tag);
+                
                 const directOutbound = { "type": "direct", "tag": "DIRECT", "domain_resolver": "alidns-quic" };
-                const torProxySelector = {
-                    "type": "selector",
-                    "tag": "tor-proxy",
-                    "outbounds": nodeTags.length > 0 ? nodeTags.slice(0, 3) : ["DIRECT"],
-                    "default": nodeTags.length > 0 ? nodeTags[0] : "DIRECT"
-                };
-                const torSocksOutbound = {
-                    "type": "socks",
-                    "tag": "tor-socks",
-                    "domain_resolver": "tor-dns",
-                    "server": "127.0.0.1",
-                    "server_port": 9050
-                };
                 const proxySelector = {
                     "type": "selector",
                     "tag": "PROXY",
-                    "outbounds": nodeTags.length > 0 ? ["🟢 自动-测速", "🔵 自动-稳定", ...nodeTags,
-                    "DIRECT"] : ["🟢 自动-测速", "🔵 自动-稳定", "DIRECT"],
+                    "outbounds": nodeTags.length > 0 ? ["🟢 自动-测速", "🔵 自动-稳定", ...nodeTags, "DIRECT"] : ["🟢 自动-测速", "🔵 自动-稳定", "DIRECT"],
                     "default": "🟢 自动-测速"
                 };
                 const autoSpeed = {
-                    "type": "urltest", "tag": "🟢 自动-测速", "outbounds": nodeTags,
-                    "url": "http://www.gstatic.com/generate_204", "interval": "10m0s", "tolerance": 100,
+                    "type": "urltest",
+                    "tag": "🟢 自动-测速",
+                    "outbounds": nodeTags,
+                    "url": "http://www.gstatic.com/generate_204",
+                    "interval": "10m0s",
+                    "tolerance": 100,
                     "idle_timeout": "30m0s"
                 };
                 const autoStable = {
-                    "type": "urltest", "tag": "🔵 自动-稳定", "outbounds": nodeTags,
-                    "url": "http://www.gstatic.com/generate_204", "interval": "15m0s", "tolerance": 30,
+                    "type": "urltest",
+                    "tag": "🔵 自动-稳定",
+                    "outbounds": nodeTags,
+                    "url": "http://www.gstatic.com/generate_204",
+                    "interval": "15m0s",
+                    "tolerance": 30,
                     "idle_timeout": "1h0m0s"
                 };
-                const globalSelector = { "type": "selector", "tag": "GLOBAL", "outbounds": ["PROXY", "DIRECT"],
-                    "default": "PROXY" };
-                const cnSelector = { "type": "selector", "tag": "CN", "outbounds": ["DIRECT", "PROXY"],
-                "default": "DIRECT" };
-                const finalSelector = { "type": "selector", "tag": "Final", "outbounds": ["PROXY", "DIRECT",
-                        "REJECT-DROP"
-                    ], "default": "PROXY" };
+                const globalSelector = {
+                    "type": "selector",
+                    "tag": "GLOBAL",
+                    "outbounds": ["PROXY", "DIRECT"],
+                    "default": "PROXY"
+                };
+                const cnSelector = {
+                    "type": "selector",
+                    "tag": "CN",
+                    "outbounds": ["DIRECT", "PROXY"],
+                    "default": "DIRECT"
+                };
+                const finalSelector = {
+                    "type": "selector",
+                    "tag": "Final",
+                    "outbounds": ["PROXY", "DIRECT", "REJECT-DROP"],
+                    "default": "PROXY"
+                };
                 const rejectBlock = { "type": "block", "tag": "REJECT-DROP" };
-                return [directOutbound, torProxySelector, proxySelector, autoSpeed, autoStable, globalSelector,
-                    cnSelector, finalSelector, rejectBlock, torSocksOutbound, ...finalNodes
-                ];
+                
+                return [directOutbound, proxySelector, autoSpeed, autoStable, globalSelector, cnSelector, finalSelector, rejectBlock, ...finalNodes];
             }
 
             // ========== UI交互 ==========
@@ -1343,7 +1354,10 @@
 
             document.getElementById('copyBtn').addEventListener('click', async () => {
                 const text = outputPre.textContent;
-                if (!text || text.startsWith('//')) { showFeedback('无有效配置可复制'); return; }
+                if (!text || text.startsWith('//')) {
+                    showFeedback('无有效配置可复制');
+                    return;
+                }
                 try {
                     await navigator.clipboard.writeText(text);
                     showFeedback('📋 配置已复制到剪贴板');
@@ -1365,8 +1379,7 @@
                 feedbackDiv.innerHTML = '';
             });
 
-            const sampleText =
-                `vless://a8ceaac6-bda6-459e-ace7-0b34c5873e1e@www.visa.com:443?type=ws&path=%2Fpkpk-vl&host=example.372164885.xyz&security=tls&sni=example.372164885.xyz&fp=chrome#🚀-CF-Visa
+            const sampleText = `vless://a8ceaac6-bda6-459e-ace7-0b34c5873e1e@www.visa.com:443?type=ws&path=%2Fpkpk-vl&host=example.372164885.xyz&security=tls&sni=example.372164885.xyz&fp=chrome#🚀-CF-Visa
 vmess://eyJ2IjogIjIiLCAicHMiOiAiVk1lc3MtV1MiLCAiYWRkIjogImV4YW1wbGUuY29tIiwgInBvcnQiOiA0NDMsICJpZCI6ICJhOGNlYWFjNi1iZGE2LTQ1OWUtYWNlNy0wYjM0YzU4NzNlMWUiLCAiYWlkIjogMCwgIm5ldCI6ICJ3cyIsICJ0eXBlIjogIm5vbmUiLCAiaG9zdCI6ICJleGFtcGxlLmNvbSIsICJwYXRoIjogIi93cyIsICJ0bHMiOiAidGxzIn0=
 trojan://password@trojan.example.com:443?sni=trojan.example.com#Trojan-Node
 ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388#SS-Node
