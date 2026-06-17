@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Sing-Box 转换器 · 基于31.json完整模板</title>
+    <title>Sing-Box 转换器 · 基于32.json完整模板</title>
     <style>
         * {
             box-sizing: border-box;
@@ -195,7 +195,7 @@
 <body>
 <div class="container">
     <h1>⚡ 节点转换 · Sing-Box 配置生成器</h1>
-    <div class="sub">基于「31.json」完整框架 · 动态生成节点 · 保留全部DNS/路由规则 · 节点插入outbounds中间</div>
+    <div class="sub">基于「32.json」完整框架 · 动态生成节点 · 保留全部DNS/路由规则 · 节点插入outbounds中间</div>
 
     <div class="card">
         <div class="input-header">
@@ -219,7 +219,7 @@
         <div id="copyFeedback" style="height: 28px; margin-top: 12px;"></div>
     </div>
     <div class="footnote">
-        ✅ 基于「上传.json」完整结构 (DNS / 入站 / 路由 / 实验性 / NTP) <br>
+        ✅ 基于「32.json」完整结构 (DNS / 入站 / 路由 / 实验性 / NTP) <br>
         🚀 自动生成 PROXY 选择器 + 自动测速组，节点标签自动去重，完全符合 sing-box 1.10+ 语法。<br>
         📌 无任何硬编码节点，所有节点从输入链接动态构建。节点配置插入在 outbounds 中间（DIRECT 之后，QUIC-UDP 之前）。
     </div>
@@ -227,7 +227,7 @@
 
 <script>
     (function () {
-        // ---------- 基于上传.json 完整模板 (完全保留所有配置，仅去除节点定义部分) ----------
+        // ---------- 基于32.json 完整模板 (完全保留所有配置，仅去除节点定义部分) ----------
         const BASE_TEMPLATE = {
             "log": {
                 "level": "fatal",
@@ -603,9 +603,6 @@
                         "outbound": "📦 sing-box"
                     },
                     {
-                        "action": "sniff"
-                    },
-                    {
                         "protocol": ["ntp", "icmp"],
                         "outbound": "DIRECT"
                     },
@@ -655,9 +652,6 @@
                     {
                         "domain_suffix": [".cn", ".xn--fiqs8s", ".xn--55qx5d", ".xn--io0a7i"],
                         "outbound": "🇨🇳 国内流量"
-                    },
-                    {
-                        "action": "sniff"
                     },
                     {
                         "rule_set": ["Ads", "httpDNS", "DNSreject"],
@@ -1096,7 +1090,7 @@
         }
 
         // 构建 outbounds：顺序为 DIRECT, PROXY选择器, 自动测速, 节点列表, QUIC-UDP, Final, REJECT-DROP
-        // 但根据要求节点配置不要放在最后面 —— 这里把节点列表放在 QUIC-UDP 之前，即中间位置
+        // 节点配置放在 QUIC-UDP 之前，即中间位置
         function buildOutbounds(nodeObjects) {
             const usedTags = new Set(['DIRECT', 'PROXY', '🟣 QUIC-UDP', 'Final', 'REJECT-DROP']);
             const builtNodes = [];
