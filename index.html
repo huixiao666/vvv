@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Sing-Box 转换器 · 基于33.json 模板</title>
+    <title>Sing-Box 转换器 · 基于上传.json 模板</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
         }
-
         body {
             background: #f1f5f9;
             font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
@@ -17,13 +16,11 @@
             min-height: 100vh;
             color: #0f172a;
         }
-
         .container {
             max-width: 1300px;
             margin: 0 auto;
             width: 100%;
         }
-
         h1 {
             font-size: 1.9rem;
             font-weight: 700;
@@ -34,7 +31,6 @@
             letter-spacing: -0.01em;
             margin-bottom: 8px;
         }
-
         .sub {
             color: #475569;
             margin-bottom: 28px;
@@ -42,7 +38,6 @@
             padding-left: 16px;
             font-weight: 500;
         }
-
         .card {
             background: rgba(255, 255, 255, 0.96);
             border-radius: 32px;
@@ -51,7 +46,6 @@
             margin-bottom: 28px;
             border: 1px solid #e2edf2;
         }
-
         .input-header {
             display: flex;
             justify-content: space-between;
@@ -60,13 +54,11 @@
             gap: 12px;
             margin-bottom: 14px;
         }
-
         label {
             font-weight: 600;
             color: #1e293b;
             font-size: 1rem;
         }
-
         textarea {
             width: 100%;
             padding: 16px;
@@ -79,20 +71,17 @@
             resize: vertical;
             transition: 0.2s;
         }
-
         textarea:focus {
             outline: none;
             border-color: #2c5f8a;
             box-shadow: 0 0 0 3px rgba(44, 95, 138, 0.15);
         }
-
         .button-group {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             margin-top: 16px;
         }
-
         .btn {
             background: white;
             border: 1px solid #cbd5e1;
@@ -104,37 +93,30 @@
             transition: 0.2s;
             font-family: inherit;
         }
-
         .btn-primary {
             background: #1e3a5f;
             border-color: #1e3a5f;
             color: white;
         }
-
         .btn-primary:hover {
             background: #0f2b44;
             transform: translateY(-1px);
         }
-
         .btn-success {
             background: #2c5f8a;
             border-color: #2c5f8a;
             color: white;
         }
-
         .btn-success:hover {
             background: #1f4a6e;
         }
-
         .btn-outline:hover {
             background: #eef2ff;
             border-color: #8fbbd9;
         }
-
         .output-panel {
             margin-top: 8px;
         }
-
         .output-toolbar {
             display: flex;
             justify-content: space-between;
@@ -143,7 +125,6 @@
             flex-wrap: wrap;
             gap: 12px;
         }
-
         .badge {
             background: #e2e8f0;
             padding: 5px 14px;
@@ -151,7 +132,6 @@
             font-size: 0.8rem;
             font-weight: 500;
         }
-
         pre {
             background: #0e1e2a;
             color: #eef4ff;
@@ -166,7 +146,6 @@
             border: 1px solid #2c4c6e;
             line-height: 1.45;
         }
-
         .toast {
             color: #0f3b2c;
             background: #dcfce7;
@@ -175,7 +154,6 @@
             font-size: 0.8rem;
             font-weight: 500;
         }
-
         .footnote {
             text-align: center;
             font-size: 0.8rem;
@@ -184,7 +162,6 @@
             padding-top: 18px;
             border-top: 1px solid #dce5ec;
         }
-
         .flex-between {
             display: flex;
             justify-content: space-between;
@@ -194,8 +171,8 @@
 </head>
 <body>
 <div class="container">
-    <h1>⚡ 节点转换 · Sing-Box 配置生成器</h1>
-    <div class="sub">基于「33.json」完整框架 · 动态生成节点 · 插入 outbounds 中间（DIRECT 之后，selector 之前）</div>
+    <h1>⚡ 节点转换 · 基于上传.json 模板</h1>
+    <div class="sub">完全保留上传.json 的 DNS / 入站 / 路由 / 实验性 配置 · 节点动态插入 outbounds 中间 (DIRECT 之后, 固定出站之前)</div>
 
     <div class="card">
         <div class="input-header">
@@ -219,9 +196,9 @@
         <div id="copyFeedback" style="height: 28px; margin-top: 12px;"></div>
     </div>
     <div class="footnote">
-        ✅ 基于「33.json」完整结构 (DNS / 入站 / 路由 / 实验性) <br>
+        ✅ 基于「上传.json」完整结构 (DNS / 入站 / 路由 / 实验性) <br>
         🚀 自动生成 PROXY 选择器 + 自动测速组，节点标签自动去重，完全符合 sing-box 1.10+ 语法。<br>
-        📌 节点配置插入在 outbounds 中间（DIRECT 之后，PROXY selector 之前）
+        📌 节点配置插入在 outbounds 中间 (DIRECT 之后，固定出站之前)，完美融入原模板。
     </div>
 </div>
 
@@ -230,7 +207,7 @@
         // ---------- 基于上传.json 完整模板 (完全保留所有配置，仅去除节点定义部分) ----------
         const BASE_TEMPLATE = {
             "log": {
-                "level": "trace",
+                "level": "fatal",
                 "timestamp": true
             },
             "dns": {
@@ -239,9 +216,9 @@
                         "type": "hosts",
                         "tag": "hosts_fix",
                         "predefined": {
-                            "security.cloudflare-dns.com": [
-                                "104.16.248.249",
-                                "104.16.249.249"
+                            "dns.google": [
+                                "8.8.8.8",
+                                "8.8.4.4"
                             ]
                         }
                     },
@@ -250,17 +227,16 @@
                         "tag": "local-dns"
                     },
                     {
-                        "type": "https",
-                        "tag": "cf-dns",
-                        "detour": "proxy",
-                        "domain_resolver": "hosts_fix",
-                        "server": "security.cloudflare-dns.com",
-                        "path": "/dns-query"
-                    },
-                    {
                         "type": "fakeip",
                         "tag": "fakeip",
                         "inet4_range": "198.18.0.0/15"
+                    },
+                    {
+                        "type": "https",
+                        "tag": "ggdns",
+                        "detour": "proxy",
+                        "domain_resolver": "local-dns",
+                        "server": "dns.google"
                     }
                 ],
                 "rules": [
@@ -293,22 +269,22 @@
                         "server": "local-dns"
                     },
                     {
-                        "domain_suffix": [
-                            ".cn",
-                            ".com.cn"
-                        ],
-                        "server": "local-dns"
-                    },
-                    {
                         "rule_set": [
                             "Google",
                             "fcm",
-                            "Android"
+                            "Android",
+                            "proxy",
+                            "gfw",
+                            "ai",
+                            "games",
+                            "networktest"
                         ],
-                        "server": "cf-dns"
+                        "server": "fakeip",
+                        "rewrite_ttl": 300
                     },
                     {
-                        "server": "fakeip"
+                        "rule_set": "fakeip-filter",
+                        "server": "local-dns"
                     },
                     {
                         "query_type": [
@@ -319,8 +295,8 @@
                         "action": "reject"
                     }
                 ],
-                "final": "cf-dns",
-                "timeout": "2s",
+                "final": "ggdns",
+                "timeout": "3s",
                 "cache_capacity": 50000,
                 "optimistic": {
                     "enabled": true,
@@ -330,12 +306,16 @@
             "http_clients": [
                 {
                     "tag": "default",
-                    "version": 2
+                    "version": 2,
+                    "stream_receive_window": 0,
+                    "connection_receive_window": 0
                 },
                 {
                     "tag": "proxy",
                     "version": 2,
-                    "detour": "proxy"
+                    "detour": "proxy",
+                    "stream_receive_window": 0,
+                    "connection_receive_window": 0
                 }
             ],
             "inbounds": [
@@ -369,6 +349,10 @@
                 "rules": [
                     {
                         "action": "sniff"
+                    },
+                    {
+                        "protocol": "quic",
+                        "action": "reject"
                     },
                     {
                         "type": "logical",
@@ -409,9 +393,11 @@
                         "outbound": "DIRECT"
                     },
                     {
-                        "rule_set": [
-                            "Google"
-                        ],
+                        "ip_cidr": "198.18.0.0/15",
+                        "outbound": "proxy"
+                    },
+                    {
+                        "rule_set": "Google",
                         "outbound": "proxy"
                     },
                     {
@@ -451,10 +437,6 @@
                         "outbound": "DIRECT"
                     },
                     {
-                        "ip_cidr": "198.18.0.0/15",
-                        "outbound": "proxy"
-                    },
-                    {
                         "protocol": [
                             "stun",
                             "dtls"
@@ -481,8 +463,7 @@
                             {
                                 "domain_keyword": [
                                     "stun",
-                                    "turn",
-                                    "httpdns"
+                                    "turn"
                                 ]
                             }
                         ],
@@ -619,6 +600,13 @@
                         "url": "https://cdn.jsdelivr.net/gh/senshinya/singbox_ruleset@main/rule/Android/Android.srs",
                         "http_client": "default",
                         "update_interval": "48h0m0s"
+                    },
+                    {
+                        "type": "remote",
+                        "tag": "fakeip-filter",
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/fakeip-filter.srs",
+                        "http_client": "default",
+                        "update_interval": "48h0m0s"
                     }
                 ],
                 "final": "proxy",
@@ -641,10 +629,6 @@
                     "path": "cache.db",
                     "store_fakeip": true,
                     "store_dns": true
-                },
-                "debug": {
-                    "gc_percent": 100,
-                    "memory_limit": "400MB"
                 }
             }
         };
@@ -810,10 +794,14 @@
             return finalTag;
         }
 
-        // 构建 outbounds：顺序为 DIRECT, 节点列表, auto, proxy (selector)
-        // 节点配置插入在 DIRECT 之后，proxy selector 之前
+        // 构建 outbounds：顺序为 DIRECT, PROXY选择器, 自动测速, 节点列表, 然后固定出站 (这些固定出站会附加在节点之后)
+        // 注意：模板中原有固定出站 (如 "proxy" selector 等) 我们不再保留，因为节点插入后，由新构建的 outbounds 完全接管。
+        // 但原模板中的 "proxy" 标签在 DNS 和路由中被引用，所以新构建的 outbounds 中必须包含名为 "proxy" 的出站。
+        // 因此，新 outbounds 中第一个为 DIRECT，第二个为 proxy (selector)，后续为自动测速、节点、以及原模板需要的其他固定出站。
+        // 但原模板中并没有额外的固定出站，只有 outbounds 数组为空。我们构建的 outbounds 将完全替换原 outbounds。
+        // 需要保证存在 "proxy" 标签的 outbound，因为 dns 和 route 中引用了 "proxy"。
         function buildOutbounds(nodeObjects) {
-            const usedTags = new Set(['DIRECT', 'proxy', 'auto', '节点名称']);
+            const usedTags = new Set(['DIRECT', 'proxy', '🟢 自动-测速', 'REJECT-DROP']);
             const builtNodes = [];
             for (let raw of nodeObjects) {
                 const baseTag = raw._rawTag || 'node';
@@ -824,26 +812,23 @@
             }
             const nodeTags = builtNodes.map(n => n.tag);
             // 固定出站：DIRECT
-            const direct = { type: "direct", tag: "DIRECT" };
-            // 自动测速
-            let autoUrltest;
+            const direct = { type: "direct", tag: "DIRECT", domain_resolver: "local-dns" };
+            // proxy 选择器（引用自动测速和节点）
+            let proxySelector, autoUrltest;
             if (nodeTags.length) {
-                autoUrltest = { type: "urltest", tag: "auto", outbounds: nodeTags, url: "http://www.gstatic.com/generate_204", interval: "10m0s" };
+                autoUrltest = { type: "urltest", tag: "🟢 自动-测速", outbounds: nodeTags, url: "http://www.gstatic.com/generate_204", interval: "10m0s", tolerance: 100, idle_timeout: "30m0s" };
+                proxySelector = { type: "selector", tag: "proxy", outbounds: ["🟢 自动-测速", ...nodeTags, "DIRECT"], default: "🟢 自动-测速" };
             } else {
-                autoUrltest = { type: "urltest", tag: "auto", outbounds: ["DIRECT"], url: "http://www.gstatic.com/generate_204", interval: "10m0s" };
+                proxySelector = { type: "selector", tag: "proxy", outbounds: ["DIRECT"], default: "DIRECT" };
             }
-            // proxy selector
-            const proxySelector = {
-                type: "selector",
-                tag: "proxy",
-                outbounds: nodeTags.length ? ["auto", ...nodeTags, "DIRECT"] : ["DIRECT"],
-                default: "auto"
-            };
-            // 组装顺序：DIRECT, 节点列表, auto, proxy
+            // 其他固定出站：REJECT-DROP (作为最终 fallback)
+            const rejectBlock = { type: "block", tag: "REJECT-DROP" };
+            // 组装顺序：DIRECT, proxy, 自动测速(如果有), 节点列表, REJECT-DROP
             const outbounds = [direct];
+            if (proxySelector) outbounds.push(proxySelector);
+            if (autoUrltest) outbounds.push(autoUrltest);
             if (builtNodes.length) outbounds.push(...builtNodes);
-            outbounds.push(autoUrltest);
-            outbounds.push(proxySelector);
+            outbounds.push(rejectBlock);
             return outbounds;
         }
 
@@ -857,6 +842,8 @@
             const newOutbounds = buildOutbounds(rawNodes);
             const finalConfig = JSON.parse(JSON.stringify(BASE_TEMPLATE));
             finalConfig.outbounds = newOutbounds;
+            // 确保 route 中的 final 引用存在
+            // 原模板 route.final = "proxy"，我们已经创建了 proxy selector，所以没问题
             return { config: finalConfig, nodeCount: rawNodes.length };
         }
 
