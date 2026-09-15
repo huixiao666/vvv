@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Sing-Box 转换器 · 基于上传.json 模板</title>
+    <title>Sing-Box 转换器 · 基于 1.15.0-alpha.2 模板</title>
     <style>
         * {
             box-sizing: border-box;
@@ -171,15 +171,15 @@
 </head>
 <body>
 <div class="container">
-    <h1>⚡ 节点转换 · 基于上传.json 模板</h1>
-    <div class="sub">完全保留上传.json 的 DNS / 入站 / 路由 / 实验性 配置 · 节点动态插入 outbounds 中间 (DIRECT 之后, 固定出站之前)</div>
+    <h1>⚡ 节点转换 · 基于 1.15.0-alpha.2 模板</h1>
+    <div class="sub">完整保留 1.15.0-alpha.2.json 的 DNS / 入站 / 路由 / 实验性 配置 · 节点动态插入并接入 📦 sing-box / 自动测速组</div>
 
     <div class="card">
         <div class="input-header">
-            <label>📎 粘贴节点链接 (每行一个，支持 vless / vmess / trojan / ss / hysteria2)</label>
+            <label>📎 粘贴节点链接 (每行一个，支持 vless / vmess / trojan / ss / hysteria2 / tuic / anytls / naive)</label>
             <button class="btn btn-outline" id="sampleBtn" style="padding: 6px 18px;">📋 填入示例</button>
         </div>
-        <textarea id="nodeInput" placeholder="vless://...&#10;vmess://...&#10;trojan://...&#10;ss://...&#10;hysteria2://..."></textarea>
+        <textarea id="nodeInput" placeholder="vless://...&#10;vmess://...&#10;trojan://...&#10;ss://...&#10;hysteria2://...&#10;tuic://...&#10;anytls://...&#10;naive+https://..."></textarea>
         <div class="button-group">
             <button class="btn btn-primary" id="convertBtn">✨ 解析并生成配置</button>
             <button class="btn btn-outline" id="clearBtn">🧹 清空</button>
@@ -196,18 +196,18 @@
         <div id="copyFeedback" style="height: 28px; margin-top: 12px;"></div>
     </div>
     <div class="footnote">
-        ✅ 基于「上传.json」完整结构 (DNS / 入站 / 路由 / 实验性) <br>
-        🚀 自动生成 PROXY 选择器 + 自动测速组，节点标签自动去重，完全符合 sing-box 1.10+ 语法。<br>
-        📌 节点配置插入在 outbounds 中间 (DIRECT 之后，固定出站之前)，完美融入原模板。
+        ✅ 基于「1.15.0-alpha.2.json」完整结构 (DNS / 入站 / 路由 / 实验性) <br>
+        🚀 支持 VLESS、VMess、Trojan、Shadowsocks、Hysteria2、TUIC、AnyTLS、Naive 等协议。<br>
+        📌 节点插入在 outbounds 中 DIRECT 之后，完全兼容 sing-box 1.15+ 语法。
     </div>
 </div>
 
 <script>
     (function () {
-        // ---------- 基于上传.json 完整模板 (完全保留所有配置，仅去除节点定义部分) ----------
+        // ---------- 基于 1.15.0-alpha.2.json 的完整模板（已移除占位节点，保留所有选择器、路由与 DNS） ----------
         const BASE_TEMPLATE = {
             "log": {
-                "level": "fatal",
+                "level": "trace",
                 "timestamp": true
             },
             "dns": {
@@ -216,15 +216,19 @@
                         "type": "hosts",
                         "tag": "hosts_fix",
                         "predefined": {
-                            "dns.google": [
-                                "8.8.8.8",
-                                "8.8.4.4"
-                            ]
+                            "cloudflare-dns.com": ["1.1.1.1", "1.0.0.1"],
+                            "dns.google": ["8.8.8.8", "8.8.4.4"],
+                            "raw.githubusercontent.com": ["185.199.108.133", "185.199.109.133", "185.199.110.133", "185.199.111.133"]
                         }
                     },
                     {
                         "type": "local",
-                        "tag": "local-dns"
+                        "tag": "pkpk-dns"
+                    },
+                    {
+                        "type": "udp",
+                        "tag": "pk-dns",
+                        "server": "192.168.3.1"
                     },
                     {
                         "type": "fakeip",
@@ -233,87 +237,79 @@
                     },
                     {
                         "type": "https",
-                        "tag": "ggdns",
-                        "detour": "proxy",
-                        "domain_resolver": "local-dns",
+                        "tag": "cf-dns",
+                        "detour": "📦 sing-box",
+                        "domain_resolver": "hosts_fix",
+                        "server": "cloudflare-dns.com"
+                    },
+                    {
+                        "type": "https",
+                        "tag": "google-dns",
+                        "detour": "📦 sing-box",
+                        "domain_resolver": "hosts_fix",
                         "server": "dns.google"
                     }
                 ],
                 "rules": [
                     {
-                        "ip_version": 6,
+                        "domain_suffix": [".google.com", ".openai.com", ".anthropic.com", ".claude.ai", ".chatgpt.com"],
+                        "server": "cf-dns"
+                    },
+                    {
+                        "domain_suffix": [".miui.com", ".xiaomi.com", ".xiaomiyun.com", ".bilivideo.com", ".bilibili.com", ".biliapi.com", ".hdslb.com", ".biliimg.com", ".acgvideo.com", ".deepseek.com"],
+                        "server": "pk-dns"
+                    },
+                    {
+                        "rule_set": ["microsoft-cn", "apple-cn", "games-cn"],
+                        "server": "pk-dns"
+                    },
+                    {
+                        "query_type": ["SVCB", "HTTPS", "PTR"],
                         "action": "reject"
                     },
                     {
-                        "query_type": [
-                            "SVCB",
-                            "HTTPS",
-                            "PTR"
-                        ],
+                        "rule_set": "geosite-category-ads-all",
                         "action": "reject"
                     },
                     {
-                        "rule_set": [
-                            "ads",
-                            "httpDNS",
-                            "DNSreject"
-                        ],
-                        "action": "reject"
+                        "action": "evaluate",
+                        "server": "cf-dns",
+                        "tag": "cf"
                     },
                     {
-                        "rule_set": "private",
-                        "server": "local-dns"
+                        "action": "evaluate",
+                        "server": "google-dns",
+                        "tag": "gg"
+                    },
+                    {
+                        "match_response": "cf",
+                        "action": "respond",
+                        "race": true
+                    },
+                    {
+                        "match_response": "gg",
+                        "action": "respond",
+                        "race": true
                     },
                     {
                         "rule_set": "cn",
-                        "server": "local-dns"
-                    },
-                    {
-                        "rule_set": [
-                            "Google",
-                            "fcm",
-                            "Android",
-                            "proxy",
-                            "gfw",
-                            "ai",
-                            "games",
-                            "networktest"
-                        ],
-                        "server": "fakeip",
-                        "rewrite_ttl": 300
-                    },
-                    {
-                        "rule_set": "fakeip-filter",
-                        "server": "local-dns"
-                    },
-                    {
-                        "query_type": [
-                            "A",
-                            "AAAA"
-                        ],
                         "invert": true,
-                        "action": "reject"
+                        "server": "fakeip"
                     }
                 ],
-                "final": "ggdns",
-                "timeout": "3s",
-                "cache_capacity": 50000,
+                "final": "google-dns",
+                "strategy": "ipv4_only",
+                "timeout": "10s",
+                "cache_capacity": 8192,
                 "optimistic": {
                     "enabled": true,
-                    "timeout": "1h0m0s"
+                    "timeout": "5m0s"
                 }
             },
             "http_clients": [
                 {
                     "tag": "default",
                     "version": 2,
-                    "stream_receive_window": 0,
-                    "connection_receive_window": 0
-                },
-                {
-                    "tag": "proxy",
-                    "version": 2,
-                    "detour": "proxy",
                     "stream_receive_window": 0,
                     "connection_receive_window": 0
                 }
@@ -323,151 +319,130 @@
                     "type": "tun",
                     "tag": "tun-in",
                     "mtu": 1500,
-                    "address": [
-                        "10.8.0.1/24",
-                        "fdfe:dcba:9876::1/126"
-                    ],
+                    "address": "10.8.0.1/24",
                     "dns_mode": "hijack",
-                    "dns_address": [
-                        "10.8.0.2",
-                        "fdfe:dcba:9876::2"
-                    ],
                     "auto_route": true,
+                    "auto_redirect": true,
                     "strict_route": true,
-                    "route_address_set": [
-                        "cnip",
-                        "private"
-                    ],
-                    "stack": "mixed",
+                    "udp_timeout": "5m0s",
+                    "udp_nat_max": 4096,
                     "endpoint_independent_nat": true
                 }
             ],
             "outbounds": [
-                // 占位，会被完全替换
+                {
+                    "type": "direct",
+                    "tag": "DIRECT"
+                },
+                {
+                    "type": "selector",
+                    "tag": "📦 sing-box",
+                    "outbounds": [
+                        "🟢 自动-测速",
+                        "🔵 自动-稳定"
+                    ],
+                    "default": "🟢 自动-测速"
+                },
+                {
+                    "type": "urltest",
+                    "tag": "🟢 自动-测速",
+                    "outbounds": [],
+                    "url": "http://www.gstatic.com/generate_204",
+                    "interval": "15m0s",
+                    "tolerance": 30,
+                    "idle_timeout": "20m0s"
+                },
+                {
+                    "type": "urltest",
+                    "tag": "🔵 自动-稳定",
+                    "outbounds": [],
+                    "url": "http://www.gstatic.com/generate_204",
+                    "interval": "30m0s",
+                    "tolerance": 50,
+                    "idle_timeout": "1h0m0s"
+                },
+                {
+                    "type": "selector",
+                    "tag": "🧭 Google Services",
+                    "outbounds": ["📦 sing-box"],
+                    "default": "📦 sing-box"
+                },
+                {
+                    "type": "selector",
+                    "tag": "📬 Google FCM",
+                    "outbounds": ["📦 sing-box", "🧭 Google Services"],
+                    "default": "📦 sing-box"
+                },
+                {
+                    "type": "selector",
+                    "tag": "🍎 Apple",
+                    "outbounds": ["DIRECT"],
+                    "default": "DIRECT"
+                },
+                {
+                    "type": "selector",
+                    "tag": "📺 StreamingME",
+                    "outbounds": ["📦 sing-box"],
+                    "default": "📦 sing-box"
+                },
+                {
+                    "type": "selector",
+                    "tag": "🪟 Microsoft",
+                    "outbounds": ["DIRECT"],
+                    "default": "DIRECT"
+                },
+                {
+                    "type": "selector",
+                    "tag": "📠 Telegram",
+                    "outbounds": ["📦 sing-box"],
+                    "default": "📦 sing-box"
+                },
+                {
+                    "type": "selector",
+                    "tag": "🇨🇳 国内流量",
+                    "outbounds": ["DIRECT", "📦 sing-box"],
+                    "default": "DIRECT"
+                },
+                {
+                    "type": "selector",
+                    "tag": "GLOBAL",
+                    "outbounds": ["📦 sing-box"],
+                    "default": "📦 sing-box"
+                },
+                {
+                    "type": "selector",
+                    "tag": "🚦 FINAL",
+                    "outbounds": ["📦 sing-box", "DIRECT", "❌ REJECT-DROP"],
+                    "default": "📦 sing-box"
+                },
+                {
+                    "type": "block",
+                    "tag": "❌ REJECT-DROP"
+                }
             ],
             "route": {
                 "rules": [
                     {
+                        "rule_set": "cn",
+                        "invert": true,
                         "action": "sniff"
-                    },
-                    {
-                        "protocol": "quic",
-                        "action": "reject"
                     },
                     {
                         "type": "logical",
                         "mode": "or",
                         "rules": [
-                            {
-                                "port": 53
-                            },
-                            {
-                                "protocol": "dns"
-                            }
+                            { "port": 53 },
+                            { "protocol": "dns" }
                         ],
                         "action": "hijack-dns"
                     },
                     {
-                        "type": "logical",
-                        "mode": "and",
-                        "rules": [
-                            {
-                                "ip_version": 6
-                            },
-                            {
-                                "default_interface_address": "2000::/3",
-                                "invert": true
-                            }
-                        ],
-                        "action": "reject"
-                    },
-                    {
-                        "port": [
-                            853,
-                            5353
-                        ],
-                        "action": "reject"
-                    },
-                    {
-                        "ip_is_private": true,
+                        "protocol": "icmp",
                         "outbound": "DIRECT"
                     },
                     {
-                        "ip_cidr": "198.18.0.0/15",
-                        "outbound": "proxy"
-                    },
-                    {
-                        "rule_set": "Google",
-                        "outbound": "proxy"
-                    },
-                    {
-                        "rule_set": [
-                            "fcm",
-                            "Android"
-                        ],
-                        "outbound": "proxy"
-                    },
-                    {
-                        "rule_set": [
-                            "proxy",
-                            "gfw",
-                            "ai",
-                            "games",
-                            "networktest"
-                        ],
-                        "outbound": "proxy"
-                    },
-                    {
-                        "rule_set": [
-                            "cn",
-                            "cnip"
-                        ],
+                        "domain_suffix": "cdn.jsdelivr.net",
                         "outbound": "DIRECT"
-                    },
-                    {
-                        "rule_set": "private",
-                        "outbound": "DIRECT"
-                    },
-                    {
-                        "rule_set": [
-                            "microsoft-cn",
-                            "apple-cn",
-                            "games-cn"
-                        ],
-                        "outbound": "DIRECT"
-                    },
-                    {
-                        "protocol": [
-                            "stun",
-                            "dtls"
-                        ],
-                        "action": "reject"
-                    },
-                    {
-                        "type": "logical",
-                        "mode": "or",
-                        "rules": [
-                            {
-                                "network": "udp",
-                                "port": [
-                                    3478,
-                                    5349,
-                                    5350,
-                                    19302,
-                                    10000
-                                ]
-                            },
-                            {
-                                "domain_regex": "^stun\\..+"
-                            },
-                            {
-                                "domain_keyword": [
-                                    "stun",
-                                    "turn"
-                                ]
-                            }
-                        ],
-                        "action": "reject"
                     },
                     {
                         "action": "route-options",
@@ -475,154 +450,129 @@
                         "udp_connect": true
                     },
                     {
-                        "action": "resolve"
+                        "ip_cidr": [
+                            "91.105.192.0/23", "91.108.4.0/22", "91.108.8.0/22", "91.108.12.0/22",
+                            "91.108.16.0/22", "91.108.20.0/22", "91.108.56.0/22", "95.161.64.0/20",
+                            "149.154.160.0/21", "149.154.168.0/22", "149.154.172.0/22", "185.76.151.0/24"
+                        ],
+                        "outbound": "📠 Telegram"
                     },
                     {
-                        "outbound": "proxy"
+                        "rule_set": "Google",
+                        "outbound": "🧭 Google Services"
+                    },
+                    {
+                        "rule_set": "GoogleFCM",
+                        "outbound": "📬 Google FCM"
+                    },
+                    {
+                        "rule_set": ["netflix", "disney", "youtube", "spotify", "primevideo"],
+                        "outbound": "📺 StreamingME"
+                    },
+                    {
+                        "rule_set": ["Android", "proxy", "gfw", "ai", "games", "networktest"],
+                        "outbound": "GLOBAL"
+                    },
+                    {
+                        "package_name_regex": [
+                            "com.twitter.android", "com.google.android.youtube", "com.google.android.apps.maps",
+                            "com.instagram.android", "com.facebook.katana", "com.facebook.orca", "com.whatsapp",
+                            "org.telegram.messenger", "org.telegram.group", "com.discord", "com.reddit.frontpage",
+                            "com.spotify.music", "com.netflix.mediaclient", "com.google.android.gm",
+                            "com.google.android.apps.docs", "com.google.android.apps.photos", "com.google.android.apps.translate",
+                            "com.google.android.keep", "com.snapchat.android", "com.tiktok.", "com.android.vending"
+                        ],
+                        "outbound": "📦 sing-box"
+                    },
+                    {
+                        "package_name_regex": [
+                            "com.tencent.mm", "com.tencent.mobileqq", "com.taobao.taobao", "com.eg.android.AlipayGphone",
+                            "com.ss.android.ugc.aweme", "tv.danmaku.bili", "com.baidu.searchbox", "com.xunmeng.pinduoduo",
+                            "com.sina.weibo", "com.xingin.xhs", "com.kuaishou.nebula", "com.zhihu.android",
+                            "com.tencent.qqlive", "com.qiyi.video", "com.alibaba.android.rimet", "com.jingdong.app.mall",
+                            "com.sankuai.meituan", "com.douban.frodo", "com.UCMobile", "com.tencent.wework",
+                            "com.netease.cloudmusic", "cn.wps.moffice_eng", "com.unionpay", "com.bankcomm."
+                        ],
+                        "outbound": "🇨🇳 国内流量"
+                    },
+                    {
+                        "rule_set": ["cn", "cnip", "games-cn"],
+                        "outbound": "🇨🇳 国内流量"
+                    },
+                    {
+                        "rule_set": "microsoft-cn",
+                        "outbound": "🪟 Microsoft"
+                    },
+                    {
+                        "rule_set": "apple-cn",
+                        "outbound": "🍎 Apple"
+                    },
+                    {
+                        "protocol": "ntp",
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "clash_mode": "direct",
+                        "outbound": "DIRECT"
+                    },
+                    {
+                        "clash_mode": "global",
+                        "outbound": "GLOBAL"
+                    },
+                    {
+                        "ip_cidr": "198.18.0.0/15",
+                        "outbound": "📦 sing-box"
+                    },
+                    {
+                        "ip_cidr": "0.0.0.0/8",
+                        "action": "reject"
+                    },
+                    {
+                        "rule_set": "geosite-category-ads-all",
+                        "action": "reject"
+                    },
+                    {
+                        "protocol": ["stun", "dtls"],
+                        "action": "reject",
+                        "method": "drop"
+                    },
+                    {
+                        "rule_set": "cn",
+                        "invert": true,
+                        "outbound": "📦 sing-box"
                     }
                 ],
                 "rule_set": [
                     {
                         "type": "remote",
-                        "tag": "cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cn.srs",
-                        "http_client": "default",
+                        "tag": ["cn", "cnip", "proxy", "ai", "games", "microsoft-cn", "apple-cn", "games-cn", "networktest", "netflix", "disney", "youtube", "spotify", "primevideo"],
+                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/{tag}.srs",
                         "update_interval": "48h0m0s"
                     },
                     {
                         "type": "remote",
-                        "tag": "cnip",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/cnip.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "private",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/private.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "ads",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ads.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "proxy",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/proxy.srs",
-                        "http_client": "default",
+                        "tag": ["Google", "Android", "GoogleFCM"],
+                        "url": "https://cdn.jsdelivr.net/gh/senshinya/singbox_ruleset@main/rule/{tag}/{tag}.srs",
                         "update_interval": "48h0m0s"
                     },
                     {
                         "type": "remote",
                         "tag": "gfw",
-                        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/gfw.srs",
-                        "http_client": "default",
+                        "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/{tag}.srs",
                         "update_interval": "48h0m0s"
                     },
                     {
                         "type": "remote",
-                        "tag": "ai",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/ai.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "games",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "microsoft-cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/microsoft-cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "apple-cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "games-cn",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/games-cn.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "networktest",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/networktest.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "httpDNS",
-                        "url": "https://cdn.jsdelivr.net/gh/senshinya/singbox_ruleset@main/rule/BlockHttpDNS/BlockHttpDNS.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "DNSreject",
-                        "url": "https://cdn.jsdelivr.net/gh/senshinya/singbox_ruleset@main/rule/AdGuardSDNSFilter/AdGuardSDNSFilter.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "Google",
-                        "url": "https://cdn.jsdelivr.net/gh/senshinya/singbox_ruleset@main/rule/Google/Google.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "fcm",
-                        "url": "https://cdn.jsdelivr.net/gh/senshinya/singbox_ruleset@main/rule/GoogleFCM/GoogleFCM.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "Android",
-                        "url": "https://cdn.jsdelivr.net/gh/senshinya/singbox_ruleset@main/rule/Android/Android.srs",
-                        "http_client": "default",
-                        "update_interval": "48h0m0s"
-                    },
-                    {
-                        "type": "remote",
-                        "tag": "fakeip-filter",
-                        "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/fakeip-filter.srs",
-                        "http_client": "default",
+                        "tag": "geosite-category-ads-all",
+                        "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs",
                         "update_interval": "48h0m0s"
                     }
                 ],
-                "final": "proxy",
+                "final": "🚦 FINAL",
                 "auto_detect_interface": true,
-                "default_domain_resolver": "local-dns"
+                "default_domain_resolver": "pkpk-dns",
+                "default_http_client": "default"
             },
-            "services": [
-                {
-                    "type": "api",
-                    "tag": "api",
-                    "listen": "127.0.0.1",
-                    "listen_port": 9091,
-                    "access_control_allow_private_network": true,
-                    "dashboard": true
-                }
-            ],
             "experimental": {
                 "cache_file": {
                     "enabled": true,
@@ -633,7 +583,8 @@
             }
         };
 
-        // ---------- 协议解析器 (vless/vmess/trojan/ss/hysteria2) ----------
+        // ---------- 协议解析器 ----------
+
         function parseVless(url) {
             let main = url.substring(8);
             let fragment = '';
@@ -662,7 +613,7 @@
             const pbk = params.get('pbk') || '';
             const sid = params.get('sid') || '';
             const rawTag = fragment || `${server}:${port}`;
-            const node = { _rawTag: rawTag, type: 'vless', server, server_port: port, uuid, domain_resolver: 'local-dns', tcp_fast_open: true, connect_timeout: "5s", tcp_keep_alive: "30s", tcp_keep_alive_interval: "5s", udp_fragment: true };
+            const node = { _rawTag: rawTag, type: 'vless', server, server_port: port, uuid, domain_resolver: 'pkpk-dns', tcp_fast_open: true, connect_timeout: "5s", tcp_keep_alive: "30s", tcp_keep_alive_interval: "5s", udp_fragment: true };
             if (flow) node.flow = flow;
             if (type !== 'tcp') {
                 const transport = { type };
@@ -682,11 +633,12 @@
             }
             return node;
         }
+
         function parseVmess(url) {
             const b64 = url.substring(8);
             const vm = JSON.parse(atob(b64));
             const rawTag = vm.ps || `${vm.add}:${vm.port}`;
-            const node = { _rawTag: rawTag, type: 'vmess', server: vm.add, server_port: parseInt(vm.port) || 443, uuid: vm.id, security: vm.scy || 'auto', alter_id: parseInt(vm.aid) || 0, domain_resolver: 'local-dns', tcp_fast_open: true, connect_timeout: "5s", tcp_keep_alive: "30s", tcp_keep_alive_interval: "5s", udp_fragment: true };
+            const node = { _rawTag: rawTag, type: 'vmess', server: vm.add, server_port: parseInt(vm.port) || 443, uuid: vm.id, security: vm.scy || 'auto', alter_id: parseInt(vm.aid) || 0, domain_resolver: 'pkpk-dns', tcp_fast_open: true, connect_timeout: "5s", tcp_keep_alive: "30s", tcp_keep_alive_interval: "5s", udp_fragment: true };
             const net = vm.net;
             if (net && net !== 'tcp') {
                 const transport = { type: net };
@@ -700,6 +652,7 @@
             }
             return node;
         }
+
         function parseTrojan(url) {
             let main = url.substring(9);
             let fragment = '';
@@ -720,7 +673,7 @@
             const path = params.get('path') || '/';
             const host = params.get('host') || sni;
             const rawTag = fragment || `${server}:${port}`;
-            const node = { _rawTag: rawTag, type: 'trojan', server, server_port: port, password, domain_resolver: 'local-dns', tcp_fast_open: true, connect_timeout: "5s", tcp_keep_alive: "30s", tcp_keep_alive_interval: "5s", udp_fragment: true };
+            const node = { _rawTag: rawTag, type: 'trojan', server, server_port: port, password, domain_resolver: 'pkpk-dns', tcp_fast_open: true, connect_timeout: "5s", tcp_keep_alive: "30s", tcp_keep_alive_interval: "5s", udp_fragment: true };
             if (type !== 'tcp') {
                 const transport = { type };
                 if (type === 'ws') { transport.path = path; if (host) transport.headers = { Host: host }; }
@@ -730,6 +683,7 @@
             if (fp) node.tls.utls = { enabled: true, fingerprint: fp };
             return node;
         }
+
         function parseShadowsocks(url) {
             let main = url.substring(5);
             let fragment = '';
@@ -749,8 +703,9 @@
                 port = col !== -1 ? parseInt(hostPort.substring(col + 1)) : 8388;
             } else { const decoded = atob(main); const parts = decoded.split('@'); const mp = parts[0].split(':'); method = mp[0]; password = mp[1]; const hp = parts[1].split(':'); server = hp[0]; port = parseInt(hp[1]); }
             const rawTag = fragment || `${server}:${port}`;
-            return { _rawTag: rawTag, type: 'shadowsocks', server, server_port: port, method, password, domain_resolver: 'local-dns', connect_timeout: "5s", tcp_fast_open: true };
+            return { _rawTag: rawTag, type: 'shadowsocks', server, server_port: port, method, password, domain_resolver: 'pkpk-dns', connect_timeout: "5s", tcp_fast_open: true };
         }
+
         function parseHysteria2(url) {
             let u = url.startsWith('hysteria2://') ? url : url.replace('hy2://', 'hysteria2://');
             let main = u.substring(12);
@@ -769,8 +724,167 @@
             const sni = params.get('sni') || server;
             const insecure = params.get('insecure') === '1';
             const rawTag = fragment || `${server}:${port}`;
-            return { _rawTag: rawTag, type: 'hysteria2', server, server_port: port, password, domain_resolver: 'local-dns', tls: { enabled: true, server_name: sni, insecure, ech: { enabled: false } } };
+            return { _rawTag: rawTag, type: 'hysteria2', server, server_port: port, password, domain_resolver: 'pkpk-dns', tls: { enabled: true, server_name: sni, insecure, ech: { enabled: false } } };
         }
+
+        function parseTuic(url) {
+            let main = url.substring(7); // 去掉 "tuic://"
+            let fragment = '';
+            const hash = main.indexOf('#');
+            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1)); main = main.substring(0, hash); }
+            const qIdx = main.indexOf('?');
+            let serverPart = main, query = '';
+            if (qIdx !== -1) { serverPart = main.substring(0, qIdx); query = main.substring(qIdx + 1); }
+            const at = serverPart.indexOf('@');
+            if (at === -1) throw new Error('Invalid TUIC');
+            const userInfo = serverPart.substring(0, at);
+            const hostPort = serverPart.substring(at + 1);
+            const colon = userInfo.indexOf(':');
+            let uuid, password;
+            if (colon !== -1) {
+                uuid = userInfo.substring(0, colon);
+                password = userInfo.substring(colon + 1);
+            } else {
+                uuid = userInfo;
+                password = '';
+            }
+            let server, port;
+            const col = hostPort.lastIndexOf(':');
+            if (col !== -1) { server = hostPort.substring(0, col); port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort; port = 443; }
+            const params = new URLSearchParams(query);
+            const congestion_control = params.get('congestion_control') || 'bbr';
+            const udp_relay_mode = params.get('udp_relay_mode') || 'native';
+            const alpn = params.get('alpn') || 'h3';
+            const sni = params.get('sni') || server;
+            const allowInsecure = params.get('allow_insecure') === '1' || params.get('insecure') === '1';
+            const rawTag = fragment || `${server}:${port}`;
+            return {
+                _rawTag: rawTag,
+                type: 'tuic',
+                server,
+                server_port: port,
+                uuid,
+                password,
+                congestion_control,
+                udp_relay_mode,
+                heartbeat: '10s',
+                tls: {
+                    enabled: true,
+                    server_name: sni,
+                    alpn: alpn,
+                    insecure: allowInsecure,
+                    ech: { enabled: false }
+                },
+                stream_receive_window: 0,
+                connection_receive_window: 0,
+                domain_resolver: 'pkpk-dns'
+            };
+        }
+
+        function parseAnyTls(url) {
+            const prefix = 'anytls://';
+            let main = url.substring(prefix.length);
+            let fragment = '';
+            const hash = main.indexOf('#');
+            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1)); main = main.substring(0, hash); }
+            const qIdx = main.indexOf('?');
+            let serverPart = main, query = '';
+            if (qIdx !== -1) { serverPart = main.substring(0, qIdx); query = main.substring(qIdx + 1); }
+            const at = serverPart.indexOf('@');
+            if (at === -1) throw new Error('Invalid AnyTLS');
+            const password = serverPart.substring(0, at);
+            const hostPort = serverPart.substring(at + 1);
+            let server, port;
+            const col = hostPort.lastIndexOf(':');
+            if (col !== -1) { server = hostPort.substring(0, col); port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort; port = 443; }
+            const params = new URLSearchParams(query);
+            const sni = params.get('sni') || server;
+            const allowInsecure = params.get('allowInsecure') === '1' || params.get('allow_insecure') === '1' || params.get('insecure') === '1';
+            const fp = params.get('fp') || 'chrome';
+            const rawTag = fragment || `${server}:${port}`;
+            return {
+                _rawTag: rawTag,
+                type: 'anytls',
+                server,
+                server_port: port,
+                password,
+                tls: {
+                    enabled: true,
+                    server_name: sni,
+                    insecure: allowInsecure,
+                    utls: { enabled: true, fingerprint: fp },
+                    ech: { enabled: false }
+                },
+                idle_session_check_interval: '30s',
+                idle_session_timeout: '30s',
+                min_idle_session: 5,
+                domain_resolver: 'pkpk-dns'
+            };
+        }
+
+        function parseNaive(url) {
+            let isQuic = false;
+            let main;
+            if (url.startsWith('naive+https://')) {
+                main = url.substring('naive+https://'.length);
+            } else if (url.startsWith('naive+quic://')) {
+                main = url.substring('naive+quic://'.length);
+                isQuic = true;
+            } else if (url.startsWith('naive://')) {
+                main = url.substring('naive://'.length);
+            } else {
+                throw new Error('Invalid Naive URL');
+            }
+            let fragment = '';
+            const hash = main.indexOf('#');
+            if (hash !== -1) { fragment = decodeURIComponent(main.substring(hash + 1)); main = main.substring(0, hash); }
+            const qIdx = main.indexOf('?');
+            let serverPart = main, query = '';
+            if (qIdx !== -1) { serverPart = main.substring(0, qIdx); query = main.substring(qIdx + 1); }
+            const at = serverPart.indexOf('@');
+            if (at === -1) throw new Error('Invalid Naive');
+            const userInfo = serverPart.substring(0, at);
+            const hostPort = serverPart.substring(at + 1);
+            const colon = userInfo.indexOf(':');
+            let username, password;
+            if (colon !== -1) {
+                username = userInfo.substring(0, colon);
+                password = userInfo.substring(colon + 1);
+            } else {
+                username = userInfo;
+                password = '';
+            }
+            let server, port;
+            const col = hostPort.lastIndexOf(':');
+            if (col !== -1) { server = hostPort.substring(0, col); port = parseInt(hostPort.substring(col + 1)); } else { server = hostPort; port = 443; }
+            const params = new URLSearchParams(query);
+            const sni = params.get('sni') || server;
+            const allowInsecure = params.get('allowInsecure') === '1' || params.get('allow_insecure') === '1' || params.get('insecure') === '1';
+            const rawTag = fragment || `${server}:${port}`;
+            const node = {
+                _rawTag: rawTag,
+                type: 'naive',
+                server,
+                server_port: port,
+                username,
+                password,
+                udp_over_tcp: true,
+                tls: {
+                    enabled: true,
+                    server_name: sni,
+                    insecure: allowInsecure,
+                    ech: { enabled: false }
+                },
+                domain_resolver: 'pkpk-dns'
+            };
+            if (isQuic) {
+                node.quic = true;
+                node.quic_congestion_control = 'bbr';
+                node.udp_over_tcp = false;
+            }
+            return node;
+        }
+
         function parseLine(line) {
             line = line.trim();
             if (!line) return null;
@@ -780,6 +894,9 @@
                 if (line.startsWith('trojan://')) return parseTrojan(line);
                 if (line.startsWith('ss://')) return parseShadowsocks(line);
                 if (line.startsWith('hysteria2://') || line.startsWith('hy2://')) return parseHysteria2(line);
+                if (line.startsWith('tuic://')) return parseTuic(line);
+                if (line.startsWith('anytls://')) return parseAnyTls(line);
+                if (line.startsWith('naive+https://') || line.startsWith('naive+quic://') || line.startsWith('naive://')) return parseNaive(line);
             } catch (e) { console.warn(e); return null; }
             return null;
         }
@@ -794,14 +911,14 @@
             return finalTag;
         }
 
-        // 构建 outbounds：顺序为 DIRECT, PROXY选择器, 自动测速, 节点列表, 然后固定出站 (这些固定出站会附加在节点之后)
-        // 注意：模板中原有固定出站 (如 "proxy" selector 等) 我们不再保留，因为节点插入后，由新构建的 outbounds 完全接管。
-        // 但原模板中的 "proxy" 标签在 DNS 和路由中被引用，所以新构建的 outbounds 中必须包含名为 "proxy" 的出站。
-        // 因此，新 outbounds 中第一个为 DIRECT，第二个为 proxy (selector)，后续为自动测速、节点、以及原模板需要的其他固定出站。
-        // 但原模板中并没有额外的固定出站，只有 outbounds 数组为空。我们构建的 outbounds 将完全替换原 outbounds。
-        // 需要保证存在 "proxy" 标签的 outbound，因为 dns 和 route 中引用了 "proxy"。
+        // 构建 outbounds：基于 BASE_TEMPLATE.outbounds，插入节点并更新相关选择器
         function buildOutbounds(nodeObjects) {
-            const usedTags = new Set(['DIRECT', 'proxy', '🟢 自动-测速', 'REJECT-DROP']);
+            // 深拷贝模板 outbounds
+            const outbounds = JSON.parse(JSON.stringify(BASE_TEMPLATE.outbounds));
+            const usedTags = new Set();
+            // 收集已有 tag 避免冲突
+            outbounds.forEach(o => { if (o.tag) usedTags.add(o.tag); });
+
             const builtNodes = [];
             for (let raw of nodeObjects) {
                 const baseTag = raw._rawTag || 'node';
@@ -811,24 +928,37 @@
                 builtNodes.push(raw);
             }
             const nodeTags = builtNodes.map(n => n.tag);
-            // 固定出站：DIRECT
-            const direct = { type: "direct", tag: "DIRECT", domain_resolver: "local-dns" };
-            // proxy 选择器（引用自动测速和节点）
-            let proxySelector, autoUrltest;
-            if (nodeTags.length) {
-                autoUrltest = { type: "urltest", tag: "🟢 自动-测速", outbounds: nodeTags, url: "http://www.gstatic.com/generate_204", interval: "10m0s", tolerance: 100, idle_timeout: "30m0s" };
-                proxySelector = { type: "selector", tag: "proxy", outbounds: ["🟢 自动-测速", ...nodeTags, "DIRECT"], default: "🟢 自动-测速" };
-            } else {
-                proxySelector = { type: "selector", tag: "proxy", outbounds: ["DIRECT"], default: "DIRECT" };
+
+            // 更新 "📦 sing-box" 选择器
+            const singBox = outbounds.find(o => o.tag === '📦 sing-box');
+            if (singBox) {
+                singBox.outbounds = ["🟢 自动-测速", "🔵 自动-稳定", ...nodeTags];
+                if (nodeTags.length === 0) {
+                    singBox.outbounds = ["DIRECT"];
+                    singBox.default = "DIRECT";
+                }
             }
-            // 其他固定出站：REJECT-DROP (作为最终 fallback)
-            const rejectBlock = { type: "block", tag: "REJECT-DROP" };
-            // 组装顺序：DIRECT, proxy, 自动测速(如果有), 节点列表, REJECT-DROP
-            const outbounds = [direct];
-            if (proxySelector) outbounds.push(proxySelector);
-            if (autoUrltest) outbounds.push(autoUrltest);
-            if (builtNodes.length) outbounds.push(...builtNodes);
-            outbounds.push(rejectBlock);
+
+            // 更新 "🟢 自动-测速"
+            const autoFast = outbounds.find(o => o.tag === '🟢 自动-测速');
+            if (autoFast) {
+                autoFast.outbounds = nodeTags.length ? nodeTags : ["DIRECT"];
+            }
+
+            // 更新 "🔵 自动-稳定"
+            const autoStable = outbounds.find(o => o.tag === '🔵 自动-稳定');
+            if (autoStable) {
+                autoStable.outbounds = nodeTags.length ? nodeTags : ["DIRECT"];
+            }
+
+            // 将新节点插入到 DIRECT 之后
+            const directIndex = outbounds.findIndex(o => o.tag === 'DIRECT');
+            if (directIndex !== -1 && builtNodes.length) {
+                outbounds.splice(directIndex + 1, 0, ...builtNodes);
+            } else if (builtNodes.length) {
+                outbounds.push(...builtNodes);
+            }
+
             return outbounds;
         }
 
@@ -842,8 +972,7 @@
             const newOutbounds = buildOutbounds(rawNodes);
             const finalConfig = JSON.parse(JSON.stringify(BASE_TEMPLATE));
             finalConfig.outbounds = newOutbounds;
-            // 确保 route 中的 final 引用存在
-            // 原模板 route.final = "proxy"，我们已经创建了 proxy selector，所以没问题
+            // route 中的 final 已经是 "🚦 FINAL"，无需修改
             return { config: finalConfig, nodeCount: rawNodes.length };
         }
 
